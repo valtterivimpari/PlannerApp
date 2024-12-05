@@ -148,28 +148,19 @@ app.post('/api/users/:username/profile-image', authenticateToken, upload.single(
 
 // Fetch all trips
 // Fetch a single trip by ID
-app.get('/api/trips/:id', async (req, res) => {
-    const { id } = req.params;
-    console.log(`Fetching trip with ID: ${id}`); // Debugging log
-
+app.get('/api/trips', async (req, res) => {
     try {
-        const query = `SELECT * FROM trips WHERE id = $1`;
-        const result = await pool.query(query, [id]);
-
-        if (result.rowCount === 0) {
-            console.log(`Trip with ID ${id} not found`);
-            return res.status(404).send('Trip not found');
-        }
-
-        console.log('Trip details:', result.rows[0]); // Debugging log
-        console.log('Route hit: /api/trips/:id');
-    console.log('Params:', req.params);
-        res.json(result.rows[0]);
+        const query = `SELECT * FROM trips`;
+        const result = await pool.query(query);
+        res.json(result.rows); // Respond with all trips
     } catch (error) {
-        console.error('Error fetching trip:', error);
+        console.error('Error fetching trips:', error);
         res.status(500).send('Server error');
     }
 });
+
+
+
 
 
 

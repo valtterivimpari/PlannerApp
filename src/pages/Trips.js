@@ -57,26 +57,21 @@ function Trips() {
                 navigate('/login');
                 return;
             }
-
+    
             try {
                 const response = await axios.get('http://localhost:5000/api/trips', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                console.log('Fetched trips:', response.data);
-
-
+                console.log('Fetched trips:', response.data); // Add this log
                 setTrips(response.data);
-
-                // Fetch images for all unique countries
-                const uniqueCountries = [...new Set(response.data.map((trip) => trip.selected_country))];
-                uniqueCountries.forEach((country) => fetchCountryImage(country));
             } catch (error) {
                 console.error('Error fetching trips:', error.response || error.message);
             }
         };
-
+    
         fetchTrips();
     }, [navigate]);
+    
 
     return (
         <div className="trips-container">
