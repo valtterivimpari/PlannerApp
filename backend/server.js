@@ -9,6 +9,7 @@ const multer = require('multer');
 const path = require('path');
 const morgan = require('morgan');
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -32,17 +33,19 @@ app.use(cors());
 app.use(morgan('dev'));
 
 // Middleware to authenticate JWT
-function authenticateToken(req, res, next) {
+const authenticateToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
+
     if (!token) return res.status(401).send('Unauthorized');
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) return res.status(403).send('Invalid token');
-        req.user = user; // Attach user info to the request object
+        req.user = user; // Attach user info to the request
         next();
     });
-}
+};
+
 
 // Routes
 // Register a new user
@@ -81,6 +84,11 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).send('Invalid username or password');
         }
         console.log('User found:', user);
+        console.log('Request received:', req.body);
+console.log('Executing query:', query, [username]);
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
+
+
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         console.log('Password valid:', isPasswordValid);
@@ -148,11 +156,13 @@ app.post('/api/users/:username/profile-image', authenticateToken, upload.single(
 
 // Fetch all trips
 // Fetch a single trip by ID
-app.get('/api/trips', async (req, res) => {
+app.get('/api/trips', authenticateToken, async (req, res) => {
+    const userId = req.user.id; // Extracted from the JWT token
+
     try {
-        const query = `SELECT * FROM trips`;
-        const result = await pool.query(query);
-        res.json(result.rows); // Respond with all trips
+        const query = `SELECT * FROM trips WHERE user_id = $1;`;
+        const result = await pool.query(query, [userId]);
+        res.json(result.rows);
     } catch (error) {
         console.error('Error fetching trips:', error);
         res.status(500).send('Server error');
@@ -166,26 +176,26 @@ app.get('/api/trips', async (req, res) => {
 
 
 
-// Add a new trip
-app.post('/api/trips', async (req, res) => {
-    const { tripName, selectedCountry, startDate, endDate } = req.body;
-    console.log('Received trip data:', { tripName, selectedCountry, startDate, endDate });
 
-    if (!tripName || !selectedCountry || !startDate || !endDate) {
-        return res.status(400).send('All fields are required');
-    }
+
+
+// Add a new trip
+app.post('/api/trips', authenticateToken, async (req, res) => {
+    const { tripName, selectedCountry, startDate, endDate } = req.body;
+    const userId = req.user.id; // Extracted from the JWT token
 
     try {
-        const query = `INSERT INTO trips (trip_name, selected_country, start_date, end_date) VALUES ($1, $2, $3, $4) RETURNING *`;
-        const result = await pool.query(query, [tripName, selectedCountry, startDate, endDate]);
-        console.log('Trip saved to database:', result.rows[0]);
+        const query = `
+            INSERT INTO trips (trip_name, selected_country, start_date, end_date, user_id)
+            VALUES ($1, $2, $3, $4, $5) RETURNING *;
+        `;
+        const result = await pool.query(query, [tripName, selectedCountry, startDate, endDate, userId]);
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Error saving trip:', error);
         res.status(500).send('Server error');
     }
 });
-
 
 
 
