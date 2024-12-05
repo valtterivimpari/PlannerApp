@@ -1,0 +1,52 @@
+/* src/pages/Login.css */
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    /* No background color here */
+}
+
+.login-box {
+    background-color: #f4f8fb; /* Box background color */
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); /* Shadow for the box effect */
+    width: 90%;
+    max-width: 400px; /* Limit the width to create a narrow box effect */
+    text-align: center;
+}
+
+.login-box h2 {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.login-box input {
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 1em;
+    width: 80%;
+    max-width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.login-box button {
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 1em;
+    color: white;
+    background-color: #1abc9c;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    width: 80%;
+    max-width: 300px;
+}
+
+.login-box button:hover {
+    background-color: #16a085;
+}

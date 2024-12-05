@@ -1,0 +1,125 @@
+.create-trip-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f9f9f9;
+}
+
+.create-trip-form {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
+}
+
+.create-trip-form select {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9em;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: #333; /* Default color */
+    background-color: white;
+}
+
+.create-trip-form select:invalid {
+    color: #aaa; /* Placeholder color for "Select a country..." */
+}
+
+
+.create-trip-form h2 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.create-trip-form label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 0.9em;
+    color: #555;
+    text-align: left;
+}
+
+.create-trip-form input,
+.create-trip-form select {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9em;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.date-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 15px 0;
+}
+
+.date-section div {
+    flex: 1;
+}
+
+.date-section span {
+    margin: 0 10px;
+    font-size: 1.2em;
+    color: #aaa;
+}
+
+.date-info {
+    font-size: 0.8em;
+    color: #777;
+    margin-top: 5px;
+    text-align: left;
+}
+
+.button-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.invite-friends-button {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.invite-friends-button:hover {
+    background-color: #16a085;
+}
+
+.start-planning-button {
+    background-color: #ddd;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.start-planning-button:enabled {
+    background-color: #1abc9c;
+}
+
+.start-planning-button:enabled:hover {
+    background-color: #16a085;
+}
+
+.start-planning-button:disabled {
+    cursor: not-allowed;
+    background-color: #ddd;
+}
