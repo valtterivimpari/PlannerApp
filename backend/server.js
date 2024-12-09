@@ -225,6 +225,33 @@ app.get('/api/trips', authenticateToken, async (req, res) => {
 });
 
 
+// Delete a trip
+app.delete('/api/trips/:tripId', authenticateToken, async (req, res) => {
+    const { tripId } = req.params;
+    const userId = req.user.id;
+
+    if (!userId) {
+        console.error('User ID not found in token');
+        return res.status(400).send('Invalid token');
+    }
+
+    try {
+        // Delete the trip from the database
+        const query = `DELETE FROM trips WHERE id = $1 AND user_id = $2 RETURNING *`;
+        const result = await pool.query(query, [tripId, userId]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).send('Trip not found or unauthorized');
+        }
+
+        res.status(200).send('Trip deleted successfully');
+    } catch (error) {
+        console.error('Error deleting trip:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
 
 
 

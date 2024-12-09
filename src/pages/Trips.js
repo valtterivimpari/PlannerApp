@@ -11,6 +11,10 @@ function Trips() {
     const UNSPLASH_API_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
     console.log('Unsplash API Key:', process.env.REACT_APP_UNSPLASH_ACCESS_KEY);
     console.log('Test Variable:', process.env.REACT_APP_TEST_VARIABLE);
+    console.log(process.env); // Log all environment variables to check if it's loaded correctly.
+    console.log('All Environment Variables:', process.env);
+
+
 
 
 
@@ -76,39 +80,62 @@ console.log('Trips:', trips);
     
     
 
+    const handleDeleteTrip = async (tripId) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found, redirecting to login...');
+            navigate('/login');
+            return;
+        }
+    
+        try {
+            await axios.delete(`http://localhost:5000/api/trips/${tripId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setTrips((prevTrips) => prevTrips.filter((trip) => trip.id !== tripId)); // Remove the deleted trip from the state
+            console.log('Trip deleted successfully');
+        } catch (error) {
+            console.error('Error deleting trip:', error.response || error.message);
+        }
+    };
+    
     return (
         <div className="trips-container">
             <h2>Your Trips</h2>
             {trips.length > 0 ? (
-    trips.map((trip) => (
-        <div key={trip.id} className="trip-card">
-            <h3>📍 {trip.trip_name || 'Unnamed Trip'}</h3>
-            <p>Country: {trip.selected_country || 'Unknown'}</p>
-            <p>
-                📅 {trip.start_date ? formatDateToDDMMYYYY(trip.start_date) : 'N/A'} - 
-                {trip.end_date ? formatDateToDDMMYYYY(trip.end_date) : 'N/A'}
-            </p>
-            <img
-                src={countryImages[trip.selected_country] || '/images/fallback.jpg'}
-                alt={`View of ${trip.selected_country}`}
-                className="trip-image"
-            />
-            <button
-                className="details-button"
-                onClick={() => navigate(`/trip-info/${trip.id}`)}
-
-            >
-                View Details
-            </button>
-        </div>
-    ))
-) : (
-    <p>No trips yet. Create your first trip!</p>
-
-)}
-
+                trips.map((trip) => (
+                    <div key={trip.id} className="trip-card">
+                        <h3>📍 {trip.trip_name || 'Unnamed Trip'}</h3>
+                        <p>Country: {trip.selected_country || 'Unknown'}</p>
+                        <p>
+                            📅 {trip.start_date ? formatDateToDDMMYYYY(trip.start_date) : 'N/A'} -
+                            {trip.end_date ? formatDateToDDMMYYYY(trip.end_date) : 'N/A'}
+                        </p>
+                        <img
+                            src={countryImages[trip.selected_country] || '/images/fallback.jpg'}
+                            alt={`View of ${trip.selected_country}`}
+                            className="trip-image"
+                        />
+                        <button
+                            className="details-button"
+                            onClick={() => navigate(`/trip-info/${trip.id}`)}
+                        >
+                            View Details
+                        </button>
+                        <button
+                            className="delete-button"
+                            onClick={() => handleDeleteTrip(trip.id)} // Call the delete function
+                        >
+                            Delete Trip
+                        </button>
+                    </div>
+                ))
+            ) : (
+                <p>No trips yet. Create your first trip!</p>
+            )}
         </div>
     );
+    
 }
 
 export default Trips;
