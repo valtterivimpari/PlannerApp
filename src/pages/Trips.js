@@ -62,45 +62,51 @@ function Trips() {
                 const response = await axios.get('http://localhost:5000/api/trips', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                console.log('Fetched trips:', response.data); // Add this log
+                console.log('Fetched trips:', response.data);
+                console.log('Number of trips:', trips.length);
+console.log('Trips:', trips);
+
                 setTrips(response.data);
             } catch (error) {
                 console.error('Error fetching trips:', error.response || error.message);
             }
         };
-    
         fetchTrips();
     }, [navigate]);
+    
     
 
     return (
         <div className="trips-container">
             <h2>Your Trips</h2>
             {trips.length > 0 ? (
-                trips.map((trip) => (
-                    <div key={trip.id} className="trip-card">
-                        <h3>📍 {trip.trip_name || 'Unnamed Trip'}</h3>
-                        <p>Country: {trip.selected_country || 'Unknown'}</p>
-                        <p>
-                            📅 {trip.start_date ? formatDateToDDMMYYYY(trip.start_date) : 'N/A'} - 
-                            {trip.end_date ? formatDateToDDMMYYYY(trip.end_date) : 'N/A'}
-                        </p>
-                        <img
-                            src={countryImages[trip.selected_country] || '/images/fallback.jpg'}
-                            alt={`View of ${trip.selected_country}`}
-                            className="trip-image"
-                        />
-                        <button
-                            className="details-button"
-                            onClick={() => navigate(`/trip-info/${trip.id}`)}
-                        >
-                            View Details
-                        </button>
-                    </div>
-                ))
-            ) : (
-                <p>No trips yet. Create your first trip!</p>
-            )}
+    trips.map((trip) => (
+        <div key={trip.id} className="trip-card">
+            <h3>📍 {trip.trip_name || 'Unnamed Trip'}</h3>
+            <p>Country: {trip.selected_country || 'Unknown'}</p>
+            <p>
+                📅 {trip.start_date ? formatDateToDDMMYYYY(trip.start_date) : 'N/A'} - 
+                {trip.end_date ? formatDateToDDMMYYYY(trip.end_date) : 'N/A'}
+            </p>
+            <img
+                src={countryImages[trip.selected_country] || '/images/fallback.jpg'}
+                alt={`View of ${trip.selected_country}`}
+                className="trip-image"
+            />
+            <button
+                className="details-button"
+                onClick={() => navigate(`/trip-info/${trip.id}`)}
+
+            >
+                View Details
+            </button>
+        </div>
+    ))
+) : (
+    <p>No trips yet. Create your first trip!</p>
+
+)}
+
         </div>
     );
 }

@@ -33,18 +33,34 @@ app.use(cors());
 app.use(morgan('dev'));
 
 // Middleware to authenticate JWT
+// Middleware to authenticate JWT
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) return res.status(401).send('Unauthorized');
+    if (!token) {
+        console.error('Token not provided');
+        return res.status(401).send('Unauthorized');
+    }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).send('Invalid token');
-        req.user = user; // Attach user info to the request
+        if (err) {
+            console.error('Token verification failed:', err);
+            return res.status(403).send('Invalid token');
+        }
+
+        console.log('Decoded JWT:', user); // Should include `id`
+        req.user = user; // Attach the entire decoded token
+        console.log('req.user:', req.user);
         next();
     });
 };
+
+
+
+
+
+
 
 
 // Routes
@@ -72,7 +88,6 @@ app.post('/api/register', async (req, res) => {
 // Login a user
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
-    console.log('Login attempt:', username);
 
     try {
         const query = `SELECT * FROM users WHERE username = $1`;
@@ -80,32 +95,37 @@ app.post('/api/login', async (req, res) => {
         const user = result.rows[0];
 
         if (!user) {
-            console.error('User not found:', username);
             return res.status(400).send('Invalid username or password');
         }
-        console.log('User found:', user);
-        console.log('Request received:', req.body);
-console.log('Executing query:', query, [username]);
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
-
-
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        console.log('Password valid:', isPasswordValid);
 
         if (!isPasswordValid) {
-            console.error('Invalid password for user:', username);
             return res.status(400).send('Invalid username or password');
         }
 
-        const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        console.log('Login successful for:', username);
+        // Log the user details before signing the token
+        console.log('User details for token:', user);
+        console.log('Creating token with payload:', { id: user.id, username: user.username });
+
+
+        // Include the `id` field in the JWT payload
+        const token = jwt.sign(
+            { id: user.id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
         res.json({ token, displayName: user.display_name });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).send('Server error');
     }
 });
+
+
+
+
 
 
 
@@ -154,15 +174,50 @@ app.post('/api/users/:username/profile-image', authenticateToken, upload.single(
     }
 });
 
-// Fetch all trips
-// Fetch a single trip by ID
-app.get('/api/trips', authenticateToken, async (req, res) => {
+
+// Add a new trip
+app.post('/api/trips', authenticateToken, async (req, res) => {
+    const { tripName, selectedCountry, startDate, endDate } = req.body;
     const userId = req.user.id; // Extracted from the JWT token
 
+    if (!userId) {
+        console.error('User ID not found in token');
+        return res.status(400).send('Invalid token');
+    }
+
     try {
-        const query = `SELECT * FROM trips WHERE user_id = $1;`;
+        console.log('Inserting trip for user ID:', userId); // Debugging
+        const query = `
+            INSERT INTO trips (trip_name, selected_country, start_date, end_date, user_id)
+            VALUES ($1, $2, $3, $4, $5) RETURNING *;
+        `;
+        const result = await pool.query(query, [tripName, selectedCountry, startDate, endDate, userId]);
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error saving trip:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+
+// Get all trips for the logged-in user
+app.get('/api/trips', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+
+    if (!userId) {
+        console.error('User ID not found in token');
+        return res.status(400).send('Invalid token');
+    }
+
+    try {
+        console.log('Fetching trips for user ID:', userId);
+        const query = `SELECT * FROM trips WHERE user_id = $1 ORDER BY created_at DESC`;
         const result = await pool.query(query, [userId]);
-        res.json(result.rows);
+
+        console.log('Trips fetched:', result.rows); // Log trips fetched
+        res.status(200).json(result.rows);
     } catch (error) {
         console.error('Error fetching trips:', error);
         res.status(500).send('Server error');
@@ -175,27 +230,6 @@ app.get('/api/trips', authenticateToken, async (req, res) => {
 
 
 
-
-
-
-
-// Add a new trip
-app.post('/api/trips', authenticateToken, async (req, res) => {
-    const { tripName, selectedCountry, startDate, endDate } = req.body;
-    const userId = req.user.id; // Extracted from the JWT token
-
-    try {
-        const query = `
-            INSERT INTO trips (trip_name, selected_country, start_date, end_date, user_id)
-            VALUES ($1, $2, $3, $4, $5) RETURNING *;
-        `;
-        const result = await pool.query(query, [tripName, selectedCountry, startDate, endDate, userId]);
-        res.status(201).json(result.rows[0]);
-    } catch (error) {
-        console.error('Error saving trip:', error);
-        res.status(500).send('Server error');
-    }
-});
 
 
 

@@ -45,30 +45,35 @@ function CreateTripPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting trip:', { tripName, selectedCountry, startDate, endDate });
     
         const token = localStorage.getItem('token');
+        console.log('Token being sent:', token); // Debugging
+    
         if (!token) {
             console.error('No token found');
             return;
         }
     
         try {
-            const response = await axios.post('http://localhost:5000/api/trips', {
-                tripName,
-                selectedCountry,
-                startDate,
-                endDate,
-            }, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await axios.post(
+                'http://localhost:5000/api/trips',
+                { tripName, selectedCountry, startDate, endDate },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
     
             console.log('Trip created successfully:', response.data);
-            navigate('/trips');
         } catch (error) {
             console.error('Error creating trip:', error.response ? error.response.data : error.message);
         }
     };
+    
+    
+    
     
     
 
