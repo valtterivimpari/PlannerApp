@@ -271,13 +271,14 @@ app.get('/api/trips/:tripId', authenticateToken, async (req, res) => {
             return res.status(404).send('Trip not found or unauthorized');
         }
 
-        console.log('Query result:', result.rows[0]); // Debugging
-        res.status(200).json(result.rows[0]); // Send JSON response
+        console.log('Trip data:', result.rows[0]); // Debugging
+        res.status(200).json(result.rows[0]);
     } catch (error) {
         console.error('Error fetching trip:', error);
         res.status(500).send('Server error');
     }
 });
+
 
 
 
