@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import './TripInfo.css';
+import { useParams } from 'react-router-dom'; // Add this import
 import axios from 'axios';
+import './TripInfo.css';
 
 function TripInfo() {
-    const { id } = useParams();
+    const { id } = useParams(); // Extract the trip ID from the URL
     const [trip, setTrip] = useState(null);
     const [error, setError] = useState(null);
-
 
     useEffect(() => {
         const fetchTripDetails = async () => {
@@ -16,7 +15,7 @@ function TripInfo() {
                 setError('No token found');
                 return;
             }
-        
+
             try {
                 const response = await axios.get(`http://localhost:5000/api/trips/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
@@ -24,40 +23,50 @@ function TripInfo() {
                 setTrip(response.data);
             } catch (err) {
                 console.error('Error fetching trip details:', err);
-                console.log(`API URL: http://localhost:5000/api/trips/${id}`);
-console.log(`Authorization: Bearer ${localStorage.getItem('token')}`);
                 setError('Failed to fetch trip details.');
             }
         };
-        
-    
+
         fetchTripDetails();
     }, [id]);
-    
 
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
     if (!trip) return <p>Loading...</p>;
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
 
     return (
         <div className="trip-info">
             <div className="trip-header">
                 <h1>{trip.tripName}</h1>
                 <p>
-                    <span>{trip.startDate}</span> - <span>{trip.endDate}</span>
+                    Selected Dates: <strong>{formatDate(trip.startDate)}</strong> - <strong>{formatDate(trip.endDate)}</strong>
                 </p>
             </div>
             <div className="trip-body">
-                <h2>Country: {trip.selectedCountry}</h2>
-                {trip.notes && <p>Notes: {trip.notes}</p>}
-                <div className="trip-destinations">
-                    <h3>Destinations</h3>
-                    {trip.destinations?.map((destination, index) => (
-                        <div key={index} className="destination-item">
-                            <h4>{destination.name}</h4>
-                            <p>{destination.startDate} - {destination.endDate}</p>
+                <div className="trip-summary">
+                    <h2>Plan</h2>
+                    <div className="summary-grid">
+                    <div>
+    <strong>Country:</strong> {trip.selected_country || 'Unknown'}
+</div>
+
+                        <div>
+                            <strong>Nights:</strong> {trip.nights || 'N/A'}
                         </div>
-                    ))}
-                    <button className="add-destination-button">+ Add New Destination</button>
+                        <div>
+                            <strong>Sleeping:</strong> {trip.sleeping || 'N/A'}
+                        </div>
+                        <div>
+                            <strong>Discover:</strong> {trip.discover || 'N/A'}
+                        </div>
+                        <div>
+                            <strong>Transport:</strong> {trip.transport || 'N/A'}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

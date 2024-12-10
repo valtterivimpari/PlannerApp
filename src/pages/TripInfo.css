@@ -3,6 +3,7 @@
     background-color: #f9f9f9;
     color: #333;
     min-height: 100vh;
+    font-family: Arial, sans-serif;
 }
 
 .trip-header {
@@ -29,11 +30,30 @@
     margin: 0 auto;
 }
 
-.trip-body h2 {
-    font-size: 1.8em;
+.trip-summary {
     margin-bottom: 20px;
-    color: #00796b;
 }
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.summary-grid div {
+    padding: 10px;
+    background: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+}
+
+.summary-grid strong {
+    color: #00796b;
+    font-weight: bold;
+}
+
 
 .trip-destinations {
     margin-top: 20px;

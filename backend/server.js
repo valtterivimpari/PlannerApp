@@ -260,7 +260,7 @@ app.delete('/api/trips/:tripId', authenticateToken, async (req, res) => {
 app.get('/api/trips/:tripId', authenticateToken, async (req, res) => {
     console.log(`GET /api/trips/${req.params.tripId} hit`);
     const { tripId } = req.params;
-    const userId = req.user.id; // Retrieved from the token
+    const userId = req.user.id;
 
     try {
         const query = `SELECT * FROM trips WHERE id = $1 AND user_id = $2`;
@@ -271,13 +271,15 @@ app.get('/api/trips/:tripId', authenticateToken, async (req, res) => {
             return res.status(404).send('Trip not found or unauthorized');
         }
 
-        console.log('Query result:', result.rows[0]);
-        res.status(200).json(result.rows[0]);
+        console.log('Query result:', result.rows[0]); // Debugging
+        res.status(200).json(result.rows[0]); // Send JSON response
     } catch (error) {
         console.error('Error fetching trip:', error);
         res.status(500).send('Server error');
     }
 });
+
+
 
 
 
