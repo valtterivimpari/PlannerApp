@@ -14,6 +14,10 @@ function Login() {
 
     const handleLogin = async () => {
         console.log('Attempting login with:', { username, password });
+        console.log('JWT_SECRET:', process.env.JWT_SECRET);
+        console.log(process.env);
+
+
     
         try {
             const response = await fetch('http://localhost:5000/api/login', {

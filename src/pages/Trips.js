@@ -8,6 +8,7 @@ function Trips() {
     const [trips, setTrips] = useState([]);
     const [countryImages, setCountryImages] = useState({}); // Store country-to-image mapping
 
+
     const UNSPLASH_API_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
     console.log('Unsplash API Key:', process.env.REACT_APP_UNSPLASH_ACCESS_KEY);
     console.log('Test Variable:', process.env.REACT_APP_TEST_VARIABLE);
@@ -119,6 +120,7 @@ console.log('Trips:', trips);
                         <button
                             className="details-button"
                             onClick={() => navigate(`/trip-info/${trip.id}`)}
+
                         >
                             View Details
                         </button>

@@ -11,20 +11,25 @@ function TripInfo() {
 
     useEffect(() => {
         const fetchTripDetails = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('No token found');
+                return;
+            }
+        
             try {
                 const response = await axios.get(`http://localhost:5000/api/trips/${id}`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 setTrip(response.data);
             } catch (err) {
                 console.error('Error fetching trip details:', err);
-                console.log('Trip ID from URL:', id);
-                
-                
-
+                console.log(`API URL: http://localhost:5000/api/trips/${id}`);
+console.log(`Authorization: Bearer ${localStorage.getItem('token')}`);
                 setError('Failed to fetch trip details.');
             }
         };
+        
     
         fetchTripDetails();
     }, [id]);

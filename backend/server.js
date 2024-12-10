@@ -38,6 +38,8 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
+    console.log('Token received:', token);
+
     if (!token) {
         console.error('Token not provided');
         return res.status(401).send('Unauthorized');
@@ -49,12 +51,12 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).send('Invalid token');
         }
 
-        console.log('Decoded JWT:', user); // Should include `id`
-        req.user = user; // Attach the entire decoded token
-        console.log('req.user:', req.user);
+        console.log('Token verified successfully:', user);
+        req.user = user;
         next();
     });
 };
+
 
 
 
@@ -230,8 +232,11 @@ app.delete('/api/trips/:tripId', authenticateToken, async (req, res) => {
     const { tripId } = req.params;
     const userId = req.user.id;
 
+    console.log(`Fetching trip ID: ${tripId} for user ID: ${userId}`); 
+
     if (!userId) {
         console.error('User ID not found in token');
+        console.log('Trip not found or unauthorized');
         return res.status(400).send('Invalid token');
     }
 
@@ -251,15 +256,35 @@ app.delete('/api/trips/:tripId', authenticateToken, async (req, res) => {
     }
 });
 
+// Get a specific trip by ID
+app.get('/api/trips/:tripId', authenticateToken, async (req, res) => {
+    console.log(`GET /api/trips/${req.params.tripId} hit`);
+    const { tripId } = req.params;
+    const userId = req.user.id; // Retrieved from the token
+
+    try {
+        const query = `SELECT * FROM trips WHERE id = $1 AND user_id = $2`;
+        const result = await pool.query(query, [tripId, userId]);
+
+        if (result.rowCount === 0) {
+            console.log('Trip not found or unauthorized');
+            return res.status(404).send('Trip not found or unauthorized');
+        }
+
+        console.log('Query result:', result.rows[0]);
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error fetching trip:', error);
+        res.status(500).send('Server error');
+    }
+});
 
 
 
-
-
-
-
-
-
+app.use((req, res, next) => {
+    console.log(`Unhandled route: ${req.method} ${req.url}`);
+    res.status(404).send('Route not found');
+});
 
 
 // Start server
