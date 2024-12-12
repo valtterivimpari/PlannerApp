@@ -1,0 +1,41 @@
+.destination-container {
+    text-align: center;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+}
+
+.destination-container h1 {
+    font-size: 2.5em;
+    color: #1abc9c;
+    margin-bottom: 20px;
+}
+
+.destination-input-container {
+    margin: 20px auto;
+}
+
+.destination-input {
+    width: 70%;
+    max-width: 600px;
+    padding: 15px;
+    font-size: 1.2em;
+    border: 2px solid #1abc9c;
+    border-radius: 30px;
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.destination-input:focus {
+    border-color: #16a085;
+    box-shadow: 0 4px 15px rgba(22, 160, 133, 0.4);
+}
+
+.selected-country {
+    margin-top: 30px;
+    font-size: 1.5em;
+    color: #00796b;
+}
+

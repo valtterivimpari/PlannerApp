@@ -118,12 +118,12 @@ console.log('Trips:', trips);
                             className="trip-image"
                         />
                         <button
-                            className="details-button"
-                            onClick={() => navigate(`/trip-info/${trip.id}`)}
+    className="details-button"
+    onClick={() => navigate(`/destination/${trip.id}`)}
+>
+    View Details
+</button>
 
-                        >
-                            View Details
-                        </button>
                         <button
                             className="delete-button"
                             onClick={() => handleDeleteTrip(trip.id)} // Call the delete function

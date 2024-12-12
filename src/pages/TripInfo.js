@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './TripInfo.css';
 
@@ -9,6 +9,8 @@ function TripInfo() {
     const [error, setError] = useState(null);
     const [nights, setNights] = useState(0); // State for nights
     const [endDate, setEndDate] = useState(''); // State for dynamically updated end_date
+    const location = useLocation();
+    const [selectedCountry] = useState(location.state?.selectedCountry || '');
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };

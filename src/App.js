@@ -9,6 +9,7 @@ import OtherProfile from './pages/OtherProfile';
 import CreateTripPage from './pages/CreateTripPage';
 import Trips from './pages/Trips';
 import TripInfo from './pages/TripInfo'; // Ensure TripInfo is correctly imported
+import Destination from './pages/Destination';
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/create-trip" element={<RequireAuth><CreateTripPage /></RequireAuth>} />
                 <Route path="/trips" element={<RequireAuth><Trips /></RequireAuth>} />
                 <Route path="/trip-info/:id" element={<RequireAuth><TripInfo /></RequireAuth>} />
+                <Route path="/destination/:id" element={<RequireAuth><Destination /></RequireAuth>} />
             </Routes>
         </Router>
     );
