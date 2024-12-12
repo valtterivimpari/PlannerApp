@@ -88,3 +88,46 @@
 .add-destination-button:hover {
     background-color: #16a085;
 }
+
+.add-sleeping-button {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.5em;
+    line-height: 30px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.add-sleeping-button:hover {
+    background-color: #16a085;
+}
+
+.add-discover-button,
+.add-transport-button {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.5em;
+    line-height: 30px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.add-discover-button:hover,
+.add-transport-button:hover {
+    background-color: #16a085;
+}
+
