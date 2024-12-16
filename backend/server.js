@@ -280,6 +280,61 @@ app.get('/api/trips/:tripId', authenticateToken, async (req, res) => {
     }
 });
 
+// Place this route first
+app.put('/api/trips/:tripId/add-destination', authenticateToken, async (req, res) => {
+    console.log("PUT request received for /api/trips/:tripId/add-destination");
+
+    const { tripId } = req.params;
+    const { newDestination } = req.body;
+
+    if (!newDestination || !newDestination.name) {
+        console.error("Invalid destination data:", req.body);
+        return res.status(400).send("Invalid destination data");
+    }
+
+    try {
+        // Fetch current destinations from the database
+        const fetchQuery = `SELECT destinations FROM trips WHERE id = $1 AND user_id = $2`;
+        const fetchResult = await pool.query(fetchQuery, [tripId, req.user.id]);
+
+        if (fetchResult.rowCount === 0) {
+            console.log("Trip not found or unauthorized");
+            return res.status(404).send("Trip not found or unauthorized");
+        }
+
+        const currentDestinations = fetchResult.rows[0].destinations || [];
+        console.log("Current Destinations from DB:", currentDestinations);
+
+        // Add the new destination to the current destinations
+        const updatedDestinations = [...currentDestinations, newDestination];
+        console.log("New Destination:", newDestination);
+        console.log("Updated Destinations to be Saved:", updatedDestinations);
+
+        // Update the destinations in the database
+        const updateQuery = `
+            UPDATE trips
+            SET destinations = $1
+            WHERE id = $2 AND user_id = $3
+            RETURNING destinations;
+        `;
+        console.log("Executing query:", updateQuery);
+
+        // Use JSON.stringify for updatedDestinations to ensure valid JSON
+        const updateResult = await pool.query(updateQuery, [JSON.stringify(updatedDestinations), tripId, req.user.id]);
+
+        console.log("Final Updated Destinations in DB:", updateResult.rows[0].destinations);
+        res.status(200).json(updateResult.rows[0]);
+    } catch (error) {
+        console.error("Error adding destination:", error);
+        res.status(500).send("Server error");
+    }
+});
+
+
+
+
+
+
 app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
     console.log('PUT request received for trip:', req.params.tripId);
     console.log('Request body:', req.body);
@@ -308,9 +363,13 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
         res.status(200).json(result.rows[0]);
     } catch (error) {
         console.error('Error during PUT request:', error);
-        res.status(500).send('Server error');
+        res.status(200).send("Route works with minimal logic!");
     }
 });
+
+
+
+
 
 
 

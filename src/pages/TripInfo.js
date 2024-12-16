@@ -11,6 +11,9 @@ function TripInfo() {
     const [endDate, setEndDate] = useState(''); // State for dynamically updated end_date
     const location = useLocation();
     const destinationName = location.state?.selectedDestination || trip?.selected_country || 'Unknown';
+    const [destinations, setDestinations] = useState(trip?.destinations || []);
+    const [newDestination, setNewDestination] = useState('');
+
 
 
     const formatDate = (dateString) => {
@@ -53,6 +56,9 @@ function TripInfo() {
                 setEndDate(response.data.end_date);
             } catch (err) {
                 console.error('Error fetching trip details:', err);
+                console.log('Response from server:', response.data);
+                console.log("Trip ID being used:", id);
+
                 setError('Failed to fetch trip details.');
             }
         };
@@ -60,6 +66,53 @@ function TripInfo() {
         fetchTripDetails();
     }, [id]);
 
+    const handleAddDestination = async () => {
+        if (!newDestination.trim()) return;
+    
+        const destinationObject = {
+            name: newDestination,
+            startDate: '', // Optional logic to add startDate
+            endDate: ''    // Optional logic to add endDate
+        };
+    
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put(
+                `http://localhost:5000/api/trips/${id}/add-destination`,
+                { newDestination: destinationObject },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+    
+            // Ensure the state updates correctly
+            if (response.data && response.data.destinations) {
+                setDestinations(response.data.destinations);
+                setNewDestination('');
+            } else {
+                console.error('Invalid response from server:', response.data);
+            }
+        } catch (error) {
+            console.error('Error adding destination:', error);
+        }
+    };
+    
+    
+    const handleRemoveDestination = (index) => {
+        const updatedDestinations = destinations.filter((_, i) => i !== index);
+        setDestinations(updatedDestinations);
+    };
+
+    const saveDestinations = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.put(
+                `http://localhost:5000/api/trips/${id}/destinations`,
+                { destinations },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+        } catch (error) {
+            console.error('Error saving destinations:', error);
+        }
+    };
     const handleIncrement = () => {
         const updatedNights = nights + 1;
         setNights(updatedNights);
@@ -75,61 +128,86 @@ function TripInfo() {
     };
 
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
-    if (!trip) return <p>Loading...</p>;
+if (!trip) return <p>Loading...</p>;
 
-    return (
-        <div className="trip-info">
-            <div className="trip-header">
-                <h1>{trip.trip_name}</h1>
-                <p>
-                    Selected Dates: <strong>{formatDate(trip.start_date)}</strong> - <strong>{formatDate(endDate)}</strong>
-                </p>
-            </div>
-            <div className="trip-body">
-                <div className="trip-summary">
-                    <h2>Plan</h2>
-                    <div className="summary-grid">
-    <div>
-    <strong>Destination:</strong> {destinationName || 'Unknown'}
-    </div>
-    <div className="nights-counter">
-        <strong>Nights:</strong>
-        <div className="counter">
-            <button onClick={handleDecrement}>-</button>
-            <span>{nights}</span>
-            <button onClick={handleIncrement}>+</button>
+return (
+    <div className="trip-info">
+        <div className="trip-header">
+            <h1>{trip.trip_name || 'Unnamed Trip'}</h1>
+            <p>
+                Selected Dates: <strong>{formatDate(trip.start_date)}</strong> - <strong>{formatDate(endDate)}</strong>
+            </p>
         </div>
-    </div>
-    <div>
-        <strong>Sleeping:</strong>
-        {trip.sleeping ? (
-            trip.sleeping
-        ) : (
-            <button onClick={() => console.log("Add sleeping details")} className="add-sleeping-button">+</button>
-        )}
-    </div>
-    <div>
-        <strong>Discover:</strong>
-        {trip.discover ? (
-            trip.discover
-        ) : (
-            <button onClick={() => console.log("Add discover details")} className="add-discover-button">+</button>
-        )}
-    </div>
-    <div>
-        <strong>Transport:</strong>
-        {trip.transport ? (
-            trip.transport
-        ) : (
-            <button onClick={() => console.log("Add transport details")} className="add-transport-button">+</button>
-        )}
-    </div>
-</div>
+        <div className="trip-body">
+            <div className="trip-summary">
+                <h2>Plan</h2>
+                <div className="summary-grid">
+                    <div>
+                        <strong>Destination:</strong> {destinationName || 'Unknown'}
 
+                    </div>
+                    <div className="nights-counter">
+                        <strong>Nights:</strong>
+                        <div className="counter">
+                            <button onClick={handleDecrement}>-</button>
+                            <span>{nights}</span>
+                            <button onClick={handleIncrement}>+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Sleeping:</strong>
+                        {trip.sleeping ? (
+                            trip.sleeping
+                        ) : (
+                            <button onClick={() => console.log('Add sleeping details')} className="add-sleeping-button">
+                                +
+                            </button>
+                        )}
+                    </div>
+                    <div>
+                        <strong>Discover:</strong>
+                        {trip.discover ? (
+                            trip.discover
+                        ) : (
+                            <button onClick={() => console.log('Add discover details')} className="add-discover-button">
+                                +
+                            </button>
+                        )}
+                    </div>
+                    <div>
+                        <strong>Transport:</strong>
+                        {trip.transport ? (
+                            trip.transport
+                        ) : (
+                            <button onClick={() => console.log('Add transport details')} className="add-transport-button">
+                                +
+                            </button>
+                        )}
+                    </div>
+                </div>
+                <div className="trip-destinations">
+                    <h2>Destination</h2>
+                    {destinations.map((destination, index) => (
+                        <div className="destination-item" key={index}>
+                            <h4>{`${index + 1}. ${destination.name}`}</h4>
+                            <p>{`${destination.startDate} - ${destination.endDate}`}</p>
+                        </div>
+                    ))}
+                    <div className="add-destination">
+                        <input
+                            type="text"
+                            value={newDestination}
+                            onChange={(e) => setNewDestination(e.target.value)}
+                            placeholder="Add new destination"
+                        />
+                        <button onClick={handleAddDestination}>Add</button>
+                    </div>
                 </div>
             </div>
         </div>
-    );
+    </div>
+);
 }
+
 
 export default TripInfo;
