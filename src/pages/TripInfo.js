@@ -10,7 +10,8 @@ function TripInfo() {
     const [nights, setNights] = useState(0); // State for nights
     const [endDate, setEndDate] = useState(''); // State for dynamically updated end_date
     const location = useLocation();
-    const [selectedCountry] = useState(location.state?.selectedCountry || '');
+    const destinationName = location.state?.selectedDestination || trip?.selected_country || 'Unknown';
+
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -89,7 +90,7 @@ function TripInfo() {
                     <h2>Plan</h2>
                     <div className="summary-grid">
     <div>
-        <strong>Country:</strong> {trip.selected_country || 'Unknown'}
+    <strong>Destination:</strong> {destinationName || 'Unknown'}
     </div>
     <div className="nights-counter">
         <strong>Nights:</strong>

@@ -38,7 +38,7 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
-    console.log('Token received:', token);
+    console.log('Received token:', token);
 
     if (!token) {
         console.error('Token not provided');
@@ -51,11 +51,12 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).send('Invalid token');
         }
 
-        console.log('Token verified successfully:', user);
+        console.log('Token verified for user:', user);
         req.user = user;
         next();
     });
 };
+
 
 
 
@@ -279,15 +280,53 @@ app.get('/api/trips/:tripId', authenticateToken, async (req, res) => {
     }
 });
 
+app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
+    console.log('PUT request received for trip:', req.params.tripId);
+    console.log('Request body:', req.body);
+    console.log('User ID from token:', req.user.id);
+
+    const { tripId } = req.params;
+    const { selected_country } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const query = `
+            UPDATE trips
+            SET selected_country = $1
+            WHERE id = $2 AND user_id = $3
+            RETURNING *;
+        `;
+        console.log('Executing query with:', selected_country, tripId, userId);
+        const result = await pool.query(query, [selected_country, tripId, userId]);
+
+        if (result.rowCount === 0) {
+            console.log('No rows updated: Trip not found or unauthorized.');
+            return res.status(404).send('Trip not found or unauthorized');
+        }
+
+        console.log('Trip updated successfully:', result.rows[0]);
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error during PUT request:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+
+
 
 
 
 
 
 app.use((req, res, next) => {
-    console.log(`Unhandled route: ${req.method} ${req.url}`);
-    res.status(404).send('Route not found');
+    console.log(`Incoming request: ${req.method} ${req.url}`);
+    next();
 });
+
+
 
 
 // Start server

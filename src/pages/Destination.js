@@ -33,9 +33,10 @@ function Destination() {
 
     const handleDestinationSelection = (country) => {
         setSelectedCountry(country);
-        // Navigate to trip info after selection
-        navigate(`/trip-info/${id}`, { state: { selectedCountry: country } });
+        // Pass selected destination value when navigating
+        navigate(`/trip-info/${id}`, { state: { selectedDestination: country } });
     };
+    
 
     if (!trip) return <p>Loading...</p>;
 
