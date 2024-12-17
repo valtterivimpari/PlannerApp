@@ -96,10 +96,24 @@ function TripInfo() {
     };
     
     
-    const handleRemoveDestination = (index) => {
+    const handleRemoveDestination = async (index) => {
         const updatedDestinations = destinations.filter((_, i) => i !== index);
-        setDestinations(updatedDestinations);
+    
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put(
+                `http://localhost:5000/api/trips/${id}/destinations`,
+                { destinations: updatedDestinations },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setDestinations(response.data); // Ensure state syncs with server response
+            console.log("Destinations updated successfully:", response.data);
+        } catch (error) {
+            console.error('Error removing destination:', error);
+        }
     };
+    
+    
 
     const saveDestinations = async () => {
         try {
@@ -189,9 +203,16 @@ return (
                     <h2>Destination</h2>
                     {destinations.map((destination, index) => (
                         <div className="destination-item" key={index}>
-                            <h4>{`${index + 1}. ${destination.name}`}</h4>
-                            <p>{`${destination.startDate} - ${destination.endDate}`}</p>
-                        </div>
+                        <h4>{`${index + 1}. ${destination.name}`}</h4>
+                        <p>{`${destination.startDate} - ${destination.endDate}`}</p>
+                        <button
+                            className="delete-button"
+                            onClick={() => handleRemoveDestination(index)}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                    
                     ))}
                     <div className="add-destination">
                         <input

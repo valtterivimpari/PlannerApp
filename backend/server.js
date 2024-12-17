@@ -330,6 +330,33 @@ app.put('/api/trips/:tripId/add-destination', authenticateToken, async (req, res
     }
 });
 
+app.put('/api/trips/:tripId/destinations', authenticateToken, async (req, res) => {
+    const { tripId } = req.params;
+    const { destinations } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const query = `
+            UPDATE trips
+            SET destinations = $1
+            WHERE id = $2 AND user_id = $3
+            RETURNING destinations;
+        `;
+        const result = await pool.query(query, [JSON.stringify(destinations), tripId, userId]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).send('Trip not found or unauthorized');
+        }
+
+        res.status(200).json(result.rows[0].destinations);
+    } catch (error) {
+        console.error('Error updating destinations:', error);
+        console.log("Updated destinations in database:", result.rows[0].destinations);
+        res.status(500).send('Server error');
+    }
+});
+
+
 
 
 
