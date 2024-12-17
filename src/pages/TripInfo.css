@@ -187,4 +187,33 @@
     background-color: #c0392b;
 }
 
+.map-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+.map-button:hover {
+    background-color: #2980b9;
+}
+
+.map-container {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.destination-buttons {
+    display: flex;
+    gap: 10px; /* Spacing between buttons */
+}
+
+
 

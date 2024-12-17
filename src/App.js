@@ -10,6 +10,7 @@ import CreateTripPage from './pages/CreateTripPage';
 import Trips from './pages/Trips';
 import TripInfo from './pages/TripInfo'; // Ensure TripInfo is correctly imported
 import Destination from './pages/Destination';
+import MapPage from './pages/MapPage'; // Import the new MapPage component
 
 function App() {
     return (
@@ -25,6 +26,8 @@ function App() {
                 <Route path="/trips" element={<RequireAuth><Trips /></RequireAuth>} />
                 <Route path="/trip-info/:id" element={<RequireAuth><TripInfo /></RequireAuth>} />
                 <Route path="/destination/:id" element={<RequireAuth><Destination /></RequireAuth>} />
+                <Route path="/trips/:id" element={<TripInfo />} />
+                <Route path="/map-view/:destination" element={<MapPage />} />
             </Routes>
         </Router>
     );
@@ -64,3 +67,4 @@ function RequireAuth({ children }) {
 }
 
 export default App;
+

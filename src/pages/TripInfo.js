@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './TripInfo.css';
 
 function TripInfo() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [trip, setTrip] = useState(null);
     const [error, setError] = useState(null);
     const [nights, setNights] = useState(0); // State for nights
@@ -207,29 +208,37 @@ return (
                     </div>
                 </div>
                 <div className="trip-destinations">
-                    <h2>Destination</h2>
-                    {destinations.map((destination, index) => (
-                        <div className="destination-item" key={index}>
-                        <h4>{`${index + 1 }. ${destination.name}`}</h4>
-                        <p>{`${destination.startDate} - ${destination.endDate}`}</p>
-                        <button
-                            className="delete-button"
-                            onClick={() => handleRemoveDestination(index)}
-                        >
-                            Delete
-                        </button>
-                    </div>
-                    
-                    ))}
-                    <div className="add-destination">
-                        <input
-                            type="text"
-                            value={newDestination}
-                            onChange={(e) => setNewDestination(e.target.value)}
-                            placeholder="Add new destination"
-                        />
-                        <button onClick={handleAddDestination}>Add</button>
-                    </div>
+                <h2>Destination</h2>
+{destinations.map((destination, index) => (
+    <div className="destination-item" key={index}>
+        <h4>{`${index + 1}. ${destination.name}`}</h4>
+        <p>{`${destination.startDate} - ${destination.endDate}`}</p>
+        <div className="destination-buttons">
+            <button
+                className="delete-button"
+                onClick={() => handleRemoveDestination(index)}
+            >
+                Delete
+            </button>
+            <button
+                className="map-button"
+                onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}
+            >
+                Map View
+            </button>
+        </div>
+    </div>
+))}
+<div className="add-destination">
+    <input
+        type="text"
+        value={newDestination}
+        onChange={(e) => setNewDestination(e.target.value)}
+        placeholder="Add new destination"
+    />
+    <button onClick={handleAddDestination}>Add</button>
+</div>
+
                 </div>
             </div>
         </div>
