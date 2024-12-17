@@ -173,11 +173,6 @@
 .add-destination button:hover {
     background-color: #16a085;
 }
-.destination-item h4::before {
-    content: counter(item) ". ";
-    counter-increment: item;
-    color: #1abc9c;
-}
 .delete-button {
     background-color: #e74c3c;
     color: white;

@@ -13,6 +13,7 @@ function TripInfo() {
     const destinationName = location.state?.selectedDestination || trip?.selected_country || 'Unknown';
     const [destinations, setDestinations] = useState(trip?.destinations || []);
     const [newDestination, setNewDestination] = useState('');
+    const selectedDestination = location.state?.selectedDestination;
 
 
 
@@ -49,6 +50,12 @@ function TripInfo() {
                 });
                 console.log('Trip details:', response.data);
                 setTrip(response.data);
+
+                let updatedDestinations = response.data.destinations || [];
+                if (selectedDestination) {
+                    updatedDestinations = [{ name: selectedDestination }, ...updatedDestinations];
+                }
+                setDestinations(updatedDestinations);
 
                 // Calculate initial nights and set the endDate
                 const initialNights = calculateNights(response.data.start_date, response.data.end_date);
@@ -203,7 +210,7 @@ return (
                     <h2>Destination</h2>
                     {destinations.map((destination, index) => (
                         <div className="destination-item" key={index}>
-                        <h4>{`${index + 1}. ${destination.name}`}</h4>
+                        <h4>{`${index + 1 }. ${destination.name}`}</h4>
                         <p>{`${destination.startDate} - ${destination.endDate}`}</p>
                         <button
                             className="delete-button"
