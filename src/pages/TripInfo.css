@@ -243,4 +243,9 @@
     font-weight: bold;
 }
 
+.destination-item p {
+    margin: 5px 0 0;
+    font-size: 0.9em;
+    color: #555;
+}
 

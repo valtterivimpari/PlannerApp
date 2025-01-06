@@ -17,26 +17,6 @@ function TripInfo() {
     const selectedDestination = location.state?.selectedDestination;
 
 
-
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
-    };
-
-    const calculateNights = (startDate, endDate) => {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const difference = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-        return difference;
-    };
-
-    const calculateEndDate = (startDate, nights) => {
-        const start = new Date(startDate);
-        const updatedEndDate = new Date(start);
-        updatedEndDate.setDate(start.getDate() + nights); // Add the nights to the start date
-        return updatedEndDate.toISOString();
-    };
-
     useEffect(() => {
         const fetchTripDetails = async () => {
             const token = localStorage.getItem('token');
@@ -64,6 +44,25 @@ function TripInfo() {
 
         fetchTripDetails();
     }, [id]);
+
+     // Function to calculate the start date for each destination
+     const calculateStartDate = (tripStartDate, destinationIndex) => {
+        const startDate = new Date(tripStartDate);
+        destinations.slice(0, destinationIndex).forEach((destination) => {
+            startDate.setDate(startDate.getDate() + destination.nights);
+        });
+        return startDate;
+    };
+
+    const formatDateRange = (startDate, nights) => {
+        const start = new Date(startDate);
+        const end = new Date(start);
+        end.setDate(start.getDate() + nights);
+
+        const options = { day: 'numeric', month: 'short', weekday: 'short' };
+        return `${start.toLocaleDateString(undefined, options)} - ${end.toLocaleDateString(undefined, options)}`;
+    };
+
 
 
     const handleAddDestination = async () => {
@@ -150,8 +149,9 @@ return (
         <div className="trip-header">
             <h1>{trip.trip_name || 'Unnamed Trip'}</h1>
             <p>
-                Selected Dates: <strong>{formatDate(trip.start_date)}</strong> - <strong>{formatDate(endDate)}</strong>
-            </p>
+    Selected Dates: <strong>{new Date(trip.start_date).toLocaleDateString()}</strong> -{' '}
+    <strong>{new Date(endDate).toLocaleDateString()}</strong>
+</p>
         </div>
         <div className="trip-body">
             <div className="trip-summary">
@@ -194,43 +194,47 @@ return (
                     </div>
                 </div>
                 <div className="trip-destinations">
-                <h2>Destination</h2>
-                {destinations.map((destination, index) => (
-    <div className="destination-item" key={index}>
-        <h4>{`${index + 1}. ${destination.name}`}</h4>
-        <div className="nights-counter">
-            <strong>Nights:</strong>
-            <button onClick={() => handleDecrement(index)}>-</button>
-            <span>{destination.nights || 1}</span> {/* Default to 1 */}
-            <button onClick={() => handleIncrement(index)}>+</button>
+    <h2>Destinations</h2>
+    {destinations.map((destination, index) => (
+        <div className="destination-item" key={index}>
+            <div>
+                <h4>{`${index + 1}. ${destination.name}`}</h4>
+                {/* Display the date range under the city name */}
+                <p>{formatDateRange(calculateStartDate(trip.start_date, index), destination.nights)}</p>
+            </div>
+            <div className="nights-counter">
+                <strong>Nights:</strong>
+                <button onClick={() => handleDecrement(index)}>-</button>
+                <span>{destination.nights || 1}</span> {/* Default to 1 */}
+                <button onClick={() => handleIncrement(index)}>+</button>
+            </div>
+            <div className="destination-buttons">
+                <button
+                    className="delete-button"
+                    onClick={() => handleRemoveDestination(index)}
+                >
+                    Delete
+                </button>
+                <button
+                    className="map-button"
+                    onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}
+                >
+                    Map View
+                </button>
+            </div>
         </div>
-        <div className="destination-buttons">
-            <button
-                className="delete-button"
-                onClick={() => handleRemoveDestination(index)}
-            >
-                Delete
-            </button>
-            <button
-                className="map-button"
-                onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}
-            >
-                Map View
-            </button>
-        </div>
+    ))}
+    <div className="add-destination">
+        <input
+            type="text"
+            value={newDestination}
+            onChange={(e) => setNewDestination(e.target.value)}
+            placeholder="Add new destination"
+        />
+        <button onClick={handleAddDestination}>Add</button>
     </div>
-))}
-<div className="add-destination">
-    <input
-        type="text"
-        value={newDestination}
-        onChange={(e) => setNewDestination(e.target.value)}
-        placeholder="Add new destination"
-    />
-    <button onClick={handleAddDestination}>Add</button>
 </div>
 
-                </div>
             </div>
         </div>
     </div>
