@@ -131,23 +131,20 @@ console.log('Formatted Date Range:', formatDateRange(calculateStartDate(trip.sta
         }
     };
     
-
     const handleIncrement = (index) => {
         console.log('Incrementing nights for destination at index:', index);
         const updatedDestinations = [...destinations];
-        updatedDestinations[index].nights += 1;
+        updatedDestinations[index].nights = (updatedDestinations[index].nights || 1) + 1;
         setDestinations(updatedDestinations);
-        console.log('Updated Destinations:', updatedDestinations);
         saveUpdatedDestinations(updatedDestinations);
     };
     
     const handleDecrement = (index) => {
         console.log('Decrementing nights for destination at index:', index);
         const updatedDestinations = [...destinations];
-        if (updatedDestinations[index].nights > 1) {
+        if ((updatedDestinations[index].nights || 1) > 1) {
             updatedDestinations[index].nights -= 1;
             setDestinations(updatedDestinations);
-            console.log('Updated Destinations:', updatedDestinations);
             saveUpdatedDestinations(updatedDestinations);
         }
     };
