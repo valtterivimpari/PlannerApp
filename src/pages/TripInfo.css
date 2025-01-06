@@ -60,11 +60,14 @@
 }
 
 .destination-item {
-    background: #f4f4f4;
-    padding: 15px;
-    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin: 10px 0;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .destination-item h4 {
@@ -215,5 +218,29 @@
     gap: 10px; /* Spacing between buttons */
 }
 
+.nights-counter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nights-counter button {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.nights-counter button:hover {
+    background-color: #16a085;
+}
+
+.nights-counter span {
+    font-size: 1.2em;
+    font-weight: bold;
+}
 
 

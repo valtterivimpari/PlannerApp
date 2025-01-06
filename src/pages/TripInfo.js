@@ -44,35 +44,27 @@ function TripInfo() {
                 setError('No token found');
                 return;
             }
-
+        
             try {
                 const response = await axios.get(`http://localhost:5000/api/trips/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                console.log('Trip details:', response.data);
-                setTrip(response.data);
-
-                let updatedDestinations = response.data.destinations || [];
-                if (selectedDestination) {
-                    updatedDestinations = [{ name: selectedDestination }, ...updatedDestinations];
-                }
+                const updatedDestinations = response.data.destinations.map((destination) => ({
+                    ...destination,
+                    nights: destination.nights || 1, // Initialize nights to 1 if not defined
+                }));
                 setDestinations(updatedDestinations);
-
-                // Calculate initial nights and set the endDate
-                const initialNights = calculateNights(response.data.start_date, response.data.end_date);
-                setNights(initialNights);
-                setEndDate(response.data.end_date);
+                setTrip(response.data);
             } catch (err) {
                 console.error('Error fetching trip details:', err);
-                console.log('Response from server:', response.data);
-                console.log("Trip ID being used:", id);
-
                 setError('Failed to fetch trip details.');
             }
         };
+        
 
         fetchTripDetails();
     }, [id]);
+
 
     const handleAddDestination = async () => {
         if (!newDestination.trim()) return;
@@ -135,19 +127,20 @@ function TripInfo() {
             console.error('Error saving destinations:', error);
         }
     };
-    const handleIncrement = () => {
-        const updatedNights = nights + 1;
-        setNights(updatedNights);
-        setEndDate(calculateEndDate(trip.start_date, updatedNights));
+    const handleDecrement = (index) => {
+        const updatedDestinations = [...destinations];
+        if (updatedDestinations[index].nights > 1) {
+            updatedDestinations[index].nights -= 1;
+        }
+        setDestinations(updatedDestinations);
     };
 
-    const handleDecrement = () => {
-        if (nights > 0) {
-            const updatedNights = nights - 1;
-            setNights(updatedNights);
-            setEndDate(calculateEndDate(trip.start_date, updatedNights));
-        }
+    const handleIncrement = (index) => {
+        const updatedDestinations = [...destinations];
+        updatedDestinations[index].nights += 1;
+        setDestinations(updatedDestinations);
     };
+
 
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
 if (!trip) return <p>Loading...</p>;
@@ -168,14 +161,7 @@ return (
                         <strong>Destination:</strong> {destinationName || 'Unknown'}
 
                     </div>
-                    <div className="nights-counter">
-                        <strong>Nights:</strong>
-                        <div className="counter">
-                            <button onClick={handleDecrement}>-</button>
-                            <span>{nights}</span>
-                            <button onClick={handleIncrement}>+</button>
-                        </div>
-                    </div>
+
                     <div>
                         <strong>Sleeping:</strong>
                         {trip.sleeping ? (
@@ -209,10 +195,15 @@ return (
                 </div>
                 <div className="trip-destinations">
                 <h2>Destination</h2>
-{destinations.map((destination, index) => (
+                {destinations.map((destination, index) => (
     <div className="destination-item" key={index}>
         <h4>{`${index + 1}. ${destination.name}`}</h4>
-        <p>{`${destination.startDate} - ${destination.endDate}`}</p>
+        <div className="nights-counter">
+            <strong>Nights:</strong>
+            <button onClick={() => handleDecrement(index)}>-</button>
+            <span>{destination.nights || 1}</span> {/* Default to 1 */}
+            <button onClick={() => handleIncrement(index)}>+</button>
+        </div>
         <div className="destination-buttons">
             <button
                 className="delete-button"
