@@ -33,8 +33,8 @@ function TripInfo() {
                     ...destination,
                     nights: destination.nights || 1, // Initialize nights to 1 if not defined
                 }));
-                setDestinations(updatedDestinations);
                 setTrip(response.data);
+            setEndDate(response.data.end_date); // Set endDate here
             } catch (err) {
                 console.error('Error fetching trip details:', err);
                 setError('Failed to fetch trip details.');
@@ -109,6 +109,8 @@ function TripInfo() {
             console.log("Destinations updated successfully:", response.data);
         } catch (error) {
             console.error('Error removing destination:', error);
+            console.log('End Date:', trip.end_date);
+
         }
     };
     
