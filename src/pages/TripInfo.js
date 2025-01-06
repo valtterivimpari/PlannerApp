@@ -24,54 +24,69 @@ function TripInfo() {
                 setError('No token found');
                 return;
             }
-        
+    
             try {
                 const response = await axios.get(`http://localhost:5000/api/trips/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                const updatedDestinations = response.data.destinations.map((destination) => ({
+                const updatedDestinations = response.data.destinations.map(destination => ({
                     ...destination,
-                    nights: destination.nights || 1, // Initialize nights to 1 if not defined
+                    nights: destination.nights || 1, // Default to 1 if null or undefined
                 }));
-                setTrip(response.data);
-            setEndDate(response.data.end_date); // Set endDate here
+                setTrip({ ...response.data, destinations: updatedDestinations });
+                setDestinations(updatedDestinations);
+                setEndDate(response.data.end_date);
             } catch (err) {
                 console.error('Error fetching trip details:', err);
                 setError('Failed to fetch trip details.');
             }
         };
-        
-
+    
         fetchTripDetails();
     }, [id]);
-
+    
+    
      // Function to calculate the start date for each destination
      const calculateStartDate = (tripStartDate, destinationIndex) => {
+        if (!tripStartDate || isNaN(new Date(tripStartDate))) {
+            console.error('Invalid tripStartDate:', tripStartDate);
+            return 'Invalid Date';
+        }
+    
         const startDate = new Date(tripStartDate);
         destinations.slice(0, destinationIndex).forEach((destination) => {
-            startDate.setDate(startDate.getDate() + destination.nights);
+            startDate.setDate(startDate.getDate() + (destination.nights || 1));
         });
-        return startDate;
+        return startDate; // Return a valid Date object
     };
+    
+    
+    
+    
 
     const formatDateRange = (startDate, nights) => {
+        if (!startDate || isNaN(new Date(startDate))) {
+            console.error('Invalid startDate in formatDateRange:', startDate);
+            return 'Invalid Date';
+        }
+    
         const start = new Date(startDate);
         const end = new Date(start);
         end.setDate(start.getDate() + nights);
-
+    
         const options = { day: 'numeric', month: 'short', weekday: 'short' };
-        return `${start.toLocaleDateString(undefined, options)} - ${end.toLocaleDateString(undefined, options)}`;
+        return `${start.toLocaleDateString('fi-FI', options)} - ${end.toLocaleDateString('fi-FI', options)}`;
     };
-
-
-
+    
+    
     const handleAddDestination = async () => {
         if (!newDestination.trim()) return;
     
         const destinationObject = {
             name: newDestination,
             startDate: '', // Optional logic to add startDate
-            endDate: ''    // Optional logic to add endDate
+            endDate: '',   // Optional logic to add endDate
+            nights: 1,     // Default to 1
         };
     
         try {
@@ -82,7 +97,6 @@ function TripInfo() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
     
-            // Ensure the state updates correctly
             if (response.data && response.data.destinations) {
                 setDestinations(response.data.destinations);
                 setNewDestination('');
@@ -93,7 +107,7 @@ function TripInfo() {
             console.error('Error adding destination:', error);
         }
     };
-    
+      
     
     const handleRemoveDestination = async (index) => {
         const updatedDestinations = destinations.filter((_, i) => i !== index);
@@ -110,38 +124,51 @@ function TripInfo() {
         } catch (error) {
             console.error('Error removing destination:', error);
             console.log('End Date:', trip.end_date);
+            console.log('Start Date:', calculateStartDate(trip.start_date, index));
+console.log('Formatted Date Range:', formatDateRange(calculateStartDate(trip.start_date, index), destination.nights));
+
 
         }
     };
     
-    
-
-    const saveDestinations = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            await axios.put(
-                `http://localhost:5000/api/trips/${id}/destinations`,
-                { destinations },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-        } catch (error) {
-            console.error('Error saving destinations:', error);
-        }
-    };
-    const handleDecrement = (index) => {
-        const updatedDestinations = [...destinations];
-        if (updatedDestinations[index].nights > 1) {
-            updatedDestinations[index].nights -= 1;
-        }
-        setDestinations(updatedDestinations);
-    };
 
     const handleIncrement = (index) => {
+        console.log('Incrementing nights for destination at index:', index);
         const updatedDestinations = [...destinations];
         updatedDestinations[index].nights += 1;
         setDestinations(updatedDestinations);
+        console.log('Updated Destinations:', updatedDestinations);
+        saveUpdatedDestinations(updatedDestinations);
     };
+    
+    const handleDecrement = (index) => {
+        console.log('Decrementing nights for destination at index:', index);
+        const updatedDestinations = [...destinations];
+        if (updatedDestinations[index].nights > 1) {
+            updatedDestinations[index].nights -= 1;
+            setDestinations(updatedDestinations);
+            console.log('Updated Destinations:', updatedDestinations);
+            saveUpdatedDestinations(updatedDestinations);
+        }
+    };
+    
+        
 
+    const saveUpdatedDestinations = async (updatedDestinations) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put(
+                `http://localhost:5000/api/trips/${id}/destinations`,
+                { destinations: updatedDestinations },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log('Save response:', response.data);
+        } catch (error) {
+            console.error('Error saving updated destinations:', error);
+        }
+    };
+    
+    
 
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
 if (!trip) return <p>Loading...</p>;
@@ -151,9 +178,10 @@ return (
         <div className="trip-header">
             <h1>{trip.trip_name || 'Unnamed Trip'}</h1>
             <p>
-    Selected Dates: <strong>{new Date(trip.start_date).toLocaleDateString()}</strong> -{' '}
-    <strong>{new Date(endDate).toLocaleDateString()}</strong>
+            Selected Dates: <strong>{new Date(trip.start_date).toLocaleDateString()}</strong> -{' '}
+            <strong>{new Date(endDate).toLocaleDateString()}</strong>
 </p>
+
         </div>
         <div className="trip-body">
             <div className="trip-summary">
@@ -202,7 +230,15 @@ return (
             <div>
                 <h4>{`${index + 1}. ${destination.name}`}</h4>
                 {/* Display the date range under the city name */}
-                <p>{formatDateRange(calculateStartDate(trip.start_date, index), destination.nights)}</p>
+                <p>
+    {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
+        ? formatDateRange(calculateStartDate(trip.start_date, index), destination.nights)
+        : 'Invalid Date'}
+</p>
+
+
+
+
             </div>
             <div className="nights-counter">
                 <strong>Nights:</strong>
