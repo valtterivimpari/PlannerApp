@@ -9,13 +9,13 @@ function Home() {
     return (
         <div className="home-container">
             <div className="logo">
-                <span className="logo-gradient">Matkasuunnittelija</span>
+                <span className="logo-gradient">Travel Planner</span>
             </div>
 
             <div className="intro-text">
-                <h1>Suunnittele reissun jokainen <br /> käännekohta</h1>
-                <p>Helpota matkaasi Matkasuunnittelijalla</p>
-                <button className="start-button" onClick={() => navigate('/login')}>Aloita!</button>
+                <h1>Plan every milestone of your trip</h1>
+                <p>Make your journey easier with the Travel Planner</p>
+                <button className="start-button" onClick={() => navigate('/login')}>Start!</button>
             </div>
         </div>
     );

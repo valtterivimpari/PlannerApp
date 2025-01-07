@@ -7,7 +7,7 @@ function Header() {
     return (
         <div className="header">
             <Link to="/" className="logo">
-                <span className="logo-gradient">Matkasuunnittelija</span>
+                <span className="logo-gradient">Travel Planner</span>
             </Link>
         </div>
     );
