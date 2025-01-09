@@ -15,6 +15,7 @@ function TripInfo() {
     const [destinations, setDestinations] = useState(trip?.destinations || []);
     const [newDestination, setNewDestination] = useState('');
     const selectedDestination = location.state?.selectedDestination;
+    const [distances, setDistances] = useState([]);
 
 
     useEffect(() => {
@@ -44,6 +45,28 @@ function TripInfo() {
     
         fetchTripDetails();
     }, [id]);
+
+    useEffect(() => {
+        const calculateDistances = async () => {
+            const coords = [];
+            for (const destination of destinations) {
+                const coordinates = await fetchCoordinates(destination.name);
+                coords.push(coordinates);
+            }
+    
+            const calculatedDistances = [];
+            for (let i = 0; i < coords.length - 1; i++) {
+                if (coords[i] && coords[i + 1]) {
+                    calculatedDistances.push(haversineDistance(coords[i], coords[i + 1]));
+                }
+            }
+            setDistances(calculatedDistances);
+        };
+    
+        if (destinations.length > 1) {
+            calculateDistances();
+        }
+    }, [destinations]);
     
     
      // Function to calculate the start date for each destination
@@ -164,6 +187,43 @@ console.log('Formatted Date Range:', formatDateRange(calculateStartDate(trip.sta
             console.error('Error saving updated destinations:', error);
         }
     };
+
+    const haversineDistance = (coords1, coords2) => {
+        const toRadians = (degrees) => (degrees * Math.PI) / 180;
+    
+        const [lat1, lon1] = coords1;
+        const [lat2, lon2] = coords2;
+    
+        const R = 6371; // Earth's radius in km
+        const dLat = toRadians(lat2 - lat1);
+        const dLon = toRadians(lon2 - lon1);
+    
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRadians(lat1)) *
+                Math.cos(toRadians(lat2)) *
+                Math.sin(dLon / 2) *
+                Math.sin(dLon / 2);
+    
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Distance in km
+    };
+    
+    const fetchCoordinates = async (city) => {
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${city}`
+            );
+            const data = await response.json();
+            if (data && data.length > 0) {
+                return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            }
+        } catch (error) {
+            console.error(`Error fetching coordinates for ${city}:`, error);
+        }
+        return null;
+    };
+    
     
     
 
@@ -226,21 +286,23 @@ return (
         <div className="destination-item" key={index}>
             <div>
                 <h4>{`${index + 1}. ${destination.name}`}</h4>
-                {/* Display the date range under the city name */}
+                {index > 0 && distances[index - 1] && (
+    <div className="distance-display">
+        <span>{distances[index - 1].toFixed(1)} km</span>
+    </div>
+)}
+
+
                 <p>
-    {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
-        ? formatDateRange(calculateStartDate(trip.start_date, index), destination.nights)
-        : 'Invalid Date'}
-</p>
-
-
-
-
+                    {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
+                        ? formatDateRange(calculateStartDate(trip.start_date, index), destination.nights)
+                        : 'Invalid Date'}
+                </p>
             </div>
             <div className="nights-counter">
                 <strong>Nights:</strong>
                 <button onClick={() => handleDecrement(index)}>-</button>
-                <span>{destination.nights || 1}</span> {/* Default to 1 */}
+                <span>{destination.nights || 1}</span>
                 <button onClick={() => handleIncrement(index)}>+</button>
             </div>
             <div className="destination-buttons">

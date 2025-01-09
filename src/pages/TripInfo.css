@@ -9,6 +9,8 @@
 .trip-header {
     text-align: center;
     margin-bottom: 20px;
+    margin-top: 50px; /* Add margin to push it down */
+    padding-top: 20px; /* Optional padding */
 }
 
 .trip-header h1 {
@@ -244,8 +246,36 @@
 }
 
 .destination-item p {
-    margin: 5px 0 0;
     font-size: 0.9em;
     color: #555;
+    margin: 5px 0;
 }
+
+.distance-display {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e0f7fa; /* Light teal for a softer look */
+    color: #00796b; /* Teal for professional touch */
+    font-weight: 600;
+    font-size: 0.9em; /* Smaller text */
+    padding: 5px 10px; /* Compact padding */
+    border-radius: 20px; /* Subtle rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    cursor: default; /* No pointer */
+}
+
+.distance-display:hover {
+    background-color: #b2ebf2; /* Slightly darker teal on hover */
+    transform: translateY(-2px); /* Subtle lift effect */
+}
+
+.distance-display span {
+    margin-left: 5px;
+    font-size: 0.8em; /* Smaller text size for units */
+    color: #004d40; /* Darker teal for units */
+}
+
+
 
