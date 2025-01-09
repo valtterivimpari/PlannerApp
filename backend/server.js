@@ -8,6 +8,8 @@ const { Pool } = require('pg');
 const multer = require('multer');
 const path = require('path');
 const morgan = require('morgan');
+const axios = require('axios');
+
 
 
 const app = express();
@@ -393,6 +395,29 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
         res.status(200).send("Route works with minimal logic!");
     }
 });
+
+app.get('/api/directions', async (req, res) => {
+    const { start, end } = req.query;
+
+    if (!start || !end) {
+        return res.status(400).send('Missing start or end coordinates');
+    }
+
+    try {
+        console.log("Fetching directions with:", { start, end });
+        const response = await axios.get('https://api.openrouteservice.org/v2/directions/driving-car', {
+            headers: { Authorization: process.env.REACT_APP_OPENROUTESERVICE_API_KEY },
+            params: { start, end },
+        });
+        console.log("Directions API Response:", response.data);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching directions:', error.message, error.response?.data);
+        res.status(500).send('Failed to fetch directions');
+    }
+    
+});
+
 
 
 

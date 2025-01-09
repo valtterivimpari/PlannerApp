@@ -16,6 +16,8 @@ function TripInfo() {
     const [newDestination, setNewDestination] = useState('');
     const selectedDestination = location.state?.selectedDestination;
     const [distances, setDistances] = useState([]);
+    const [drivingTimes, setDrivingTimes] = useState([]);
+
 
 
     useEffect(() => {
@@ -55,18 +57,31 @@ function TripInfo() {
             }
     
             const calculatedDistances = [];
+            const calculatedDrivingTimes = []; // Use a separate variable
+    
             for (let i = 0; i < coords.length - 1; i++) {
                 if (coords[i] && coords[i + 1]) {
-                    calculatedDistances.push(haversineDistance(coords[i], coords[i + 1]));
+                    const distance = haversineDistance(coords[i], coords[i + 1]);
+                    calculatedDistances.push(distance);
+    
+                    const drivingTime = await fetchDrivingTime(coords[i], coords[i + 1]);
+                    calculatedDrivingTimes.push(drivingTime);
                 }
             }
+    
+            console.log("Distances:", calculatedDistances);
+            console.log("Driving Times:", calculatedDrivingTimes);
+    
             setDistances(calculatedDistances);
+            setDrivingTimes(calculatedDrivingTimes); // Update state
         };
     
         if (destinations.length > 1) {
             calculateDistances();
         }
     }, [destinations]);
+    
+    
     
     
      // Function to calculate the start date for each destination
@@ -223,6 +238,34 @@ console.log('Formatted Date Range:', formatDateRange(calculateStartDate(trip.sta
         }
         return null;
     };
+
+    const fetchDrivingTime = async (originCoords, destinationCoords) => {
+        try {
+            console.log("Fetching driving time with:", originCoords, destinationCoords);
+    
+            const response = await axios.get(`http://localhost:5000/api/directions`, {
+                params: {
+                    start: `${originCoords[1]},${originCoords[0]}`, // Longitude, Latitude
+                    end: `${destinationCoords[1]},${destinationCoords[0]}`,
+                },
+            });
+    
+            console.log("API Response:", response.data);
+    
+            const durationInSeconds = response.data.features[0].properties.segments[0].duration;
+            const durationInMinutes = Math.ceil(durationInSeconds / 60);
+            const hours = Math.floor(durationInMinutes / 60);
+            const minutes = durationInMinutes % 60;
+    
+            return `${hours}h ${minutes}m`;
+        } catch (error) {
+            console.error('Error fetching driving time:', error);
+            return 'Unknown';
+        }
+    };
+    
+    
+    
     
     
     
@@ -301,10 +344,11 @@ return (
     navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${trip.start_date}`, {
         state: {
             distance: distances[index - 1].toFixed(1),
-            duration: '1h 18m',
+            duration: drivingTimes[index - 1], // Use dynamic driving time
             date: trip.start_date,
         },
     });
+    
 }}
 
     

@@ -9,9 +9,10 @@ const Transport = () => {
     // Fallbacks for undefined state
     const {
         distance = 'Unknown',
-        duration = 'Unknown',
+        duration = 'Unknown', // Dynamic driving time
         date = new Date().toISOString(),
     } = location.state || {};
+    
 
     console.log("State received in Transport.js:", {
         origin,
