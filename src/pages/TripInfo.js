@@ -287,10 +287,37 @@ return (
             <div>
                 <h4>{`${index + 1}. ${destination.name}`}</h4>
                 {index > 0 && distances[index - 1] && (
-    <div className="distance-display">
-        <span>{distances[index - 1].toFixed(1)} km</span>
-    </div>
+  <div
+  className="distance-display"
+  onClick={() => {
+    console.log("Navigating to transport with:", {
+        url: `/transport/${destinations[index - 1].name}/${destination.name}/${trip.start_date}`,
+        state: {
+            distance: distances[index - 1].toFixed(1),
+            duration: '1h 18m',
+            date: trip.start_date,
+        },
+    });
+    navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${trip.start_date}`, {
+        state: {
+            distance: distances[index - 1].toFixed(1),
+            duration: '1h 18m',
+            date: trip.start_date,
+        },
+    });
+}}
+
+    
+    
+>
+  <span>{distances[index - 1].toFixed(1)} km</span>
+</div>
+
+
 )}
+
+
+
 
 
                 <p>
