@@ -33,3 +33,91 @@
     font-size: 1.1em;
     color: #555;
 }
+
+.flights-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.flights-button:hover {
+    background-color: #0056b3;
+}
+
+.flights-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.flights-info {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.flights-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1.2em;
+    gap: 8px;
+    transition: color 0.3s ease;
+}
+
+.flights-link:hover {
+    color: #0056b3;
+}
+
+.flights-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.add-flight {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.add-flight input {
+    padding: 8px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.add-flight button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.5em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.add-flight button:hover {
+    background-color: #0056b3;
+}
+
