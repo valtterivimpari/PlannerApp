@@ -31,7 +31,7 @@ function App() {
                 <Route path="/trips/:id" element={<TripInfo />} />
                 <Route path="/map-view/:destination" element={<MapPage />} />
                 <Route path="/transport/:origin/:destination/:date" element={<Transport />} />
-                <Route path="/flights" element={<RequireAuth><Flights /></RequireAuth>} /> {/* New route */}
+                <Route path="/flights/:origin/:destination/:date"element={<RequireAuth><Flights /></RequireAuth>}/>
 
             </Routes>
         </Router>

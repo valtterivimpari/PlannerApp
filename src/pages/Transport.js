@@ -76,7 +76,8 @@ const Transport = () => {
                         />
                         Find flights on Skyscanner
                     </a>
-                    <Link to="/flights" className="add-flight-link">
+                    <Link to={`/flights/${origin}/${destination}/${new Date(date).toISOString().split('T')[0]}`}
+                        className="add-flight-link">
                         <img
                             src={planeIcon}
                             alt="Add your flight"
