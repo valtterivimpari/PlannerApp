@@ -12,6 +12,7 @@ import TripInfo from './pages/TripInfo'; // Ensure TripInfo is correctly importe
 import Destination from './pages/Destination';
 import MapPage from './pages/MapPage'; // Import the new MapPage component
 import Transport from './pages/Transport';
+import Flights from './pages/Flights';
 
 function App() {
     return (
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/trips/:id" element={<TripInfo />} />
                 <Route path="/map-view/:destination" element={<MapPage />} />
                 <Route path="/transport/:origin/:destination/:date" element={<Transport />} />
+                <Route path="/flights" element={<RequireAuth><Flights /></RequireAuth>} /> {/* New route */}
 
             </Routes>
         </Router>

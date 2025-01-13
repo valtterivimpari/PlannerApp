@@ -1,26 +1,19 @@
 import React, { useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import './Transport.css';
-import skyscannerIcon from '../assets/skyscanner-icon.png'; // Ensure the icon is in the assets folder
+import skyscannerIcon from '../assets/skyscanner-icon.png'; // Skyscanner icon
+import planeIcon from '../assets/icon-symbol-plane_419328-2705.avif'; // Plane icon
 
 const Transport = () => {
     const { origin, destination } = useParams();
     const location = useLocation();
     const [activeSection, setActiveSection] = useState(null); // Track active section
-    const [customFlight, setCustomFlight] = useState(''); // State for custom flight input
 
     const {
         distance = 'Unknown',
         duration = 'Unknown',
         date = new Date().toISOString(),
     } = location.state || {};
-
-    const handleAddCustomFlight = () => {
-        if (customFlight.trim()) {
-            console.log(`Added custom flight: ${customFlight}`);
-            setCustomFlight('');
-        }
-    };
 
     return (
         <div className="transport-page">
@@ -83,15 +76,14 @@ const Transport = () => {
                         />
                         Find flights on Skyscanner
                     </a>
-                    <div className="add-flight">
-                        <input
-                            type="text"
-                            placeholder="Add your flight"
-                            value={customFlight}
-                            onChange={(e) => setCustomFlight(e.target.value)}
+                    <Link to="/flights" className="add-flight-link">
+                        <img
+                            src={planeIcon}
+                            alt="Add your flight"
+                            className="add-flight-icon"
                         />
-                        <button onClick={handleAddCustomFlight}>+</button>
-                    </div>
+                        Add your flight
+                    </Link>
                 </div>
             )}
 

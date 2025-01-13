@@ -67,17 +67,18 @@
     text-align: center;
 }
 
-.flights-link {
-    display: inline-flex;
-    align-items: center;
+.flights-link,
+.add-flight-link {
+    display: block; /* Ensures vertical stacking */
     text-decoration: none;
     color: #007bff;
     font-size: 1.2em;
-    gap: 8px;
+    margin-top: 10px;
     transition: color 0.3s ease;
 }
 
-.flights-link:hover {
+.flights-link:hover,
+.add-flight-link:hover {
     color: #0056b3;
 }
 
@@ -119,5 +120,18 @@
 
 .add-flight button:hover {
     background-color: #0056b3;
+}
+
+
+.add-flight-link {
+    color: #de3163; /* Cerise color */
+    font-weight: bold; /* Optional for better emphasis */
+}
+
+.add-flight-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px; /* Space between icon and text */
+    vertical-align: middle;
 }
 
