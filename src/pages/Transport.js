@@ -70,31 +70,43 @@ const Transport = () => {
 
             {/* Flights Section */}
             {activeSection === 'Flights' && (
-                <div className="flights-info">
-                    <a
-                        href="https://www.skyscanner.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flights-link"
-                    >
-                        <img
-                            src={skyscannerIcon}
-                            alt="Skyscanner Icon"
-                            className="flights-icon"
-                        />
-                        Find flights on Skyscanner
-                    </a>
-                    <Link to={`/flights/${origin}/${destination}/${new Date(date).toISOString().split('T')[0]}`}
-                        className="add-flight-link">
-                        <img
-                            src={planeIcon}
-                            alt="Add your flight"
-                            className="add-flight-icon"
-                        />
-                        Add your flight
-                    </Link>
-                </div>
-            )}
+    <div className="flights-info">
+        <a
+            href="https://www.skyscanner.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flights-link"
+        >
+            <img
+                src={skyscannerIcon}
+                alt="Skyscanner Icon"
+                className="flights-icon"
+            />
+            Find flights on Skyscanner
+        </a>
+        {date && (
+            <>
+                {(() => {
+                    const updatedDate = new Date(date);
+                    updatedDate.setDate(updatedDate.getDate() + 1); // Increment the date
+                    return (
+                        <Link
+                            to={`/flights/${origin}/${destination}/${updatedDate.toISOString().split('T')[0]}`}
+                            className="add-flight-link"
+                        >
+                            <img
+                                src={planeIcon}
+                                alt="Add your flight"
+                                className="add-flight-icon"
+                            />
+                            Add your flight
+                        </Link>
+                    );
+                })()}
+            </>
+        )}
+    </div>
+)}
 
             {/* Placeholder for Other Sections */}
             {activeSection && !['Drive', 'Flights'].includes(activeSection) && (
