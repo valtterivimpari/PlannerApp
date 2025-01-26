@@ -13,9 +13,11 @@ import Destination from './pages/Destination';
 import MapPage from './pages/MapPage'; // Import the new MapPage component
 import Transport from './pages/Transport';
 import Flights from './pages/Flights';
+import { FlightProvider } from './pages/FlightContext';
 
 function App() {
     return (
+        <FlightProvider> {/* Wrap the application */}
         <Router>
             <Header />
             <Routes>
@@ -31,10 +33,11 @@ function App() {
                 <Route path="/trips/:id" element={<TripInfo />} />
                 <Route path="/map-view/:destination" element={<MapPage />} />
                 <Route path="/transport/:origin/:destination/:date" element={<Transport />} />
-                <Route path="/flights/:origin/:destination/:date"element={<RequireAuth><Flights /></RequireAuth>}/>
+                <Route path="/flights/:origin/:destination/:date" element={<RequireAuth><Flights /></RequireAuth>} />
 
             </Routes>
         </Router>
+        </FlightProvider>
     );
 }
 

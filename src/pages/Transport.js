@@ -3,10 +3,12 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import './Transport.css';
 import skyscannerIcon from '../assets/skyscanner-icon.png'; // Skyscanner icon
 import planeIcon from '../assets/icon-symbol-plane_419328-2705.avif'; // Plane icon
+import { useFlightContext } from './FlightContext';
 
 const Transport = () => {
     const { origin, destination } = useParams();
     const location = useLocation();
+    const { flightDetails } = useFlightContext();
     const [activeSection, setActiveSection] = useState(null); // Track active section
 
     const {
@@ -83,6 +85,27 @@ const Transport = () => {
                 className="flights-icon"
             />
             Find flights on Skyscanner
+
+            <div className="transport-details">
+                    <h2>Flight Details</h2>
+                    {flightDetails.origin === origin && flightDetails.destination === destination ? (
+                        <>
+                            <p><strong>Date:</strong> {flightDetails.date}</p>
+                            <p><strong>Departure Time:</strong> {flightDetails.departureTime}</p>
+                            <p><strong>Arrival Time:</strong> {flightDetails.arrivalTime}</p>
+                            <p><strong>Notes:</strong> {flightDetails.notes}</p>
+                            <ul>
+                                {flightDetails.customInputs.map((input, index) => (
+                                    <li key={index}>
+                                        <strong>{input.label}:</strong> {input.value}
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
+                    ) : (
+                        <p>No flight details available for this route.</p>
+                    )}
+                </div>
         </a>
         {date && (
             <>
