@@ -84,8 +84,7 @@ function TripInfo() {
     
     
     
-     // Function to calculate the start date for each destination
-     const calculateStartDate = (tripStartDate, destinationIndex) => {
+    const calculateStartDate = (tripStartDate, destinationIndex) => {
         if (!tripStartDate || isNaN(new Date(tripStartDate))) {
             console.error('Invalid tripStartDate:', tripStartDate);
             return 'Invalid Date';
@@ -95,8 +94,10 @@ function TripInfo() {
         destinations.slice(0, destinationIndex).forEach((destination) => {
             startDate.setDate(startDate.getDate() + (destination.nights || 1));
         });
-        return startDate; // Return a valid Date object
+        return startDate; // Returns the start date for the destination
     };
+    
+    
     
     
     
@@ -341,13 +342,16 @@ return (
             date: trip.start_date,
         },
     });
-    navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${trip.start_date}`, {
+    const travelDate = calculateStartDate(trip.start_date, index).toISOString();
+    navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${travelDate}`, {
         state: {
-            distance: distances[index - 1].toFixed(1),
+            distance: distances[index - 1]?.toFixed(1),
             duration: drivingTimes[index - 1], // Use dynamic driving time
-            date: trip.start_date,
+            date: calculateStartDate(trip.start_date, index).toISOString(),
+            index, // Pass the index to the transport page
         },
     });
+    
     
 }}
 
@@ -364,11 +368,15 @@ return (
 
 
 
-                <p>
-                    {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
-                        ? formatDateRange(calculateStartDate(trip.start_date, index), destination.nights)
-                        : 'Invalid Date'}
-                </p>
+<p>
+    {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
+        ? formatDateRange(
+              calculateStartDate(trip.start_date, index),
+              destination.nights
+          )
+        : 'Invalid Date'}
+</p>
+
             </div>
             <div className="nights-counter">
                 <strong>Nights:</strong>

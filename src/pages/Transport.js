@@ -13,12 +13,20 @@ const Transport = () => {
         distance = 'Unknown',
         duration = 'Unknown',
         date = new Date().toISOString(),
+        index = -1, // Default value if not provided
     } = location.state || {};
+    
 
     return (
         <div className="transport-page">
             <h1>{`${origin} → ${destination}`}</h1>
-            <p>{`Travel Date: ${new Date(date).toLocaleDateString()}`}</p>
+            <p>
+    {index > 0
+        ? `Travel Date: ${new Date(date).toLocaleDateString('fi-FI')}`
+        : 'No travel date available'}
+</p>
+
+
             <div className="transport-options">
                 <button
                     className="transport-option"
