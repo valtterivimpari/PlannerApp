@@ -10,18 +10,22 @@ const Flights = () => {
 
     const { flightDetails, setFlightDetails } = useFlightContext();
 
-    const [departureTime, setDepartureTime] = useState('');
-    const [arrivalTime, setArrivalTime] = useState('');
-    const [notes, setNotes] = useState('');
-    const [customInputs, setCustomInputs] = useState([
-        { id: 1, label: 'Link', placeholder: 'Enter link...' },
-        { id: 2, label: 'Departure Airport', placeholder: 'Enter departure location...' },
-        { id: 3, label: 'Arrival Airport', placeholder: 'Enter arrival location...' },
-        { id: 4, label: 'Booking number', placeholder: 'Enter booking number...' },
-        { id: 5, label: 'Flight number', placeholder: 'Enter flight number...' },
-        { id: 6, label: 'Operator', placeholder: 'Enter operator...' },
-        { id: 7, label: 'Seat number', placeholder: 'Enter seat number...' },
-    ]);
+    const [departureTime, setDepartureTime] = useState(flightDetails.departureTime || '');
+    const [arrivalTime, setArrivalTime] = useState(flightDetails.arrivalTime || '');
+    const [notes, setNotes] = useState(flightDetails.notes || '');
+    const [customInputs, setCustomInputs] = useState(
+        flightDetails.customInputs && flightDetails.customInputs.length > 0
+            ? flightDetails.customInputs
+            : [
+                { id: 1, label: 'Link', placeholder: 'Enter link...', value: '' },
+                { id: 2, label: 'Departure Airport', placeholder: 'Enter departure location...', value: '' },
+                { id: 3, label: 'Arrival Airport', placeholder: 'Enter arrival location...', value: '' },
+                { id: 4, label: 'Booking number', placeholder: 'Enter booking number...', value: '' },
+                { id: 5, label: 'Flight number', placeholder: 'Enter flight number...', value: '' },
+                { id: 6, label: 'Operator', placeholder: 'Enter operator...', value: '' },
+                { id: 7, label: 'Seat number', placeholder: 'Enter seat number...', value: '' },
+            ]
+    );
 
     const [savedDetails, setSavedDetails] = useState(null);
 
