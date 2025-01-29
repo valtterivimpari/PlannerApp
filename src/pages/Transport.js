@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
+import { useParams, useLocation, Link, useNavigate } from 'react-router-dom';
 import './Transport.css';
 import skyscannerIcon from '../assets/skyscanner-icon.png'; // Skyscanner icon
 import planeIcon from '../assets/icon-symbol-plane_419328-2705.avif'; // Plane icon
@@ -8,25 +8,31 @@ import { useFlightContext } from './FlightContext';
 const Transport = () => {
     const { origin, destination } = useParams();
     const location = useLocation();
-    const { flightDetails } = useFlightContext();
+    const navigate = useNavigate();
+    const { flightDetails, setFlightDetails } = useFlightContext();
     const [activeSection, setActiveSection] = useState(null); // Track active section
 
     const {
         distance = 'Unknown',
         duration = 'Unknown',
         date = new Date().toISOString(),
-        index = -1, // Default value if not provided
     } = location.state || {};
+
+    const travelDate = date ? new Date(date).toLocaleDateString('fi-FI') : 'Unknown Date';
+
+    const handleEditFlight = () => {
+        navigate(`/flights/${origin}/${destination}/${date.split('T')[0]}`);
+    };
+
+    const handleDeleteFlight = () => {
+        setFlightDetails({});
+    };
     
 
     return (
         <div className="transport-page">
             <h1>{`${origin} → ${destination}`}</h1>
-            <p>
-    {index > 0
-        ? `Travel Date: ${new Date(date).toLocaleDateString('fi-FI')}`
-        : 'No travel date available'}
-</p>
+            <p><strong>Travel Date:</strong> {travelDate}</p>
 
 
             <div className="transport-options">
@@ -73,40 +79,46 @@ const Transport = () => {
             {/* Flights Section */}
             {activeSection === 'Flights' && (
     <div className="flights-info">
-        <a
-            href="https://www.skyscanner.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flights-link"
-        >
-            <img
-                src={skyscannerIcon}
-                alt="Skyscanner Icon"
-                className="flights-icon"
-            />
-            Find flights on Skyscanner
+        {/* Skyscanner link is now separate */}
+        <div className="flights-link-container">
+            <a
+                href="https://www.skyscanner.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flights-link"
+            >
+                <img src={skyscannerIcon} alt="Skyscanner Icon" className="flights-icon" />
+                Find flights on Skyscanner
+            </a>
+        </div>
 
-            <div className="transport-details">
-                    <h2>Flight Details</h2>
-                    {flightDetails.origin === origin && flightDetails.destination === destination ? (
-                        <>
-                            <p><strong>Date:</strong> {flightDetails.date}</p>
-                            <p><strong>Departure Time:</strong> {flightDetails.departureTime}</p>
-                            <p><strong>Arrival Time:</strong> {flightDetails.arrivalTime}</p>
-                            <p><strong>Notes:</strong> {flightDetails.notes}</p>
-                            <ul>
-                                {flightDetails.customInputs.map((input, index) => (
-                                    <li key={index}>
-                                        <strong>{input.label}:</strong> {input.value}
-                                    </li>
-                                ))}
-                            </ul>
-                        </>
-                    ) : (
-                        <p>No flight details available for this route.</p>
-                    )}
-                </div>
-        </a>
+        <div className="transport-details">
+            <h2>Flight Details</h2>
+            {flightDetails.origin === origin && flightDetails.destination === destination ? (
+                <>
+                    <p><strong>Date:</strong> {flightDetails.date}</p>
+                    <p><strong>Departure Time:</strong> {flightDetails.departureTime}</p>
+                    <p><strong>Arrival Time:</strong> {flightDetails.arrivalTime}</p>
+                    <p><strong>Notes:</strong> {flightDetails.notes}</p>
+                    <ul>
+                        {flightDetails.customInputs.map((input, index) => (
+                            <li key={index}>
+                                <strong>{input.label}:</strong> {input.value}
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Buttons are now separate from the Skyscanner link */}
+                    <div className="flight-buttons">
+                        <button onClick={handleEditFlight} className="edit-button">Edit</button>
+                        <button onClick={handleDeleteFlight} className="delete-button">Delete</button>
+                    </div>
+                </>
+            ) : (
+                <p>No flight details available for this route.</p>
+            )}
+        </div>
+
         {date && (
             <>
                 {(() => {

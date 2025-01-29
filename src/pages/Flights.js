@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './Flights.css';
 import { useFlightContext } from './FlightContext';
 
-
 const Flights = () => {
     const { origin = 'Unknown Departure', destination = 'Unknown Destination', date } = useParams();
+    const navigate = useNavigate();
     const formattedDate = date ? new Date(date).toLocaleDateString('fi-FI') : 'Unknown Date';
 
-    const { setFlightDetails } = useFlightContext();
+    const { flightDetails, setFlightDetails } = useFlightContext();
 
     const [departureTime, setDepartureTime] = useState('');
     const [arrivalTime, setArrivalTime] = useState('');
@@ -23,13 +23,11 @@ const Flights = () => {
         { id: 7, label: 'Seat number', placeholder: 'Enter seat number...' },
     ]);
 
-    const [savedDetails, setSavedDetails] = useState(null); // State to store finalized details
+    const [savedDetails, setSavedDetails] = useState(null);
 
     const handleCustomInputChange = (id, value) => {
         setCustomInputs((prevInputs) =>
-            prevInputs.map((input) =>
-                input.id === id ? { ...input, value } : input
-            )
+            prevInputs.map((input) => (input.id === id ? { ...input, value } : input))
         );
     };
 
@@ -46,7 +44,21 @@ const Flights = () => {
                 value: input.value || '',
             })),
         };
-        setFlightDetails(details); // Save the details to context
+        setFlightDetails(details);
+        setSavedDetails(details);
+    };
+
+    const handleEditDetails = () => {
+        setSavedDetails(null);
+    };
+
+    const handleDeleteDetails = () => {
+        setSavedDetails(null);
+        setFlightDetails({});
+    };
+
+    const handleReadyToGo = () => {
+        navigate(`/transport/${origin}/${destination}/2025-01-08T22:00:00.000Z`);
     };
 
     return (
@@ -100,9 +112,7 @@ const Flights = () => {
                                     type="text"
                                     placeholder={input.placeholder}
                                     value={input.value || ''}
-                                    onChange={(e) =>
-                                        handleCustomInputChange(input.id, e.target.value)
-                                    }
+                                    onChange={(e) => handleCustomInputChange(input.id, e.target.value)}
                                 />
                                 <button
                                     onClick={() =>
@@ -116,15 +126,18 @@ const Flights = () => {
                                 </button>
                             </div>
                         ))}
-                        <button onClick={() =>
-                            setCustomInputs([...customInputs, { id: Date.now(), label: 'Custom Field', placeholder: 'Enter value...' }])
-                        } className="add-button">
+                        <button
+                            onClick={() =>
+                                setCustomInputs([...customInputs, { id: Date.now(), label: 'Custom Field', placeholder: 'Enter value...' }])
+                            }
+                            className="add-button"
+                        >
                             Add Custom Field
                         </button>
                     </div>
 
                     <button onClick={handleSaveDetails} className="add-button">
-                        Ready to go!
+                        Save Flight Details
                     </button>
                 </>
             ) : (
@@ -141,9 +154,11 @@ const Flights = () => {
                             </li>
                         ))}
                     </ul>
-                    <button onClick={() => setSavedDetails(null)} className="add-button">
-                        Edit Details
-                    </button>
+                    <div className="action-buttons">
+                        <button onClick={handleEditDetails} className="edit-button">Edit</button>
+                        <button onClick={handleDeleteDetails} className="delete-button">Delete</button>
+                        <button onClick={handleReadyToGo} className="ready-button">Ready to go!</button>
+                    </div>
                 </div>
             )}
         </div>

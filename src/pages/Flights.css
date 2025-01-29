@@ -79,7 +79,7 @@ textarea {
     color: white;
     border: none;
     border-radius: 6px;
-    padding: 8px 12px;
+    padding: 10px 15px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -87,6 +87,7 @@ textarea {
 .delete-button:hover {
     background-color: #c0392b;
 }
+
 
 .add-button {
     display: block;
@@ -132,6 +133,40 @@ textarea {
 
 .saved-details li {
     margin-bottom: 5px;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.edit-button {
+    background-color: #f1c40f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+    background-color: #d4ac0d;
+}
+
+.ready-button {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.ready-button:hover {
+    background-color: #27ae60;
 }
 
 
