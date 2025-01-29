@@ -58,16 +58,17 @@
     height: 24px;
 }
 
+/* Skyscanner Link Styling */
 .flights-link-container {
     text-align: center;
-    margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 .flights-link {
     display: inline-block;
     text-decoration: none;
-    color: #007bff;
     font-size: 1.2em;
+    color: #007bff;
     transition: color 0.3s ease;
 }
 
@@ -128,14 +129,18 @@
     margin-right: 8px; /* Space between icon and text */
     vertical-align: middle;
 }
+.edit-button, .delete-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.3s ease;
+}
+
 .edit-button {
     background-color: #f1c40f;
     color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
 .edit-button:hover {
@@ -145,11 +150,6 @@
 .delete-button {
     background-color: #e74c3c;
     color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
 .delete-button:hover {
@@ -167,5 +167,47 @@
 
 .ready-button:hover {
     background-color: #27ae60;
+}
+
+.flights-info {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    margin: 20px auto;
+    text-align: left;
+}
+
+.flights-info h2 {
+    font-size: 1.8em;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.flights-info p {
+    font-size: 1.1em;
+    color: #333;
+    margin: 8px 0;
+}
+
+.flights-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.flights-info li {
+    font-size: 1em;
+    color: #555;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.flight-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
 }
 
