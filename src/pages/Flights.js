@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Flights.css';
 import { useFlightContext } from './FlightContext';
 
@@ -7,8 +8,8 @@ const Flights = () => {
     const { origin = 'Unknown Departure', destination = 'Unknown Destination', date } = useParams();
     const navigate = useNavigate();
     const formattedDate = date ? new Date(date).toLocaleDateString('fi-FI') : 'Unknown Date';
-
-    const { flightDetails, setFlightDetails } = useFlightContext();
+    const { flightDetails, setFlightDetails, fetchFlightDetails } = useFlightContext();
+    const [token, setToken] = useState(localStorage.getItem('token'));
 
     const [departureTime, setDepartureTime] = useState(flightDetails.departureTime || '');
     const [arrivalTime, setArrivalTime] = useState(flightDetails.arrivalTime || '');
@@ -35,23 +36,53 @@ const Flights = () => {
         );
     };
 
-    const handleSaveDetails = () => {
-        const details = {
-            origin,
-            destination,
-            date: formattedDate,
-            departureTime,
-            arrivalTime,
-            notes,
-            customInputs: customInputs.map((input) => ({
-                label: input.label,
-                value: input.value || '',
-            })),
-        };
-        setFlightDetails(details);
-        setSavedDetails(details);
-    };
+    useEffect(() => {
+        if (!token) {
+            console.error("User is not authenticated. Cannot fetch flights.");
+            return;
+        }
+        
+        fetchFlightDetails(token);
+    }, [token, fetchFlightDetails]);
+    
+    useEffect(() => {
+        if (flightDetails && Object.keys(flightDetails).length > 0) {
+            setSavedDetails(flightDetails);
+        }
+    }, [flightDetails]);
+    
 
+    const handleSaveDetails = async () => {
+        if (!token) {
+            console.error("No token found. Please log in.");
+            return;
+        }
+    
+        try {
+            console.log("Saving flight details:", {
+                origin, destination, date, departureTime, arrivalTime, notes, customInputs
+            });
+    
+            const response = await axios.post('/api/flights', {
+                origin, destination, date, departureTime, arrivalTime, notes, customInputs
+            }, {
+                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+            });
+    
+            console.log("Server response:", response.data);
+            setFlightDetails(response.data);
+            setSavedDetails(response.data);
+    
+            // Fetch updated flight details from backend
+            fetchFlightDetails(token);
+    
+        } catch (error) {
+            console.error('Error saving flight details:', error.response ? error.response.data : error);
+        }
+    };
+    
+    
+    
     const handleEditDetails = () => {
         setSavedDetails(null);
     };
