@@ -47,7 +47,10 @@ const Flights = () => {
     
     useEffect(() => {
         if (flightDetails && Object.keys(flightDetails).length > 0) {
-            setSavedDetails(flightDetails);
+            setSavedDetails({
+                ...flightDetails,
+                customInputs: flightDetails.customInputs || []  // Ensure it's always an array
+            });
         }
     }, [flightDetails]);
     
@@ -60,16 +63,17 @@ const Flights = () => {
     
         try {
             console.log("Saving flight details:", {
+
                 origin, destination, date, departureTime, arrivalTime, notes, customInputs
             });
     
-            const response = await axios.post('/api/flights', {
-                origin, destination, date, departureTime, arrivalTime, notes, customInputs
-            }, {
+            const response = await axios.post('http://localhost:5000/api/flights', { origin, destination, date, departureTime, arrivalTime, notes, customInputs }, {
                 headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+
             });
-    
+
             console.log("Server response:", response.data);
+            console.log("Token being used:", token);
             setFlightDetails(response.data);
             setSavedDetails(response.data);
     

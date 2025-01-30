@@ -15,7 +15,8 @@ export const FlightProvider = ({ children }) => {
         }
     
         try {
-            console.log("Fetching flights with token:", token);
+            console.log("Fetched flights:", JSON.stringify(response.data, null, 2));
+
             const response = await axios.get('/api/flights', {
                 headers: { Authorization: `Bearer ${token}` },
             });

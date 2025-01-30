@@ -434,7 +434,17 @@ app.post('/api/flights', authenticateToken, async (req, res) => {
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING *;
         `;
-        const values = [userId, origin, destination, date, departureTime, arrivalTime, notes, JSON.stringify(customInputs)];
+
+        const values = [
+            userId, 
+            origin, 
+            destination, 
+            date, 
+            departureTime, 
+            arrivalTime, 
+            notes, 
+            JSON.stringify(customInputs || [])  // ✅ Ensure it's always an array
+        ];
 
         const result = await pool.query(query, values);
         console.log("Flight saved to DB:", result.rows[0]);
@@ -523,7 +533,14 @@ app.get('/api/flights', authenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'No flights found' });
         }
 
-        res.json(result.rows);
+        // ✅ Ensure every flight object has a valid `custom_inputs` array
+        const flights = result.rows.map(flight => ({
+            ...flight,
+            custom_inputs: flight.custom_inputs ? JSON.parse(flight.custom_inputs) : [] // Ensure it's always an array
+        }));
+
+        console.log("Fetched flights:", flights);
+        res.json(flights);
     } catch (error) {
         console.error('Error fetching flights:', error);
         res.status(500).send('Server error');
