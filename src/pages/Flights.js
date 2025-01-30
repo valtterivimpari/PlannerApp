@@ -49,10 +49,11 @@ const Flights = () => {
         if (flightDetails && Object.keys(flightDetails).length > 0) {
             setSavedDetails({
                 ...flightDetails,
-                customInputs: flightDetails.customInputs || []  // Ensure it's always an array
+                customInputs: flightDetails.customInputs || []  // ✅ Ensure it's always an array
             });
         }
     }, [flightDetails]);
+    
     
 
     const handleSaveDetails = async () => {
@@ -187,12 +188,13 @@ const Flights = () => {
                     <p><strong>Notes:</strong> {savedDetails.notes}</p>
                     <h3>Additional Information:</h3>
                     <ul>
-                        {savedDetails.customInputs.map((input, index) => (
-                            <li key={index}>
-                                <strong>{input.label}:</strong> {input.value}
-                            </li>
-                        ))}
-                    </ul>
+    {Array.isArray(savedDetails?.customInputs) ? savedDetails.customInputs.map((input, index) => (
+        <li key={index}>
+            <strong>{input.label}:</strong> {input.value}
+        </li>
+    )) : <p>No additional details available</p>}
+</ul>
+
                     <div className="action-buttons">
                         <button onClick={handleEditDetails} className="edit-button">Edit</button>
                         <button onClick={handleDeleteDetails} className="delete-button">Delete</button>

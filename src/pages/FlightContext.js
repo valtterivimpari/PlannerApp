@@ -15,19 +15,18 @@ export const FlightProvider = ({ children }) => {
         }
     
         try {
-            console.log("Fetched flights:", JSON.stringify(response.data, null, 2));
-
-            const response = await axios.get('/api/flights', {
+            const response = await axios.get('http://localhost:5000/api/flights', {
                 headers: { Authorization: `Bearer ${token}` },
             });
     
             console.log("Fetched flights:", response.data);
     
-            // If flights exist, set the most recent one
+            // ✅ Ensure customInputs is always an array
             if (response.data.length > 0) {
-                setFlightDetails(response.data[0]); // Set the latest flight
+                const latestFlight = response.data[0];
+                latestFlight.custom_inputs = latestFlight.custom_inputs || []; // ✅ Default to an empty array
+                setFlightDetails(latestFlight);
             }
-    
         } catch (error) {
             console.error('Error fetching flight details:', error.response ? error.response.data : error);
         }

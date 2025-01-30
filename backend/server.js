@@ -457,6 +457,7 @@ app.post('/api/flights', authenticateToken, async (req, res) => {
 });
 
 
+
 app.get('/api/flights/:origin/:destination/:date', authenticateToken, async (req, res) => {
     const { origin, destination, date } = req.params;
     const userId = req.user.id;
@@ -533,10 +534,10 @@ app.get('/api/flights', authenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'No flights found' });
         }
 
-        // ✅ Ensure every flight object has a valid `custom_inputs` array
+        // ✅ Ensure `custom_inputs` is always an array before returning it
         const flights = result.rows.map(flight => ({
             ...flight,
-            custom_inputs: flight.custom_inputs ? JSON.parse(flight.custom_inputs) : [] // Ensure it's always an array
+            custom_inputs: flight.custom_inputs ? JSON.parse(flight.custom_inputs) : [] // ✅ Ensure it's an array
         }));
 
         console.log("Fetched flights:", flights);
@@ -546,6 +547,7 @@ app.get('/api/flights', authenticateToken, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
 
 
 
