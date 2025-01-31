@@ -443,19 +443,26 @@ app.post('/api/flights', authenticateToken, async (req, res) => {
             departureTime, 
             arrivalTime, 
             notes, 
-            customInputs && Array.isArray(customInputs) ? JSON.stringify(customInputs) : '[]'
+            JSON.stringify(customInputs || []) // ✅ Ensure customInputs is stored as a string
         ];
         
-
         const result = await pool.query(query, values);
         console.log("Flight saved to DB:", result.rows[0]);
 
-        res.status(201).json(result.rows[0]);
+        // ✅ Ensure correct parsing before returning
+        let savedFlight = result.rows[0];
+        savedFlight.custom_inputs = typeof savedFlight.custom_inputs === 'string'
+            ? JSON.parse(savedFlight.custom_inputs)
+            : [];
+
+        res.status(201).json(savedFlight);
+
     } catch (error) {
         console.error('Error saving flight:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
+
 
 
 
@@ -483,6 +490,8 @@ app.get('/api/flights/:origin/:destination/:date', authenticateToken, async (req
         res.status(500).send('Server error');
     }
 });
+
+
 
 app.put('/api/flights/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;

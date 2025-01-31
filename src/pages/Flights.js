@@ -41,22 +41,33 @@ const Flights = () => {
             return;
         }
     
-        if (!savedDetails) { 
+        if (!flightDetails || Object.keys(flightDetails).length === 0) { 
             fetchFlightDetails(token, origin, destination, date);
         }
-    }, [token, savedDetails, origin, destination, date]); // ✅ Added `origin`, `destination`, and `date`
+    }, [token, origin, destination, date]); // ✅ Removed `savedDetails` to prevent unnecessary re-fetching
     
     
     
     
     useEffect(() => {
         if (flightDetails && Object.keys(flightDetails).length > 0) {
-            setSavedDetails({
-                ...flightDetails,
-                customInputs: flightDetails.customInputs || []  // ✅ Ensure it's always an array
-            });
+            if (flightDetails.departureTime || flightDetails.arrivalTime || flightDetails.notes || 
+                (Array.isArray(flightDetails.customInputs) && flightDetails.customInputs.length > 0)) {
+                
+                setTimeout(() => { // ✅ Add delay to avoid flickering
+                    setSavedDetails({
+                        ...flightDetails,
+                        customInputs: flightDetails.customInputs && Array.isArray(flightDetails.customInputs)
+                            ? flightDetails.customInputs
+                            : []
+                    });
+                }, 500); // ✅ 500ms delay to prevent UI flickering
+            }
         }
     }, [flightDetails]);
+    
+    
+    
     
     
 
@@ -69,22 +80,26 @@ const Flights = () => {
         try {
             console.log("Saving flight details:", { origin, destination, date, departureTime, arrivalTime, notes, customInputs });
     
+            const formattedCustomInputs = customInputs.map(input => ({
+                label: input.label,
+                value: input.value
+            }));
+    
             const response = await axios.post('http://localhost:5000/api/flights', {
-                origin, destination, date, departureTime, arrivalTime, notes, customInputs
+                origin, destination, date, departureTime, arrivalTime, notes, 
+                customInputs: formattedCustomInputs
             }, {
                 headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
             });
     
             console.log("Server response:", response.data);
-            console.log("Token being used:", token);
     
+            // ✅ Ensure frontend updates correctly
             setFlightDetails(response.data);
-            setSavedDetails(response.data);
     
-            // ✅ Delay fetching the new flight to prevent immediate UI overwrite
             setTimeout(() => {
-                fetchFlightDetails(token, origin, destination, date);
-            }, 2000);
+                setSavedDetails(response.data);
+            }, 500); // ✅ Add delay to prevent UI flickering
     
         } catch (error) {
             console.error('Error saving flight details:', error.response ? error.response.data : error);
@@ -95,9 +110,21 @@ const Flights = () => {
     
     
     
+    
+    
+    
+    
     const handleEditDetails = () => {
         setSavedDetails(null);
+        setFlightDetails(prevDetails => ({
+            ...prevDetails,
+            departureTime: prevDetails.departureTime || '',
+            arrivalTime: prevDetails.arrivalTime || '',
+            notes: prevDetails.notes || '',
+            customInputs: prevDetails.customInputs || []
+        }));
     };
+    
 
     const handleDeleteDetails = () => {
         setSavedDetails(null);
