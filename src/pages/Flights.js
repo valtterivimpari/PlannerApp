@@ -51,20 +51,19 @@ const Flights = () => {
     
     useEffect(() => {
         if (flightDetails && Object.keys(flightDetails).length > 0) {
-            if (flightDetails.departureTime || flightDetails.arrivalTime || flightDetails.notes || 
-                (Array.isArray(flightDetails.customInputs) && flightDetails.customInputs.length > 0)) {
-                
-                setTimeout(() => { // ✅ Add delay to avoid flickering
-                    setSavedDetails({
-                        ...flightDetails,
-                        customInputs: flightDetails.customInputs && Array.isArray(flightDetails.customInputs)
-                            ? flightDetails.customInputs
-                            : []
-                    });
-                }, 500); // ✅ 500ms delay to prevent UI flickering
-            }
+            setSavedDetails({
+                ...flightDetails,
+                departureTime: flightDetails.departure_time || '',
+                arrivalTime: flightDetails.arrival_time || '',
+                notes: flightDetails.notes || '',
+                customInputs: flightDetails.custom_inputs && Array.isArray(flightDetails.custom_inputs)
+                    ? flightDetails.custom_inputs
+                    : []
+            });
         }
     }, [flightDetails]);
+    
+    
     
     
     
@@ -98,7 +97,12 @@ const Flights = () => {
             setFlightDetails(response.data);
     
             setTimeout(() => {
-                setSavedDetails(response.data);
+                setSavedDetails({
+                    ...response.data,
+                    customInputs: response.data.custom_inputs && Array.isArray(response.data.custom_inputs)
+                        ? response.data.custom_inputs
+                        : []
+                });
             }, 500); // ✅ Add delay to prevent UI flickering
     
         } catch (error) {
@@ -216,25 +220,31 @@ const Flights = () => {
                 </>
             ) : (
                 <div className="saved-details">
-                    <h2>Saved Flight Details</h2>
-                    <p><strong>Departure Time:</strong> {savedDetails.departureTime}</p>
-                    <p><strong>Arrival Time:</strong> {savedDetails.arrivalTime}</p>
-                    <p><strong>Notes:</strong> {savedDetails.notes}</p>
-                    <h3>Additional Information:</h3>
-                    <ul>
-    {Array.isArray(savedDetails?.customInputs) ? savedDetails.customInputs.map((input, index) => (
-        <li key={index}>
-            <strong>{input.label}:</strong> {input.value}
-        </li>
-    )) : <p>No additional details available</p>}
-</ul>
+    <h2>Saved Flight Details</h2>
+    <p><strong>Departure Time:</strong> {savedDetails.departureTime}</p>
+    <p><strong>Arrival Time:</strong> {savedDetails.arrivalTime}</p>
+    <p><strong>Notes:</strong> {savedDetails.notes}</p>
 
-                    <div className="action-buttons">
-                        <button onClick={handleEditDetails} className="edit-button">Edit</button>
-                        <button onClick={handleDeleteDetails} className="delete-button">Delete</button>
-                        <button onClick={handleReadyToGo} className="ready-button">Ready to go!</button>
-                    </div>
-                </div>
+    <h3>Additional Information:</h3>
+    {Array.isArray(savedDetails.customInputs) && savedDetails.customInputs.length > 0 ? (
+        <ul>
+            {savedDetails.customInputs.map((input, index) => (
+                <li key={index}>
+                    <strong>{input.label}:</strong> {input.value}
+                </li>
+            ))}
+        </ul>
+    ) : (
+        <p>No additional details available</p>
+    )}
+
+    <div className="action-buttons">
+        <button onClick={handleEditDetails} className="edit-button">Edit</button>
+        <button onClick={handleDeleteDetails} className="delete-button">Delete</button>
+        <button onClick={handleReadyToGo} className="ready-button">Ready to go!</button>
+    </div>
+</div>
+
             )}
         </div>
     );

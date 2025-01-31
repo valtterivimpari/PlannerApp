@@ -443,7 +443,7 @@ app.post('/api/flights', authenticateToken, async (req, res) => {
             departureTime, 
             arrivalTime, 
             notes, 
-            JSON.stringify(customInputs || []) // ✅ Ensure customInputs is stored as a string
+            JSON.stringify(customInputs || []) // ✅ Ensure customInputs is always stored as a JSON string
         ];
         
         const result = await pool.query(query, values);
@@ -451,7 +451,7 @@ app.post('/api/flights', authenticateToken, async (req, res) => {
 
         // ✅ Ensure correct parsing before returning
         let savedFlight = result.rows[0];
-        savedFlight.custom_inputs = typeof savedFlight.custom_inputs === 'string'
+        savedFlight.custom_inputs = savedFlight.custom_inputs && typeof savedFlight.custom_inputs === 'string'
             ? JSON.parse(savedFlight.custom_inputs)
             : [];
 
@@ -479,6 +479,8 @@ app.get('/api/flights/:origin/:destination/:date', authenticateToken, async (req
         }
 
         let flight = result.rows[0];
+
+        // ✅ Ensure `custom_inputs` is always an array before sending to frontend
         flight.custom_inputs = flight.custom_inputs && typeof flight.custom_inputs === 'string'
             ? JSON.parse(flight.custom_inputs)
             : [];
@@ -490,6 +492,7 @@ app.get('/api/flights/:origin/:destination/:date', authenticateToken, async (req
         res.status(500).send('Server error');
     }
 });
+
 
 
 
