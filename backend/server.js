@@ -418,146 +418,17 @@ app.get('/api/directions', async (req, res) => {
     
 });
 
-app.post('/api/flights', authenticateToken, async (req, res) => {
-    const { origin, destination, date, departureTime, arrivalTime, notes, link, departureAirport, arrivalAirport, bookingNumber, flightNumber, operator, seatNumber } = req.body;
-    const userId = req.user.id;
-
-    if (!origin || !destination || !date) {
-        return res.status(400).json({ message: "Origin, destination, and date are required" });
-    }
-
-    try {
-        console.log("Saving flight for user:", userId, "Data received:", req.body);
-
-        const query = `
-            INSERT INTO flights (user_id, origin, destination, date, departure_time, arrival_time, notes, link, departure_airport, arrival_airport, booking_number, flight_number, operator, seat_number)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-            RETURNING *;
-        `;
-
-        const values = [
-            userId, origin, destination, date, departureTime, arrivalTime, notes, link, departureAirport, arrivalAirport, bookingNumber, flightNumber, operator, seatNumber
-        ];
-        
-        const result = await pool.query(query, values);
-        console.log("Flight saved to DB:", result.rows[0]);
-
-        res.status(201).json(result.rows[0]);
-
-    } catch (error) {
-        console.error('Error saving flight:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-});
 
 
 
 
-app.get('/api/flights/:origin/:destination/:date', authenticateToken, async (req, res) => {
-    const { origin, destination, date } = req.params;
-    const userId = req.user.id;
-
-    try {
-        const query = `SELECT * FROM flights WHERE user_id = $1 AND origin = $2 AND destination = $3 AND date = $4 LIMIT 1`;
-        const result = await pool.query(query, [userId, origin, destination, date]);
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'No flight details found' });
-        }
-
-        let flight = result.rows[0];
-
-        // ✅ Ensure `custom_inputs` is always an array before sending to frontend
-        flight.custom_inputs = flight.custom_inputs && typeof flight.custom_inputs === 'string'
-            ? JSON.parse(flight.custom_inputs)
-            : [];
-
-        console.log("Fetched single flight:", flight);
-        res.json(flight);
-    } catch (error) {
-        console.error('Error fetching flight:', error);
-        res.status(500).send('Server error');
-    }
-});
 
 
 
 
-app.put('/api/flights/:id', authenticateToken, async (req, res) => {
-    const { id } = req.params;
-    const { departureTime, arrivalTime, notes, customInputs } = req.body;
-    const userId = req.user.id;
 
-    try {
-        const query = `
-            UPDATE flights
-            SET departure_time = $1, arrival_time = $2, notes = $3, custom_inputs = $4
-            WHERE id = $5 AND user_id = $6
-            RETURNING *;
-        `;
-        const values = [departureTime, arrivalTime, notes, JSON.stringify(customInputs), id, userId];
 
-        const result = await pool.query(query, values);
 
-        if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Flight not found or unauthorized' });
-        }
-
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error('Error updating flight:', error);
-        res.status(500).send('Server error');
-    }
-});
-
-app.delete('/api/flights/:id', authenticateToken, async (req, res) => {
-    const { id } = req.params;
-    const userId = req.user.id;
-
-    try {
-        const query = `DELETE FROM flights WHERE id = $1 AND user_id = $2 RETURNING *;`;
-        const result = await pool.query(query, [id, userId]);
-
-        if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Flight not found or unauthorized' });
-        }
-
-        res.status(200).json({ message: 'Flight deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting flight:', error);
-        res.status(500).send('Server error');
-    }
-});
-
-app.get('/api/flights', authenticateToken, async (req, res) => {
-    const userId = req.user.id; // Get user ID from JWT token
-
-    try {
-        const query = `SELECT * FROM flights WHERE user_id = $1 ORDER BY date DESC`;
-        const result = await pool.query(query, [userId]);
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'No flights found' });
-        }
-
-        // ✅ Ensure `custom_inputs` is always an array before returning it
-        const flights = result.rows.map(flight => ({
-            ...flight,
-            custom_inputs: flight.custom_inputs && typeof flight.custom_inputs === 'string'
-                ? JSON.parse(flight.custom_inputs) 
-                : [] // ✅ Ensure it's an array
-        }));
-        
-
-        console.log("Fetched flights:", flights);
-        console.log("Raw DB result:", result.rows);
-
-        res.json(flights);
-    } catch (error) {
-        console.error('Error fetching flights:', error);
-        res.status(500).send('Server error');
-    }
-});
 
 
 
