@@ -419,7 +419,7 @@ app.get('/api/directions', async (req, res) => {
 });
 
 app.post('/api/flights', authenticateToken, async (req, res) => {
-    const { origin, destination, date, departureTime, arrivalTime, notes, customInputs } = req.body;
+    const { origin, destination, date, departureTime, arrivalTime, notes, link, departureAirport, arrivalAirport, bookingNumber, flightNumber, operator, seatNumber } = req.body;
     const userId = req.user.id;
 
     if (!origin || !destination || !date) {
@@ -430,32 +430,19 @@ app.post('/api/flights', authenticateToken, async (req, res) => {
         console.log("Saving flight for user:", userId, "Data received:", req.body);
 
         const query = `
-            INSERT INTO flights (user_id, origin, destination, date, departure_time, arrival_time, notes, custom_inputs)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO flights (user_id, origin, destination, date, departure_time, arrival_time, notes, link, departure_airport, arrival_airport, booking_number, flight_number, operator, seat_number)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING *;
         `;
 
         const values = [
-            userId, 
-            origin, 
-            destination, 
-            date, 
-            departureTime, 
-            arrivalTime, 
-            notes, 
-            JSON.stringify(customInputs || []) // ✅ Ensure customInputs is always stored as a JSON string
+            userId, origin, destination, date, departureTime, arrivalTime, notes, link, departureAirport, arrivalAirport, bookingNumber, flightNumber, operator, seatNumber
         ];
         
         const result = await pool.query(query, values);
         console.log("Flight saved to DB:", result.rows[0]);
 
-        // ✅ Ensure correct parsing before returning
-        let savedFlight = result.rows[0];
-        savedFlight.custom_inputs = savedFlight.custom_inputs && typeof savedFlight.custom_inputs === 'string'
-            ? JSON.parse(savedFlight.custom_inputs)
-            : [];
-
-        res.status(201).json(savedFlight);
+        res.status(201).json(result.rows[0]);
 
     } catch (error) {
         console.error('Error saving flight:', error);

@@ -11,6 +11,15 @@ const Flights = () => {
     const { flightDetails, setFlightDetails, fetchFlightDetails } = useFlightContext();
     const [token, setToken] = useState(localStorage.getItem('token'));
 
+    const [link, setLink] = useState('');
+const [departureAirport, setDepartureAirport] = useState('');
+const [arrivalAirport, setArrivalAirport] = useState('');
+const [bookingNumber, setBookingNumber] = useState('');
+const [flightNumber, setFlightNumber] = useState('');
+const [operator, setOperator] = useState('');
+const [seatNumber, setSeatNumber] = useState('');
+
+
     const [departureTime, setDepartureTime] = useState(flightDetails.departureTime || '');
     const [arrivalTime, setArrivalTime] = useState(flightDetails.arrivalTime || '');
     const [notes, setNotes] = useState(flightDetails.notes || '');
@@ -47,18 +56,19 @@ const Flights = () => {
     }, [token, origin, destination, date]); // ✅ Removed `savedDetails` to prevent unnecessary re-fetching
     
     
-    
-    
     useEffect(() => {
         if (flightDetails && Object.keys(flightDetails).length > 0) {
             setSavedDetails({
-                ...flightDetails,
                 departureTime: flightDetails.departure_time || '',
                 arrivalTime: flightDetails.arrival_time || '',
                 notes: flightDetails.notes || '',
-                customInputs: flightDetails.custom_inputs && Array.isArray(flightDetails.custom_inputs)
-                    ? flightDetails.custom_inputs
-                    : []
+                link: flightDetails.link || '',
+                departureAirport: flightDetails.departure_airport || '',
+                arrivalAirport: flightDetails.arrival_airport || '',
+                bookingNumber: flightDetails.booking_number || '',
+                flightNumber: flightDetails.flight_number || '',
+                operator: flightDetails.operator || '',
+                seatNumber: flightDetails.seat_number || '',
             });
         }
     }, [flightDetails]);
@@ -69,7 +79,10 @@ const Flights = () => {
     
     
     
-
+    
+    
+    
+    
     const handleSaveDetails = async () => {
         if (!token) {
             console.error("No token found. Please log in.");
@@ -77,38 +90,36 @@ const Flights = () => {
         }
     
         try {
-            console.log("Saving flight details:", { origin, destination, date, departureTime, arrivalTime, notes, customInputs });
-    
-            const formattedCustomInputs = customInputs.map(input => ({
-                label: input.label,
-                value: input.value
-            }));
+            console.log("Saving flight details:", { 
+                origin, destination, date, departureTime, arrivalTime, notes,
+                link, departureAirport, arrivalAirport, bookingNumber, flightNumber, operator, seatNumber 
+            });
     
             const response = await axios.post('http://localhost:5000/api/flights', {
-                origin, destination, date, departureTime, arrivalTime, notes, 
-                customInputs: formattedCustomInputs
+                origin, destination, date, 
+                departureTime, arrivalTime, 
+                notes, link, departureAirport, arrivalAirport, 
+                bookingNumber, flightNumber, operator, seatNumber
             }, {
                 headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
             });
     
             console.log("Server response:", response.data);
     
-            // ✅ Ensure frontend updates correctly
+            // ✅ Make sure savedDetails gets updated properly
             setFlightDetails(response.data);
-    
-            setTimeout(() => {
-                setSavedDetails({
-                    ...response.data,
-                    customInputs: response.data.custom_inputs && Array.isArray(response.data.custom_inputs)
-                        ? response.data.custom_inputs
-                        : []
-                });
-            }, 500); // ✅ Add delay to prevent UI flickering
+            setSavedDetails(response.data);
     
         } catch (error) {
             console.error('Error saving flight details:', error.response ? error.response.data : error);
         }
     };
+    
+    
+    
+    
+    
+    
     
     
     
@@ -147,107 +158,103 @@ const Flights = () => {
                     Travel by plane from <strong>{origin}</strong> to <strong>{destination}</strong> on <strong>{formattedDate}</strong>.
                 </p>
             </div>
-
+    
             {!savedDetails ? (
                 <>
                     <div className="time-inputs">
-                        <div>
-                            <label htmlFor="departure-time">Departure Time:</label>
-                            <input
-                                type="time"
-                                id="departure-time"
-                                value={departureTime}
-                                onChange={(e) => setDepartureTime(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="arrival-time">Arrival Time:</label>
-                            <input
-                                type="time"
-                                id="arrival-time"
-                                value={arrivalTime}
-                                onChange={(e) => setArrivalTime(e.target.value)}
-                            />
-                        </div>
-                    </div>
+    <div>
+        <label htmlFor="departure-time">Departure Time:</label>
+        <input
+            type="time"
+            id="departure-time"
+            value={departureTime}
+            onChange={(e) => setDepartureTime(e.target.value)}
+        />
+    </div>
+    <div>
+        <label htmlFor="arrival-time">Arrival Time:</label>
+        <input
+            type="time"
+            id="arrival-time"
+            value={arrivalTime}
+            onChange={(e) => setArrivalTime(e.target.value)}
+        />
+    </div>
+    <div>
+        <label>Link:</label>
+        <input type="text" value={link} onChange={(e) => setLink(e.target.value)} />
+    </div>
+    <div>
+        <label>Departure Airport:</label>
+        <input type="text" value={departureAirport} onChange={(e) => setDepartureAirport(e.target.value)} />
+    </div>
+    <div>
+        <label>Arrival Airport:</label>
+        <input type="text" value={arrivalAirport} onChange={(e) => setArrivalAirport(e.target.value)} />
+    </div>
+    <div>
+        <label>Booking Number:</label>
+        <input type="text" value={bookingNumber} onChange={(e) => setBookingNumber(e.target.value)} />
+    </div>
+    <div>
+        <label>Flight Number:</label>
+        <input type="text" value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} />
+    </div>
+    <div>
+        <label>Operator:</label>
+        <input type="text" value={operator} onChange={(e) => setOperator(e.target.value)} />
+    </div>
+    <div>
+        <label>Seat Number:</label>
+        <input type="text" value={seatNumber} onChange={(e) => setSeatNumber(e.target.value)} />
+    </div>
+</div>
 
-                    <div className="notes-section">
-                        <label htmlFor="notes">Notes:</label>
-                        <textarea
-                            id="notes"
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            placeholder="Add any additional notes here..."
-                        ></textarea>
-                    </div>
+<h3>Additional Information:</h3>
+<ul>
+    {savedDetails.link && <li><strong>Link:</strong> {savedDetails.link}</li>}
+    {savedDetails.departureAirport && <li><strong>Departure Airport:</strong> {savedDetails.departureAirport}</li>}
+    {savedDetails.arrivalAirport && <li><strong>Arrival Airport:</strong> {savedDetails.arrivalAirport}</li>}
+    {savedDetails.bookingNumber && <li><strong>Booking Number:</strong> {savedDetails.bookingNumber}</li>}
+    {savedDetails.flightNumber && <li><strong>Flight Number:</strong> {savedDetails.flightNumber}</li>}
+    {savedDetails.operator && <li><strong>Operator:</strong> {savedDetails.operator}</li>}
+    {savedDetails.seatNumber && <li><strong>Seat Number:</strong> {savedDetails.seatNumber}</li>}
+</ul>
 
-                    <div className="custom-inputs">
-                        <h2>Additional Information</h2>
-                        {customInputs.map((input) => (
-                            <div key={input.id} className="custom-input">
-                                <label>{input.label}:</label>
-                                <input
-                                    type="text"
-                                    placeholder={input.placeholder}
-                                    value={input.value || ''}
-                                    onChange={(e) => handleCustomInputChange(input.id, e.target.value)}
-                                />
-                                <button
-                                    onClick={() =>
-                                        setCustomInputs((prevInputs) =>
-                                            prevInputs.filter((item) => item.id !== input.id)
-                                        )
-                                    }
-                                    className="delete-button"
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        ))}
-                        <button
-                            onClick={() =>
-                                setCustomInputs([...customInputs, { id: Date.now(), label: 'Custom Field', placeholder: 'Enter value...' }])
-                            }
-                            className="add-button"
-                        >
-                            Add Custom Field
-                        </button>
-                    </div>
 
+    
                     <button onClick={handleSaveDetails} className="add-button">
                         Save Flight Details
                     </button>
                 </>
             ) : (
                 <div className="saved-details">
-    <h2>Saved Flight Details</h2>
-    <p><strong>Departure Time:</strong> {savedDetails.departureTime}</p>
-    <p><strong>Arrival Time:</strong> {savedDetails.arrivalTime}</p>
-    <p><strong>Notes:</strong> {savedDetails.notes}</p>
-
-    <h3>Additional Information:</h3>
-    {Array.isArray(savedDetails.customInputs) && savedDetails.customInputs.length > 0 ? (
-        <ul>
-            {savedDetails.customInputs.map((input, index) => (
-                <li key={index}>
-                    <strong>{input.label}:</strong> {input.value}
-                </li>
-            ))}
-        </ul>
-    ) : (
-        <p>No additional details available</p>
-    )}
-
-    <div className="action-buttons">
-        <button onClick={handleEditDetails} className="edit-button">Edit</button>
-        <button onClick={handleDeleteDetails} className="delete-button">Delete</button>
-        <button onClick={handleReadyToGo} className="ready-button">Ready to go!</button>
-    </div>
-</div>
+                <h2>Saved Flight Details</h2>
+                <p><strong>Departure Time:</strong> {savedDetails?.departureTime || 'N/A'}</p>
+                <p><strong>Arrival Time:</strong> {savedDetails?.arrivalTime || 'N/A'}</p>
+                <p><strong>Notes:</strong> {savedDetails?.notes || 'N/A'}</p>
+            
+                <h3>Additional Information:</h3>
+                <p><strong>Link:</strong> {savedDetails?.link || 'N/A'}</p>
+                <p><strong>Departure Airport:</strong> {savedDetails?.departureAirport || 'N/A'}</p>
+                <p><strong>Arrival Airport:</strong> {savedDetails?.arrivalAirport || 'N/A'}</p>
+                <p><strong>Booking Number:</strong> {savedDetails?.bookingNumber || 'N/A'}</p>
+                <p><strong>Flight Number:</strong> {savedDetails?.flightNumber || 'N/A'}</p>
+                <p><strong>Operator:</strong> {savedDetails?.operator || 'N/A'}</p>
+                <p><strong>Seat Number:</strong> {savedDetails?.seatNumber || 'N/A'}</p>
+            
+                <div className="action-buttons">
+                    <button onClick={handleEditDetails} className="edit-button">Edit</button>
+                    <button onClick={handleDeleteDetails} className="delete-button">Delete</button>
+                    <button onClick={handleReadyToGo} className="ready-button">Ready to go!</button>
+                </div>
+            </div>
+            
 
             )}
         </div>
     );
-};
+    }
+    
 
 export default Flights;
