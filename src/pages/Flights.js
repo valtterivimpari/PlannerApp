@@ -35,15 +35,19 @@ const Flights = () => {
             prevInputs.map((input) => (input.id === id ? { ...input, value } : input))
         );
     };
-
     useEffect(() => {
         if (!token) {
             console.error("User is not authenticated. Cannot fetch flights.");
             return;
         }
-        
-        fetchFlightDetails(token);
-    }, [token, fetchFlightDetails]);
+    
+        if (!savedDetails) { 
+            fetchFlightDetails(token, origin, destination, date);
+        }
+    }, [token, savedDetails, origin, destination, date]); // ✅ Added `origin`, `destination`, and `date`
+    
+    
+    
     
     useEffect(() => {
         if (flightDetails && Object.keys(flightDetails).length > 0) {
@@ -63,28 +67,31 @@ const Flights = () => {
         }
     
         try {
-            console.log("Saving flight details:", {
-
+            console.log("Saving flight details:", { origin, destination, date, departureTime, arrivalTime, notes, customInputs });
+    
+            const response = await axios.post('http://localhost:5000/api/flights', {
                 origin, destination, date, departureTime, arrivalTime, notes, customInputs
+            }, {
+                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
             });
     
-            const response = await axios.post('http://localhost:5000/api/flights', { origin, destination, date, departureTime, arrivalTime, notes, customInputs }, {
-                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-
-            });
-
             console.log("Server response:", response.data);
             console.log("Token being used:", token);
+    
             setFlightDetails(response.data);
             setSavedDetails(response.data);
     
-            // Fetch updated flight details from backend
-            fetchFlightDetails(token);
+            // ✅ Delay fetching the new flight to prevent immediate UI overwrite
+            setTimeout(() => {
+                fetchFlightDetails(token, origin, destination, date);
+            }, 2000);
     
         } catch (error) {
             console.error('Error saving flight details:', error.response ? error.response.data : error);
         }
     };
+    
+    
     
     
     

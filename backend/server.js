@@ -443,8 +443,9 @@ app.post('/api/flights', authenticateToken, async (req, res) => {
             departureTime, 
             arrivalTime, 
             notes, 
-            JSON.stringify(customInputs || [])  // ✅ Ensure it's always an array
+            customInputs && Array.isArray(customInputs) ? JSON.stringify(customInputs) : '[]'
         ];
+        
 
         const result = await pool.query(query, values);
         console.log("Flight saved to DB:", result.rows[0]);
@@ -463,14 +464,20 @@ app.get('/api/flights/:origin/:destination/:date', authenticateToken, async (req
     const userId = req.user.id;
 
     try {
-        const query = `SELECT * FROM flights WHERE user_id = $1 AND origin = $2 AND destination = $3 AND date = $4`;
+        const query = `SELECT * FROM flights WHERE user_id = $1 AND origin = $2 AND destination = $3 AND date = $4 LIMIT 1`;
         const result = await pool.query(query, [userId, origin, destination, date]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'No flight details found' });
         }
 
-        res.json(result.rows[0]);
+        let flight = result.rows[0];
+        flight.custom_inputs = flight.custom_inputs && typeof flight.custom_inputs === 'string'
+            ? JSON.parse(flight.custom_inputs)
+            : [];
+
+        console.log("Fetched single flight:", flight);
+        res.json(flight);
     } catch (error) {
         console.error('Error fetching flight:', error);
         res.status(500).send('Server error');
@@ -537,10 +544,15 @@ app.get('/api/flights', authenticateToken, async (req, res) => {
         // ✅ Ensure `custom_inputs` is always an array before returning it
         const flights = result.rows.map(flight => ({
             ...flight,
-            custom_inputs: flight.custom_inputs ? JSON.parse(flight.custom_inputs) : [] // ✅ Ensure it's an array
+            custom_inputs: flight.custom_inputs && typeof flight.custom_inputs === 'string'
+                ? JSON.parse(flight.custom_inputs) 
+                : [] // ✅ Ensure it's an array
         }));
+        
 
         console.log("Fetched flights:", flights);
+        console.log("Raw DB result:", result.rows);
+
         res.json(flights);
     } catch (error) {
         console.error('Error fetching flights:', error);

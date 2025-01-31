@@ -8,29 +8,29 @@ export const useFlightContext = () => useContext(FlightContext);
 export const FlightProvider = ({ children }) => {
     const [flightDetails, setFlightDetails] = useState({});
 
-    const fetchFlightDetails = async (token) => {
-        if (!token) {
-            console.error('No token found. User is not authenticated.');
+    const fetchFlightDetails = async (token, origin, destination, date) => {
+        if (!token || !origin || !destination || !date) {
+            console.error('Missing token or flight details. Cannot fetch.');
             return;
         }
     
         try {
-            const response = await axios.get('http://localhost:5000/api/flights', {
+            const response = await axios.get(`http://localhost:5000/api/flights/${origin}/${destination}/${date}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
     
-            console.log("Fetched flights:", response.data);
+            console.log("Fetched flight details:", response.data);
     
-            // ✅ Ensure customInputs is always an array
-            if (response.data.length > 0) {
-                const latestFlight = response.data[0];
-                latestFlight.custom_inputs = latestFlight.custom_inputs || []; // ✅ Default to an empty array
-                setFlightDetails(latestFlight);
+            if (response.data) {
+                setFlightDetails(response.data);
             }
         } catch (error) {
             console.error('Error fetching flight details:', error.response ? error.response.data : error);
         }
     };
+    
+    
+    
     
     
     
