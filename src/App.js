@@ -8,15 +8,16 @@ import Header from './components/Header';
 import OtherProfile from './pages/OtherProfile';
 import CreateTripPage from './pages/CreateTripPage';
 import Trips from './pages/Trips';
-import TripInfo from './pages/TripInfo'; // Ensure TripInfo is correctly imported
+import TripInfo from './pages/TripInfo';
 import Destination from './pages/Destination';
-import MapPage from './pages/MapPage'; // Import the new MapPage component
+import MapPage from './pages/MapPage';
 import Transport from './pages/Transport';
-import { FlightProvider } from './pages/FlightContext';
+import FlightDetails from './pages/FlightDetails'; // Import new components
+import FlightEdit from './pages/FlightEdit';
+import FlightSummary from './pages/FlightSummary';
 
 function App() {
     return (
-        <FlightProvider> {/* Wrap the application */}
         <Router>
             <Header />
             <Routes>
@@ -29,16 +30,15 @@ function App() {
                 <Route path="/trips" element={<RequireAuth><Trips /></RequireAuth>} />
                 <Route path="/trip-info/:id" element={<RequireAuth><TripInfo /></RequireAuth>} />
                 <Route path="/destination/:id" element={<RequireAuth><Destination /></RequireAuth>} />
-                <Route path="/trips/:id" element={<TripInfo />} />
                 <Route path="/map-view/:destination" element={<MapPage />} />
                 <Route path="/transport/:origin/:destination/:date" element={<Transport />} />
-
+                <Route path="/flight-details" element={<FlightDetails />} />
+                <Route path="/flight-edit" element={<FlightEdit />} />
+                <Route path="/flight-summary" element={<FlightSummary />} />
             </Routes>
         </Router>
-        </FlightProvider>
     );
 }
-
 // Component to redirect logged-in users away from login and register pages
 function RedirectIfLoggedIn({ children }) {
     const navigate = useNavigate();

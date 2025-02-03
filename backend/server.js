@@ -418,6 +418,87 @@ app.get('/api/directions', async (req, res) => {
     
 });
 
+app.post('/api/flights', authenticateToken, async (req, res) => {
+    const {
+        origin = null, // Allow NULL value
+        destination = null, // Allow NULL value
+        date = null, // Allow NULL value
+        departureTime, 
+        arrivalTime, 
+        notes, 
+        departureAirport, 
+        arrivalAirport, 
+        flightNumber, 
+        link, 
+        operator, 
+        seatNumber, 
+        bookingNumber
+    } = req.body;
+
+    const userId = req.user.id;
+
+    console.log("Received flight data:", req.body);
+    console.log("User ID from token:", userId);
+
+    if (!userId) {
+        return res.status(401).send("Unauthorized: User ID missing in token.");
+    }
+
+    try {
+        const query = `
+            INSERT INTO flights (user_id, origin, destination, date, departure_time, arrival_time, notes, departure_airport, arrival_airport, flight_number, link, operator, seat_number, booking_number)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *;
+        `;
+
+        const values = [userId, origin, destination, date, departureTime, arrivalTime, notes, departureAirport, arrivalAirport, flightNumber, link, operator, seatNumber, bookingNumber];
+
+        console.log("Executing query with values:", values);
+
+        const result = await pool.query(query, values);
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error inserting flight:", error);
+        res.status(500).send("Server error: " + error.message);
+    }
+});
+
+
+
+
+app.get('/api/flights', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const query = `SELECT * FROM flights WHERE user_id = $1`;
+        const result = await pool.query(query, [userId]);
+        res.status(200).json(result.rows);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+app.put('/api/flights/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const updatedFields = req.body;
+
+    try {
+        let query = `UPDATE flights SET `;
+        const values = [];
+        Object.entries(updatedFields).forEach(([key, value], index) => {
+            query += `${key} = $${index + 1}, `;
+            values.push(value);
+        });
+        query = query.slice(0, -2) + ` WHERE id = $${values.length + 1} RETURNING *`;
+        values.push(id);
+
+        const result = await pool.query(query, values);
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+
 
 
 
