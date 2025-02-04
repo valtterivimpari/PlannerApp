@@ -51,18 +51,23 @@ const FlightEdit = () => {
     }
 
     // Exclude unwanted fields
-    const excludeFields = ["id", "user_id", "origin", "destination", "date", "custom_inputs", "departureAirport", "arrivalAirport", "bookingNumber"];
+    const excludeFields = ["id", "user_id", "origin", "destination", "date", "custom_inputs", "departure_time", "arrival_time"];
+
 
     // Label mapping to match FlightDetails.js
     const labelMap = {
         "departureTime": "Departure Time",
         "arrivalTime": "Arrival Time",
         "notes": "Notes",
-        "flightNumber": "Flight Number",
+        "departure_airport": "Departure Airport",
+        "arrival_airport": "Arrival Airport",
+        "flight_number": "Flight Number",
         "link": "Link",
         "operator": "Operator",
-        "seatNumber": "Seat Number"
+        "seat_number": "Seat Number",
+        "booking_number": "Booking Number"
     };
+    
 
     return (
         <div className="flight-details-container">
@@ -79,13 +84,15 @@ const FlightEdit = () => {
             </div>
 
             {Object.entries(flightDetails)
-                .filter(([key]) => !excludeFields.includes(key))
-                .map(([key, value]) => (
-                    <div key={key} className="input-group">
-                        <label>{labelMap[key] || key.replace(/([A-Z])/g, ' $1')}</label>
-                        <input type="text" name={key} value={value} onChange={handleChange} />
-                    </div>
-                ))}
+    .filter(([key]) => !excludeFields.includes(key))
+    .map(([key, value]) => (
+        <div key={key} className="input-group">
+            <label>{labelMap[key] || key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1')}</label>
+
+            <input type="text" name={key} value={value} onChange={handleChange} />
+        </div>
+    ))}
+
 
             <button className="save-button" onClick={handleSave}>Save Changes</button>
         </div>
