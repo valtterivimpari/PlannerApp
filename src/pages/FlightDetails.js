@@ -23,32 +23,39 @@ const FlightDetails = () => {
 
     const handleSave = async () => {
         const token = localStorage.getItem('token');
-
+    
         if (!token) {
             alert("You must be logged in to save flight details.");
             return;
         }
-
-        console.log("Sending flight details:", flightDetails);
-
+    
+        const flightData = {
+            ...flightDetails,
+            origin: flightDetails.departureAirport,  // Set city names correctly
+            destination: flightDetails.arrivalAirport
+        };
+    
+        console.log("Sending flight details:", flightData);
+    
         const response = await fetch('http://localhost:5000/api/flights', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify(flightDetails) // No "origin" or "destination"
+            body: JSON.stringify(flightData)
         });
-
+    
         const responseText = await response.text();
         console.log("Server response:", responseText);
-
+    
         if (response.ok) {
             navigate('/flight-summary');
         } else {
             alert('Failed to save flight details: ' + responseText);
         }
     };
+    
 
     return (
         <div className="flight-details-container">

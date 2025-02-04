@@ -498,6 +498,37 @@ app.put('/api/flights/:id', authenticateToken, async (req, res) => {
     }
 });
 
+app.delete('/api/flights/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    console.log(`DELETE request for flight ID: ${id}, User ID: ${userId}`);
+
+    if (!id) {
+        console.error("Missing flight ID in request.");
+        return res.status(400).json({ error: "Flight ID is required." });
+    }
+
+    try {
+        const query = `DELETE FROM flights WHERE id = $1 AND user_id = $2 RETURNING *`;
+        const result = await pool.query(query, [id, userId]);
+
+        if (result.rowCount === 0) {
+            console.error("Flight not found or already deleted.");
+            return res.status(404).json({ error: "Flight not found or already deleted." });
+        }
+
+        console.log("Flight deleted successfully:", result.rows[0]);
+        res.status(200).json({ message: "Flight deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting flight:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
+
+
 
 
 

@@ -26,14 +26,53 @@ const FlightSummary = () => {
         fetchFlightDetails();
     }, []);
 
+    const handleReadyToGo = () => {
+        if (!flightDetails) {
+            alert('Flight details are missing.');
+            return;
+        }
+    
+        const origin = flightDetails.origin || flightDetails.departureAirport;
+        const destination = flightDetails.destination || flightDetails.arrivalAirport;
+        const date = flightDetails.date || new Date().toISOString(); 
+    
+        if (!origin || !destination || !date) {
+            alert('Missing flight details for navigation.');
+            console.error('Missing details:', { origin, destination, date });
+            return;
+        }
+    
+        const transportUrl = `/transport/${encodeURIComponent(origin)}/${encodeURIComponent(destination)}/${encodeURIComponent(date)}`;
+    
+        navigate(transportUrl, { state: { flightDetails } });
+    };
+    
+    
+    
+
+    const handleDeleteFlight = async () => {
+        const token = localStorage.getItem('token');
+        if (!flightDetails) return;
+
+        const response = await fetch(`http://localhost:5000/api/flights/${flightDetails.id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            setFlightDetails(null);
+            alert('Flight deleted successfully');
+        } else {
+            alert('Failed to delete flight');
+        }
+    };
+
     if (!flightDetails) {
         return <p>Loading flight details...</p>;
     }
 
-    // Fields to exclude from display
-    const excludeFields = ["id", "user_id", "origin", "destination", "date", "custom_inputs"];
+    const excludeFields = ["id", "user_id", "origin", "destination", "custom_inputs", "date"];
 
-    // Map for renaming fields properly
     const labelMap = {
         "departure_time": "Departure Time",
         "arrival_time": "Arrival Time",
@@ -56,10 +95,13 @@ const FlightSummary = () => {
                     <p key={key}><strong>{labelMap[key] || key}:</strong> {value}</p>
                 ))}
             <button onClick={() => navigate('/flight-edit')} className="edit-button">Edit</button>
+            <button onClick={handleReadyToGo} className="ready-button">Ready to Go!</button>
+            <button onClick={handleDeleteFlight} className="delete-button">Delete Flight</button>
         </div>
     );
 };
 
 export default FlightSummary;
+
 
 
