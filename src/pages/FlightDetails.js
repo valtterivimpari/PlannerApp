@@ -26,20 +26,17 @@ const FlightDetails = () => {
     
         if (!token) {
             alert("You must be logged in to save flight details.");
-            console.log("Saving flight details:", flightDetails);
-
             return;
         }
     
         const flightData = {
             ...flightDetails,
             origin: localStorage.getItem("originalOrigin") || flightDetails.departureAirport || "Unknown",
-            destination: localStorage.getItem("originalDestination") || flightDetails.arrivalAirport || "Unknown"
+            destination: localStorage.getItem("originalDestination") || flightDetails.arrivalAirport || "Unknown",
+            date: localStorage.getItem("originalDate") || new Date().toISOString() // Preserve original date
         };
         
-        
-        
-        
+    
         console.log("Sending flight details:", flightData);
     
         const response = await fetch('http://localhost:5000/api/flights', {
@@ -60,6 +57,7 @@ const FlightDetails = () => {
             alert('Failed to save flight details: ' + responseText);
         }
     };
+    
     
 
     return (

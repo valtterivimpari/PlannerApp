@@ -44,7 +44,10 @@ const destination = flightDetails.destination && flightDetails.destination !== "
 
 
         
-        const date = flightDetails.date || new Date().toISOString();
+    const date = flightDetails.date && flightDetails.date !== "Unknown"
+    ? flightDetails.date
+    : localStorage.getItem("originalDate") || new Date().toISOString();
+
     
         console.log("Navigating with:", { origin, destination, date, flightDetails });
     

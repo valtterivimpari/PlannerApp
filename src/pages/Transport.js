@@ -5,7 +5,7 @@ import skyscannerIcon from '../assets/skyscanner-icon.png';
 import planeIcon from '../assets/icon-symbol-plane_419328-2705.avif';
 
 const Transport = () => {
-    const { origin: paramOrigin, destination: paramDestination } = useParams();
+    const { origin: paramOrigin, destination: paramDestination, date: paramDate } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -26,7 +26,11 @@ const Transport = () => {
         date = new Date().toISOString(),
     } = location.state || {};
 
-    const travelDate = date ? new Date(date).toLocaleDateString('fi-FI') : 'Unknown Date';
+    const originalDate = localStorage.getItem("originalDate") || paramDate || new Date().toISOString();
+    const travelDate = new Date(originalDate).toLocaleDateString('fi-FI');
+    
+
+
 
     useEffect(() => {
         console.log("Transport Page Params:", { origin, destination });
@@ -159,17 +163,21 @@ const Transport = () => {
                     </div>
 
                     {date && (
-                      <Link 
-                      to="/flight-details" 
-                      className="add-flight-link"
-                      onClick={() => {
-                          localStorage.setItem("originalOrigin", paramOrigin);
-                          localStorage.setItem("originalDestination", paramDestination);
-                      }}
-                  >
-                      <img src={planeIcon} alt="Add your flight" className="add-flight-icon" />
-                      Add your flight
-                  </Link>
+                    <Link 
+                    to="/flight-details" 
+                    className="add-flight-link"
+                    onClick={() => {
+                        localStorage.setItem("originalOrigin", paramOrigin);
+                        localStorage.setItem("originalDestination", paramDestination);
+                        localStorage.setItem("originalDate", paramDate || new Date().toISOString());
+                    }}
+                    
+                >
+                
+                     <img src={planeIcon} alt="Add your flight" className="add-flight-icon" />
+                     Add your flight
+                 </Link>
+                 
                   
                    
                     
