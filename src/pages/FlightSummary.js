@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './FlightSummary.css';
 
 const FlightSummary = () => {
     const navigate = useNavigate();
     const [flightDetails, setFlightDetails] = useState(null);
+    const { origin, destination } = useParams();
 
     useEffect(() => {
         const fetchFlightDetails = async () => {
@@ -27,26 +28,14 @@ const FlightSummary = () => {
     }, []);
 
     const handleReadyToGo = () => {
-        if (!flightDetails) {
-            alert('Flight details are missing.');
-            return;
-        }
-    
-        const origin = flightDetails.origin || flightDetails.departureAirport;
-        const destination = flightDetails.destination || flightDetails.arrivalAirport;
-        const date = flightDetails.date || new Date().toISOString(); 
-    
-        if (!origin || !destination || !date) {
-            alert('Missing flight details for navigation.');
-            console.error('Missing details:', { origin, destination, date });
-            return;
-        }
-    
-        const transportUrl = `/transport/${encodeURIComponent(origin)}/${encodeURIComponent(destination)}/${encodeURIComponent(date)}`;
+        const finalOrigin = origin || flightDetails?.savedOrigin || flightDetails?.departureAirport || "Unknown";
+        const finalDestination = destination || flightDetails?.savedDestination || flightDetails?.arrivalAirport || "Unknown";
+        const date = flightDetails?.date || new Date().toISOString();
+        
+        const transportUrl = `/transport/${encodeURIComponent(finalOrigin)}/${encodeURIComponent(finalDestination)}/${encodeURIComponent(date)}`;
     
         navigate(transportUrl, { state: { flightDetails } });
     };
-    
     
     
 
@@ -71,7 +60,8 @@ const FlightSummary = () => {
         return <p>Loading flight details...</p>;
     }
 
-    const excludeFields = ["id", "user_id", "origin", "destination", "custom_inputs", "date"];
+    const excludeFields = ["id", "user_id", "custom_inputs", "date","origin", "destination"];
+
 
     const labelMap = {
         "departure_time": "Departure Time",

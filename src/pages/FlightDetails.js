@@ -29,13 +29,13 @@ const FlightDetails = () => {
             return;
         }
     
-        const flightData = {
+        const updatedFlightData = {
             ...flightDetails,
-            origin: flightDetails.departureAirport,  // Set city names correctly
-            destination: flightDetails.arrivalAirport
+            savedOrigin: flightDetails.departureAirport,  // Set city names correctly
+            savedDestination: flightDetails.arrivalAirport
         };
     
-        console.log("Sending flight details:", flightData);
+        console.log("Sending flight details:", updatedFlightData);
     
         const response = await fetch('http://localhost:5000/api/flights', {
             method: 'POST',
@@ -43,7 +43,7 @@ const FlightDetails = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify(flightData)
+            body: JSON.stringify(updatedFlightData)
         });
     
         const responseText = await response.text();
@@ -86,4 +86,3 @@ const FlightDetails = () => {
 };
 
 export default FlightDetails;
-
