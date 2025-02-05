@@ -33,10 +33,13 @@ const FlightDetails = () => {
     
         const flightData = {
             ...flightDetails,
-            origin: flightDetails.departureAirport,  // Set city names correctly
-            destination: flightDetails.arrivalAirport
+            origin: localStorage.getItem("originalOrigin") || flightDetails.departureAirport || "Unknown",
+            destination: localStorage.getItem("originalDestination") || flightDetails.arrivalAirport || "Unknown"
         };
-    
+        
+        
+        
+        
         console.log("Sending flight details:", flightData);
     
         const response = await fetch('http://localhost:5000/api/flights', {

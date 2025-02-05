@@ -34,8 +34,16 @@ const FlightSummary = () => {
         }
     
         // Ensure correct mappings
-        const origin = flightDetails.origin || flightDetails.departureAirport || 'Unknown';
-        const destination = flightDetails.destination || flightDetails.arrivalAirport || 'Unknown';
+        const origin = flightDetails.origin && flightDetails.origin !== "Unknown" 
+    ? flightDetails.origin 
+    : localStorage.getItem("originalOrigin") || flightDetails.departureAirport || "Unknown";
+
+const destination = flightDetails.destination && flightDetails.destination !== "Unknown"
+    ? flightDetails.destination
+    : localStorage.getItem("originalDestination") || flightDetails.arrivalAirport || "Unknown";
+
+
+        
         const date = flightDetails.date || new Date().toISOString();
     
         console.log("Navigating with:", { origin, destination, date, flightDetails });

@@ -12,11 +12,10 @@ const Transport = () => {
     const [flightDetails, setFlightDetails] = useState(location.state?.flightDetails || {});
 
 
-    const origin = flightDetails?.origin || flightDetails?.departureAirport || paramOrigin || "Unknown";
-    const destination = flightDetails?.destination || flightDetails?.arrivalAirport || paramDestination || "Unknown";
+    const origin = localStorage.getItem("originalOrigin") || paramOrigin; 
+    const destination = localStorage.getItem("originalDestination") || paramDestination; 
     
-
-
+    
     
 
     const [activeSection, setActiveSection] = useState(null); 
@@ -58,15 +57,11 @@ const Transport = () => {
     
     const handleDeleteFlight = async () => {
         if (!flightDetails || !flightDetails.id) {
-            console.error("Flight ID is missing or undefined:", flightDetails);
             alert("Error: Flight ID is missing. Unable to delete.");
             return;
         }
     
         const token = localStorage.getItem('token');
-    
-        console.log("Attempting to delete flight with ID:", flightDetails.id);
-    
         const response = await fetch(`http://localhost:5000/api/flights/${flightDetails.id}`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` }
@@ -74,11 +69,15 @@ const Transport = () => {
     
         if (response.ok) {
             setFlightDetails({});
-
+            
+            // Ensure correct redirection using parameters from useParams()
+            navigate(`/transport/${paramOrigin}/${paramDestination}/${date}`, { replace: true });
+            window.location.reload();
         } else {
             const errorText = await response.text();
-            console.error("Failed to delete flight:", errorText);
             alert(`Failed to delete flight: ${errorText}`);
+        
+    
     
             // Attempt to fetch latest flight details if deletion fails
             const latestFlightResponse = await fetch('http://localhost:5000/api/flights', {
@@ -160,10 +159,19 @@ const Transport = () => {
                     </div>
 
                     {date && (
-                        <Link to="/flight-details" className="add-flight-link">
-                        <img src={planeIcon} alt="Add your flight" className="add-flight-icon" />
-                        Add your flight
-                    </Link>
+                      <Link 
+                      to="/flight-details" 
+                      className="add-flight-link"
+                      onClick={() => {
+                          localStorage.setItem("originalOrigin", paramOrigin);
+                          localStorage.setItem("originalDestination", paramDestination);
+                      }}
+                  >
+                      <img src={planeIcon} alt="Add your flight" className="add-flight-icon" />
+                      Add your flight
+                  </Link>
+                  
+                   
                     
                     )}
                 </div>
