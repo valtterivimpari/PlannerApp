@@ -11,8 +11,11 @@ const Transport = () => {
 
     const [flightDetails, setFlightDetails] = useState(location.state?.flightDetails || {});
 
-    const origin = flightDetails.origin || flightDetails.departureAirport || paramOrigin || "Unknown";
-const destination = flightDetails.destination || flightDetails.arrivalAirport || paramDestination || "Unknown";
+
+    const origin = flightDetails?.origin || flightDetails?.departureAirport || paramOrigin || "Unknown";
+    const destination = flightDetails?.destination || flightDetails?.arrivalAirport || paramDestination || "Unknown";
+    
+
 
     
 
@@ -70,7 +73,8 @@ const destination = flightDetails.destination || flightDetails.arrivalAirport ||
         });
     
         if (response.ok) {
-            setFlightDetails(null);
+            setFlightDetails({});
+
         } else {
             const errorText = await response.text();
             console.error("Failed to delete flight:", errorText);

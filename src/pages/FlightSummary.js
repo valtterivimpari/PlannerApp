@@ -100,7 +100,6 @@ const FlightSummary = () => {
                 ))}
             <button onClick={() => navigate('/flight-edit')} className="edit-button">Edit</button>
             <button onClick={handleReadyToGo} className="ready-button">Ready to Go!</button>
-            <button onClick={handleDeleteFlight} className="delete-button">Delete Flight</button>
         </div>
     );
 };
