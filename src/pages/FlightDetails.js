@@ -61,7 +61,6 @@ const FlightDetails = () => {
 
     return (
         <div className="flight-details-container">
-            <h2>Enter Flight Details</h2>
             
             <div className="input-group">
                 <label>Departure Time</label>
