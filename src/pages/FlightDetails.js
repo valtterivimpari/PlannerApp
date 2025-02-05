@@ -26,16 +26,18 @@ const FlightDetails = () => {
     
         if (!token) {
             alert("You must be logged in to save flight details.");
+            console.log("Saving flight details:", flightDetails);
+
             return;
         }
     
-        const updatedFlightData = {
+        const flightData = {
             ...flightDetails,
-            savedOrigin: flightDetails.departureAirport,  // Set city names correctly
-            savedDestination: flightDetails.arrivalAirport
+            origin: flightDetails.departureAirport,  // Set city names correctly
+            destination: flightDetails.arrivalAirport
         };
     
-        console.log("Sending flight details:", updatedFlightData);
+        console.log("Sending flight details:", flightData);
     
         const response = await fetch('http://localhost:5000/api/flights', {
             method: 'POST',
@@ -43,7 +45,7 @@ const FlightDetails = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify(updatedFlightData)
+            body: JSON.stringify(flightData)
         });
     
         const responseText = await response.text();

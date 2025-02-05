@@ -28,14 +28,28 @@ const FlightSummary = () => {
     }, []);
 
     const handleReadyToGo = () => {
-        const finalOrigin = origin || flightDetails?.savedOrigin || flightDetails?.departureAirport || "Unknown";
-        const finalDestination = destination || flightDetails?.savedDestination || flightDetails?.arrivalAirport || "Unknown";
-        const date = flightDetails?.date || new Date().toISOString();
-        
-        const transportUrl = `/transport/${encodeURIComponent(finalOrigin)}/${encodeURIComponent(finalDestination)}/${encodeURIComponent(date)}`;
+        if (!flightDetails) {
+            alert('Flight details are missing.');
+            return;
+        }
     
+        // Ensure correct mappings
+        const origin = flightDetails.origin || flightDetails.departureAirport || 'Unknown';
+        const destination = flightDetails.destination || flightDetails.arrivalAirport || 'Unknown';
+        const date = flightDetails.date || new Date().toISOString();
+    
+        console.log("Navigating with:", { origin, destination, date, flightDetails });
+    
+        if (origin === 'Unknown' || destination === 'Unknown') {
+            alert('Missing valid flight details for navigation.');
+            return;
+        }
+    
+        const transportUrl = `/transport/${encodeURIComponent(origin)}/${encodeURIComponent(destination)}/${encodeURIComponent(date)}`;
+        
         navigate(transportUrl, { state: { flightDetails } });
     };
+    
     
     
 

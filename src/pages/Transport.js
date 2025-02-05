@@ -5,11 +5,14 @@ import skyscannerIcon from '../assets/skyscanner-icon.png';
 import planeIcon from '../assets/icon-symbol-plane_419328-2705.avif';
 
 const Transport = () => {
-    const { origin, destination } = useParams();
+    const { origin: paramOrigin, destination: paramDestination } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
 
     const [flightDetails, setFlightDetails] = useState(location.state?.flightDetails || {});
+
+    const origin = flightDetails.origin || flightDetails.departureAirport || paramOrigin || "Unknown";
+const destination = flightDetails.destination || flightDetails.arrivalAirport || paramDestination || "Unknown";
 
     
 
@@ -24,6 +27,9 @@ const Transport = () => {
     const travelDate = date ? new Date(date).toLocaleDateString('fi-FI') : 'Unknown Date';
 
     useEffect(() => {
+        console.log("Transport Page Params:", { origin, destination });
+    console.log("Transport Page State:", location.state);
+    console.log("Final Origin & Destination:", { origin, destination });
         if (!flightDetails) {
             const fetchFlightDetails = async () => {
                 const token = localStorage.getItem('token');
@@ -80,6 +86,8 @@ const Transport = () => {
                 if (Array.isArray(data) && data.length > 0) {
                     setFlightDetails(data[data.length - 1]); // Load latest flight if deletion fails
                     console.log("Updated flight details after failed delete attempt:", data[data.length - 1]);
+                    console.log("Transport Page Params:", { origin, destination, date });
+
                 }
             }
         }
