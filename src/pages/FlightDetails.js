@@ -76,7 +76,7 @@ const FlightDetails = () => {
             {Object.entries(flightDetails).map(([field, value]) => 
                 field !== "departureTime" && field !== "arrivalTime" ? (
                     <div key={field} className="input-group">
-                        <label>{field.replace(/([A-Z])/g, ' $1')}</label>
+                        <label>{field.replace(/([A-Z])/g, ' $1').trim().replace(/^\w/, c => c.toUpperCase())}</label>
                         <input type="text" name={field} value={value} onChange={handleChange} />
                     </div>
                 ) : null
