@@ -34,7 +34,7 @@ function TripInfo() {
                 });
                 const updatedDestinations = response.data.destinations.map(destination => ({
                     ...destination,
-                    nights: destination.nights || 1, // Default to 1 if null or undefined
+                    nights: destination.nights ?? 1,
                 }));
                 setTrip({ ...response.data, destinations: updatedDestinations });
                 setDestinations(updatedDestinations);
@@ -173,7 +173,7 @@ console.log('Formatted Date Range:', formatDateRange(calculateStartDate(trip.sta
     const handleIncrement = (index) => {
         console.log('Incrementing nights for destination at index:', index);
         const updatedDestinations = [...destinations];
-        updatedDestinations[index].nights = (updatedDestinations[index].nights || 1) + 1;
+        updatedDestinations[index].nights = (updatedDestinations[index].nights || 0) + 1;
         setDestinations(updatedDestinations);
         saveUpdatedDestinations(updatedDestinations);
     };
@@ -181,7 +181,7 @@ console.log('Formatted Date Range:', formatDateRange(calculateStartDate(trip.sta
     const handleDecrement = (index) => {
         console.log('Decrementing nights for destination at index:', index);
         const updatedDestinations = [...destinations];
-        if ((updatedDestinations[index].nights || 1) > 1) {
+        if ((updatedDestinations[index].nights || 0) > 0) {
             updatedDestinations[index].nights -= 1;
             setDestinations(updatedDestinations);
             saveUpdatedDestinations(updatedDestinations);
@@ -325,97 +325,67 @@ return (
                     </div>
                 </div>
                 <div className="trip-destinations">
-    <h2>Destinations</h2>
-    {destinations.map((destination, index) => (
-        <div className="destination-item" key={index}>
-            <div>
-                <h4>{`${index + 1}. ${destination.name}`}</h4>
-                {index > 0 && distances[index - 1] && (
-  <div
-  className="distance-display"
-  onClick={() => {
-    console.log("Navigating to transport with:", {
-        url: `/transport/${destinations[index - 1].name}/${destination.name}/${trip.start_date}`,
-        state: {
-            distance: distances[index - 1].toFixed(1),
-            duration: '1h 18m',
-            date: trip.start_date,
-        },
-    });
-    const travelDate = calculateStartDate(trip.start_date, index).toISOString();
-    navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${travelDate}`, {
-        state: {
-            distance: distances[index - 1]?.toFixed(1),
-            duration: drivingTimes[index - 1], // Use dynamic driving time
-            date: calculateStartDate(trip.start_date, index).toISOString(),
-            index, // Pass the index to the transport page
-        },
-    });
-    
-    
-}}
-
-    
-    
->
-  <span>{distances[index - 1].toFixed(1)} km</span>
-</div>
-
-
-)}
-
-
-
-
-
-<p>
-    {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
-        ? formatDateRange(
-              calculateStartDate(trip.start_date, index),
-              destination.nights
-          )
-        : 'Invalid Date'}
-</p>
-
-            </div>
-            <div className="nights-counter">
-                <strong>Nights:</strong>
-                <button onClick={() => handleDecrement(index)}>-</button>
-                <span>{destination.nights || 1}</span>
-                <button onClick={() => handleIncrement(index)}>+</button>
-            </div>
-            <div className="destination-buttons">
-                <button
-                    className="delete-button"
-                    onClick={() => handleRemoveDestination(index)}
-                >
-                    Delete
-                </button>
-                <button
-                    className="map-button"
-                    onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}
-                >
-                    Map View
-                </button>
+                <h2>Destinations</h2>
+                        {destinations.map((destination, index) => (
+                            <div className="destination-item" key={index}>
+                                <div>
+                                    <h4>{`${index + 1}. ${destination.name}`}</h4>
+                                    <p className={destination.nights === 0 ? 'stopover-text' : ''}>
+                                        {destination.nights === 0 ? 'Stopover' : `${destination.nights} nights`}
+                                    </p>
+                                </div>
+                                {index > 0 && distances[index - 1] && (
+                                    <div className="distance-display" onClick={() => {
+                                        console.log("Navigating to transport with:", {
+                                            url: `/transport/${destinations[index - 1].name}/${destination.name}/${trip.start_date}`,
+                                            state: {
+                                                distance: distances[index - 1].toFixed(1),
+                                                duration: drivingTimes[index - 1],
+                                                date: calculateStartDate(trip.start_date, index).toISOString(),
+                                            },
+                                        });
+                                        const travelDate = calculateStartDate(trip.start_date, index).toISOString();
+                                        navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${travelDate}`, {
+                                            state: {
+                                                distance: distances[index - 1]?.toFixed(1),
+                                                duration: drivingTimes[index - 1],
+                                                date: calculateStartDate(trip.start_date, index).toISOString(),
+                                                index,
+                                            },
+                                        });
+                                    }}>
+                                        <span>{distances[index - 1].toFixed(1)} km</span>
+                                    </div>
+                                )}
+                                <p>
+                                    {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
+                                        ? formatDateRange(
+                                              calculateStartDate(trip.start_date, index),
+                                              destination.nights
+                                          )
+                                        : 'Invalid Date'}
+                                </p>
+                                <div className="nights-counter">
+                                    <strong>Nights:</strong>
+                                    <button onClick={() => handleDecrement(index)}>-</button>
+                                    <span>{destination.nights === 0 ? 'Stopover' : destination.nights}</span>
+                                    <button onClick={() => handleIncrement(index)}>+</button>
+                                </div>
+                                <div className="destination-buttons">
+                                    <button className="delete-button" onClick={() => handleRemoveDestination(index)}>Delete</button>
+                                    <button className="map-button" onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}>Map View</button>
+                                </div>
+                            </div>
+                        ))}
+                        <div className="add-destination">
+                            <input type="text" value={newDestination} onChange={(e) => setNewDestination(e.target.value)} placeholder="Add new destination" />
+                            <button onClick={handleAddDestination}>Add</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    ))}
-    <div className="add-destination">
-        <input
-            type="text"
-            value={newDestination}
-            onChange={(e) => setNewDestination(e.target.value)}
-            placeholder="Add new destination"
-        />
-        <button onClick={handleAddDestination}>Add</button>
-    </div>
-</div>
-
-            </div>
-        </div>
-    </div>
-);
+    );
 }
-
 
 export default TripInfo;
