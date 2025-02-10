@@ -92,10 +92,12 @@ function TripInfo() {
         }
     
         const startDate = new Date(tripStartDate);
-        destinations.slice(0, destinationIndex).forEach((destination) => {
-            startDate.setDate(startDate.getDate() + (destination.nights || 1));
-        });
-        return startDate; // Returns the start date for the destination
+        for (let i = 0; i < destinationIndex; i++) {
+            if (destinations[i].nights > 0) {
+                startDate.setDate(startDate.getDate() + destinations[i].nights);
+            }
+        }
+        return startDate;
     };
     
     
@@ -111,16 +113,18 @@ function TripInfo() {
         }
     
         const start = new Date(startDate);
-        if (nights === 0) {
-            return start.toLocaleDateString('fi-FI', { day: 'numeric', month: 'short', weekday: 'short' });
-        }
-    
-        const end = new Date(start);
-        end.setDate(start.getDate() + nights);
-    
         const options = { day: 'numeric', month: 'short', weekday: 'short' };
-        return `${start.toLocaleDateString('fi-FI', options)} - ${end.toLocaleDateString('fi-FI', options)}`;
+    
+        if (nights === 0) {
+            return start.toLocaleDateString('fi-FI', options);
+        } else {
+            const end = new Date(start);
+            end.setDate(start.getDate() + nights);
+            return `${start.toLocaleDateString('fi-FI', options)} - ${end.toLocaleDateString('fi-FI', options)}`;
+        }
     };
+    
+    
     
     
     const handleAddDestination = async () => {
