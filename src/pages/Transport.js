@@ -12,8 +12,8 @@ const Transport = () => {
     const [flightDetails, setFlightDetails] = useState(location.state?.flightDetails || {});
 
 
-    const origin = localStorage.getItem("originalOrigin") || paramOrigin; 
-    const destination = localStorage.getItem("originalDestination") || paramDestination; 
+    const origin = paramOrigin; 
+    const destination = paramDestination; 
     
     
     
