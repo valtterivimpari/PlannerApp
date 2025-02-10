@@ -16,6 +16,7 @@ const FlightSummary = () => {
 
             if (response.ok) {
                 const data = await response.json();
+                console.log("Fetched flight details:", data);
                 if (Array.isArray(data) && data.length > 0) {
                     setFlightDetails(data[data.length - 1]); // Show latest flight
                 }

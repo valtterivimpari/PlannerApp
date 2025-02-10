@@ -35,9 +35,8 @@ const FlightDetails = () => {
             destination: localStorage.getItem("originalDestination") || flightDetails.arrivalAirport || "Unknown",
             date: localStorage.getItem("originalDate") || new Date().toISOString() // Preserve original date
         };
-        
     
-        console.log("Sending flight details:", flightData);
+        console.log("Sending flight data to server:", flightData);
     
         const response = await fetch('http://localhost:5000/api/flights', {
             method: 'POST',
@@ -48,8 +47,8 @@ const FlightDetails = () => {
             body: JSON.stringify(flightData)
         });
     
-        const responseText = await response.text();
-        console.log("Server response:", responseText);
+        const responseData = await response.json(); 
+        console.log("Response from server after saving flight:", responseData);
     
         if (response.ok) {
             navigate('/flight-summary');

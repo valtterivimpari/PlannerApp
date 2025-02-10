@@ -9,7 +9,7 @@ const Transport = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const [flightDetails, setFlightDetails] = useState(location.state?.flightDetails || {});
+    const [flightDetails, setFlightDetails] = useState(location.state?.flightDetails || null);
 
 
     const origin = paramOrigin; 
@@ -34,27 +34,25 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
 
 
     useEffect(() => {
-        console.log("Transport Page Params:", { origin, destination });
-    console.log("Transport Page State:", location.state);
-    console.log("Final Origin & Destination:", { origin, destination });
-        if (!flightDetails) {
+        console.log("Transport Page Params:", { origin: paramOrigin, destination: paramDestination });
+        console.log("Transport Page State:", location.state);
+        console.log("Final Origin & Destination:", { origin: paramOrigin, destination: paramDestination });
+        if (!flightDetails) { // Now this will be true if flightDetails is null
             const fetchFlightDetails = async () => {
                 const token = localStorage.getItem('token');
                 const response = await fetch('http://localhost:5000/api/flights', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-
                 if (response.ok) {
                     const data = await response.json();
                     if (Array.isArray(data) && data.length > 0) {
-                        setFlightDetails(data[data.length - 1]); // Load latest flight
+                        setFlightDetails(data[data.length - 1]); // load latest flight
                     }
                 }
             };
-
             fetchFlightDetails();
         }
-    }, [flightDetails]);
+    }, [flightDetails, paramOrigin, paramDestination]);
 
     const handleEditFlight = () => {
         navigate('/flight-edit', { state: { flightDetails } });

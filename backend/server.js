@@ -420,9 +420,9 @@ app.get('/api/directions', async (req, res) => {
 
 app.post('/api/flights', authenticateToken, async (req, res) => {
     const {
-        origin = null, // Allow NULL value
-        destination = null, // Allow NULL value
-        date = null, // Allow NULL value
+        origin = null, 
+        destination = null,
+        date = null, 
         departureTime, 
         arrivalTime, 
         notes, 
@@ -437,30 +437,31 @@ app.post('/api/flights', authenticateToken, async (req, res) => {
 
     const userId = req.user.id;
 
-    console.log("Received flight data:", req.body);
-    console.log("User ID from token:", userId);
++   console.log("Incoming flight data from client:", req.body); // Added log for incoming data
 
     if (!userId) {
         return res.status(401).send("Unauthorized: User ID missing in token.");
     }
 
     try {
++       console.log("Inserting flight details into database for user:", userId);
         const query = `
             INSERT INTO flights (user_id, origin, destination, date, departure_time, arrival_time, notes, departure_airport, arrival_airport, flight_number, link, operator, seat_number, booking_number)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *;
         `;
-
         const values = [userId, origin, destination, date, departureTime, arrivalTime, notes, departureAirport, arrivalAirport, flightNumber, link, operator, seatNumber, bookingNumber];
 
-        console.log("Executing query with values:", values);
-
++       console.log("Executing query with values:", values); // Log values before saving
         const result = await pool.query(query, values);
+
++       console.log("Flight saved to DB:", result.rows[0]); // Log saved data
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error("Error inserting flight:", error);
         res.status(500).send("Server error: " + error.message);
     }
 });
+
 
 
 

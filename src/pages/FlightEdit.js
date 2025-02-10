@@ -39,6 +39,9 @@ const FlightEdit = () => {
             body: JSON.stringify(flightDetails)
         });
 
+        const updatedFlight = await response.json(); 
+        console.log("Updated flight response:", updatedFlight);
+
         if (response.ok) {
             navigate('/flight-summary');
         } else {
