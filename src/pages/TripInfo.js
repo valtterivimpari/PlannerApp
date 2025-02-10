@@ -48,6 +48,7 @@ function TripInfo() {
         fetchTripDetails();
     }, [id]);
 
+
     useEffect(() => {
         const calculateDistances = async () => {
             const coords = [];
@@ -110,6 +111,10 @@ function TripInfo() {
         }
     
         const start = new Date(startDate);
+        if (nights === 0) {
+            return start.toLocaleDateString('fi-FI', { day: 'numeric', month: 'short', weekday: 'short' });
+        }
+    
         const end = new Date(start);
         end.setDate(start.getDate() + nights);
     
@@ -279,9 +284,9 @@ return (
         <div className="trip-header">
             <h1>{trip.trip_name || 'Unnamed Trip'}</h1>
             <p>
-            Selected Dates: <strong>{new Date(trip.start_date).toLocaleDateString()}</strong> -{' '}
-            <strong>{new Date(endDate).toLocaleDateString()}</strong>
-</p>
+                    Selected Dates: <strong>{new Date(trip.start_date).toLocaleDateString()}</strong> -
+                    <strong>{new Date(endDate).toLocaleDateString()}</strong>
+                </p>
 
         </div>
         <div className="trip-body">
