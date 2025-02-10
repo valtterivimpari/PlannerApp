@@ -10,7 +10,8 @@ function Trips() {
 
 
     const UNSPLASH_API_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
-    console.log('Unsplash API Key:', process.env.REACT_APP_UNSPLASH_ACCESS_KEY);
+    console.log('Unsplash API Key:', UNSPLASH_API_KEY);    
+    console.log('Test Variable:', process.env.REACT_APP_TEST_VARIABLE);
     console.log('Test Variable:', process.env.REACT_APP_TEST_VARIABLE);
     console.log(process.env); // Log all environment variables to check if it's loaded correctly.
     console.log('All Environment Variables:', process.env);
@@ -31,16 +32,17 @@ function Trips() {
 
     // Fetch a random image for a country using Unsplash API
     const fetchCountryImage = async (country) => {
-        if (!country || countryImages[country]) return; // Skip if no country or already fetched
+        if (!country || countryImages[country]) return; 
 
         try {
             const response = await axios.get(`https://api.unsplash.com/search/photos`, {
                 params: {
                     query: country,
-                    client_id: UNSPLASH_API_KEY,
+                    client_id: UNSPLASH_API_KEY, // now defined!
                     per_page: 1,
                 },
             });
+            
 
             const imageUrl =
                 response.data.results.length > 0
@@ -79,6 +81,14 @@ console.log('Trips:', trips);
         fetchTrips();
     }, [navigate]);
     
+    useEffect(() => {
+        trips.forEach((trip) => {
+          if (trip.selected_country) {
+            fetchCountryImage(trip.selected_country);
+          }
+        });
+      }, [trips]);
+      
     
 
     const handleDeleteTrip = async (tripId) => {
@@ -100,43 +110,45 @@ console.log('Trips:', trips);
         }
     };
     
-    return (
-        <div className="trips-container">
-            <h2>Your Trips</h2>
-            {trips.length > 0 ? (
-                trips.map((trip) => (
-                    <div key={trip.id} className="trip-card">
-                        <h3>📍 {trip.trip_name || 'Unnamed Trip'}</h3>
-                        <p>Country: {trip.selected_country || 'Unknown'}</p>
-                        <p>
-                            📅 {trip.start_date ? formatDateToDDMMYYYY(trip.start_date) : 'N/A'} -
-                            {trip.end_date ? formatDateToDDMMYYYY(trip.end_date) : 'N/A'}
-                        </p>
-                        <img
-                            src={countryImages[trip.selected_country] || '/images/fallback.jpg'}
-                            alt={`View of ${trip.selected_country}`}
-                            className="trip-image"
-                        />
-                        <button
-    className="details-button"
-    onClick={() => navigate(`/destination/${trip.id}`)}
->
-    View Details
-</button>
-
-                        <button
-                            className="delete-button"
-                            onClick={() => handleDeleteTrip(trip.id)} // Call the delete function
-                        >
-                            Delete Trip
-                        </button>
-                    </div>
-                ))
-            ) : (
-                <p>No trips yet. Create your first trip!</p>
-            )}
-        </div>
-    );
+   // Trips.js
+return (
+    <div className="trips-container">
+      <h2>Your Trips</h2>
+      {trips.length > 0 ? (
+        trips.map((trip) => (
+          <div key={trip.id} className="trip-card">
+            <h3>📍 {trip.trip_name || 'Unnamed Trip'}</h3>
+            <p>Country: {trip.selected_country || 'Unknown'}</p>
+            <p>
+              📅 {trip.start_date ? formatDateToDDMMYYYY(trip.start_date) : 'N/A'} -
+              {trip.end_date ? formatDateToDDMMYYYY(trip.end_date) : 'N/A'}
+            </p>
+            <img
+              src={countryImages[trip.selected_country] || '/images/fallback.jpg'}
+              alt={`View of ${trip.selected_country}`}
+              className="trip-image"
+            />
+            <button
+              className="details-button"
+              onClick={() => navigate(`/destination/${trip.id}`)}
+            >
+              View Details
+            </button>
+            <button
+              className="delete-button"
+              onClick={() => handleDeleteTrip(trip.id)}
+            >
+              Delete Trip
+            </button>
+          </div>
+        ))
+      ) : (
+        <p>No trips yet. Create your first trip!</p>
+      )}
+    </div>
+  );
+  
+      
     
 }
 

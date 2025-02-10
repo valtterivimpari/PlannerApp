@@ -1,8 +1,8 @@
 .trips-page {
     padding: 20px;
     background-color: #f9f9f9;
-    text-align: center;
-}
+    text-align: center; /* Centers all text inside */
+  }
 
 .trips-header {
     font-size: 2.5em;
@@ -30,14 +30,33 @@
     background-color: #16a085;
 }
 
-.trips-container {
+  
+  /* Centered grid container */
+  .trips-container {
+    max-width: 500px;                /* Limits the container's overall width */
+    margin: 0 auto;                   /* Centers the container within the viewport */
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 300px)); 
+      /* Each grid column will be exactly 300px wide */
     gap: 20px;
     padding: 20px;
+    justify-content: center;          /* Center the grid as a whole */
+    justify-items: center;            /* Center each grid cell's content */
+  }
+  
+  
+  /* Center the header that spans all columns */
+  .trips-container h2 {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-bottom: 20px;
 }
+  
+  
+  
 
 .trip-card {
+    width: 300px;                     /* Matches the grid cell width */
     background: white;
     border-radius: 15px;
     padding: 20px;
@@ -45,11 +64,13 @@
     text-align: center;
     transition: transform 0.2s ease-in-out;
     overflow: hidden;
-}
+    justify-self: center;             /* Ensures the card is centered in its cell */
+  }
+  
 
-.trip-card:hover {
+  .trip-card:hover {
     transform: translateY(-5px);
-}
+  }
 
 .trip-card h3 {
     font-size: 1.2em;
