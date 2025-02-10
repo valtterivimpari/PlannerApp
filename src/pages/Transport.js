@@ -26,8 +26,9 @@ const Transport = () => {
         date = new Date().toISOString(),
     } = location.state || {};
 
-    const originalDate = localStorage.getItem("originalDate") || paramDate || new Date().toISOString();
-    const travelDate = new Date(originalDate).toLocaleDateString('fi-FI');
+    const originalDate = paramDate ? new Date(paramDate) : new Date();
+const travelDate = originalDate.toLocaleDateString('fi-FI');
+
     
 
 

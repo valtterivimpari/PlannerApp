@@ -353,15 +353,17 @@ return (
                                                 date: calculateStartDate(trip.start_date, index).toISOString(),
                                             },
                                         });
-                                        const travelDate = calculateStartDate(trip.start_date, index).toISOString();
-                                        navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${travelDate}`, {
+                                        const travelDate = calculateStartDate(trip.start_date, index);
+
+                                        navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${travelDate.toISOString()}`, {
                                             state: {
                                                 distance: distances[index - 1]?.toFixed(1),
                                                 duration: drivingTimes[index - 1],
-                                                date: calculateStartDate(trip.start_date, index).toISOString(),
+                                                date: travelDate.toISOString(),
                                                 index,
                                             },
                                         });
+                                        
                                     }}>
                                         <span>{distances[index - 1].toFixed(1)} km</span>
                                     </div>
