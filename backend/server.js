@@ -527,6 +527,108 @@ app.delete('/api/flights/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// ---------- TRAIN ENDPOINTS ----------
+
+// Create a new train entry
+app.post('/api/trains', authenticateToken, async (req, res) => {
+    const {
+        departureTime, 
+        arrivalTime, 
+        overnightTransport, 
+        notes, 
+        departureStation, 
+        arrivalStation, 
+        link, 
+        operator, 
+        seatNumber, 
+        bookingNumber, 
+        track, 
+        vehicleNumber
+    } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const query = `
+            INSERT INTO trains (
+                user_id, departure_time, arrival_time, overnight_transport, notes, 
+                departure_station, arrival_station, link, operator, seat_number, booking_number, track, vehicle_number
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) 
+            RETURNING *;
+        `;
+        const values = [
+            userId,
+            departureTime,
+            arrivalTime,
+            overnightTransport,
+            notes,
+            departureStation,
+            arrivalStation,
+            link,
+            operator,
+            seatNumber,
+            bookingNumber,
+            track,
+            vehicleNumber
+        ];
+        const result = await pool.query(query, values);
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error inserting train:", error);
+        res.status(500).send("Server error: " + error.message);
+    }
+});
+
+// Get all trains for the logged-in user
+app.get('/api/trains', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const query = `SELECT * FROM trains WHERE user_id = $1`;
+        const result = await pool.query(query, [userId]);
+        res.status(200).json(result.rows);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Update a train entry
+app.put('/api/trains/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const updatedFields = req.body;
+    try {
+        let query = `UPDATE trains SET `;
+        const values = [];
+        Object.entries(updatedFields).forEach(([key, value], index) => {
+            query += `${key} = $${index + 1}, `;
+            values.push(value);
+        });
+        query = query.slice(0, -2) + ` WHERE id = $${values.length + 1} RETURNING *`;
+        values.push(id);
+
+        const result = await pool.query(query, values);
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Delete a train entry
+app.delete('/api/trains/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+    try {
+        const query = `DELETE FROM trains WHERE id = $1 AND user_id = $2 RETURNING *`;
+        const result = await pool.query(query, [id, userId]);
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Train not found or already deleted." });
+        }
+        res.status(200).json({ message: "Train deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
 
 
 

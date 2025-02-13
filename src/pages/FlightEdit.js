@@ -54,7 +54,7 @@ const FlightEdit = () => {
     }
 
     // Exclude unwanted fields
-    const excludeFields = ["id", "user_id", "origin", "destination", "date", "custom_inputs", "departure_time", "arrival_time"];
+    const excludeFields = ["id", "user_id", "origin", "destination", "date", "custom_inputs", "departure_time", "arrival_time", "overnight_transport"];
 
 
     // Label mapping to match FlightDetails.js

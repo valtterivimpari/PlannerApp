@@ -14,6 +14,7 @@ const Transport = () => {
 
     const origin = paramOrigin; 
     const destination = paramDestination; 
+    const [trainDetails, setTrainDetails] = useState(location.state?.trainDetails || null);
     
     
     
@@ -53,6 +54,45 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
             fetchFlightDetails();
         }
     }, [flightDetails, paramOrigin, paramDestination]);
+
+    useEffect(() => {
+        if (activeSection === 'Train' && !trainDetails) {
+            const fetchTrainDetails = async () => {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/trains', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        setTrainDetails(data[data.length - 1]);
+                    }
+                }
+            };
+            fetchTrainDetails();
+        }
+    }, [activeSection, trainDetails]);
+
+    const handleDeleteTrain = async () => {
+        if (!trainDetails || !trainDetails.id) {
+            alert("Error: Train ID is missing. Unable to delete.");
+            return;
+        }
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:5000/api/trains/${trainDetails.id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+            setTrainDetails(null);
+            alert('Train details deleted successfully');
+            navigate(`/transport/${paramOrigin}/${paramDestination}/${paramDate}`, { replace: true });
+            window.location.reload();
+        } else {
+            const errorText = await response.text();
+            alert(`Failed to delete train: ${errorText}`);
+        }
+    };
 
     const handleEditFlight = () => {
         navigate('/flight-edit', { state: { flightDetails } });
@@ -102,7 +142,7 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
     
     return (
         <div className="transport-page">
-            <h1>{`${origin} → ${destination}`}</h1>
+            <h1>{`${paramOrigin} → ${paramDestination}`}</h1>
             <p><strong>Travel Date:</strong> {travelDate}</p>
 
             <div className="transport-options">
@@ -184,7 +224,51 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
                 </div>
             )}
 
-            {activeSection && !['Drive', 'Flights'].includes(activeSection) && (
+
+{activeSection === 'Train' && (
+                <div className="trains-info">
+                    <div className="transport-details">
+                        <h2>Train Details</h2>
+                        {trainDetails && Object.keys(trainDetails).length > 0 ? (
+                            <>
+                                <p><strong>Departure Time:</strong> {trainDetails.departure_time}</p>
+                                <p><strong>Arrival Time:</strong> {trainDetails.arrival_time}</p>
+                                <p><strong>Departure Station:</strong> {trainDetails.departure_station}</p>
+                                <p><strong>Arrival Station:</strong> {trainDetails.arrival_station}</p>
+                                <p><strong>Seat Number:</strong> {trainDetails.seat_number}</p>
+                                <p><strong>Operator:</strong> {trainDetails.operator}</p>
+                                <p><strong>Booking Number:</strong> {trainDetails.booking_number}</p>
+                                <p><strong>Link:</strong> <a href={trainDetails.link} target="_blank" rel="noopener noreferrer">{trainDetails.link}</a></p>
+                                <p><strong>Notes:</strong> {trainDetails.notes}</p>
+                                <p><strong>Track:</strong> {trainDetails.track}</p>
+                                <p><strong>Vehicle Number:</strong> {trainDetails.vehicle_number}</p>
+                                <div className="train-buttons">
+                                    <button onClick={() => navigate('/train-edit')} className="edit-button">Edit</button>
+                                    <button onClick={handleDeleteTrain} className="delete-button">Delete</button>
+                                </div>
+                            </>
+                        ) : (
+                            <p>No train details available for this route.</p>
+                        )}
+                    </div>
+                    {/* Inside the 'Train' section */}
+<Link 
+  to="/train-details" 
+  className="add-train-link"
+  onClick={() => {
+    // Save the original param-based origin/destination/date so we can restore them
+    localStorage.setItem("originalOrigin", paramOrigin);
+    localStorage.setItem("originalDestination", paramDestination);
+    localStorage.setItem("originalDate", paramDate || new Date().toISOString());
+  }}
+>
+  Add your train
+</Link>
+
+                </div>
+            )}
+
+            {activeSection && !['Drive', 'Flights', 'Train'].includes(activeSection) && (
                 <div className="transport-details">
                     <p>{`${activeSection} information coming soon...`}</p>
                 </div>

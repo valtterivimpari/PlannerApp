@@ -15,6 +15,10 @@ import Transport from './pages/Transport';
 import FlightDetails from './pages/FlightDetails'; // Import new components
 import FlightEdit from './pages/FlightEdit';
 import FlightSummary from './pages/FlightSummary';
+import TrainDetails from './pages/TrainDetails';
+import TrainEdit from './pages/TrainEdit';
+import TrainSummary from './pages/TrainSummary';
+
 
 function App() {
     return (
@@ -35,6 +39,10 @@ function App() {
                 <Route path="/flight-details" element={<FlightDetails />} />
                 <Route path="/flight-edit" element={<FlightEdit />} />
                 <Route path="/flight-summary" element={<FlightSummary />} />
+                <Route path="/train-details" element={<TrainDetails />} />
+<Route path="/train-edit" element={<TrainEdit />} />
+<Route path="/train-summary" element={<TrainSummary />} />
+
             </Routes>
         </Router>
     );
