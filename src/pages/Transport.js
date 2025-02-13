@@ -160,113 +160,111 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
                 </div>
             )}
 
-            {activeSection === 'Flights' && (
-                <div className="flights-info">
-                    <div className="flights-link-container">
-                        <a href="https://www.skyscanner.com" target="_blank" rel="noopener noreferrer" className="flights-link">
-                            <img src={skyscannerIcon} alt="Skyscanner Icon" className="flights-icon" />
-                            Find flights on Skyscanner
-                        </a>
-                    </div>
+{activeSection === 'Flights' && (
+  <div className="flights-info">
+    <div className="flights-link-container">
+      <a
+        href="https://www.skyscanner.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flights-link"
+      >
+        <img src={skyscannerIcon} alt="Skyscanner Icon" className="flights-icon" />
+        Find flights on Skyscanner
+      </a>
+    </div>
+    <div className="transport-details">
+      <h2>Flight Details</h2>
+      {flightDetails && Object.keys(flightDetails).length > 0 ? (
+        <>
+          <p><strong>Departure Time:</strong> {flightDetails.departure_time}</p>
+          <p><strong>Arrival Time:</strong> {flightDetails.arrival_time}</p>
+          <p><strong>Departure Airport:</strong> {flightDetails.departure_airport}</p>
+          <p><strong>Arrival Airport:</strong> {flightDetails.arrival_airport}</p>
+          <p><strong>Flight Number:</strong> {flightDetails.flight_number}</p>
+          <p><strong>Seat Number:</strong> {flightDetails.seat_number}</p>
+          <p><strong>Operator:</strong> {flightDetails.operator}</p>
+          <p><strong>Booking Number:</strong> {flightDetails.booking_number}</p>
+          <p>
+            <strong>Link:</strong> <a href={flightDetails.link} target="_blank" rel="noopener noreferrer">{flightDetails.link}</a>
+          </p>
+          <p><strong>Notes:</strong> {flightDetails.notes}</p>
+          <ul>
+            {flightDetails.customInputs?.map((input, index) => (
+              <li key={index}>
+                <strong>{input.label}:</strong> {input.value}
+              </li>
+            ))}
+          </ul>
+          <div className="flight-buttons">
+            <button onClick={handleEditFlight} className="edit-button">Edit</button>
+            <button onClick={handleDeleteFlight} className="delete-button">Delete</button>
 
-                    <div className="transport-details">
-                        <h2>Flight Details</h2>
-                        {flightDetails && Object.keys(flightDetails).length > 0 ? (
-    <>
-        <p><strong>Departure Time:</strong> {flightDetails.departure_time}</p>
-        <p><strong>Arrival Time:</strong> {flightDetails.arrival_time}</p>
-        <p><strong>Departure Airport:</strong> {flightDetails.departure_airport}</p>
-        <p><strong>Arrival Airport:</strong> {flightDetails.arrival_airport}</p>
-        <p><strong>Flight Number:</strong> {flightDetails.flight_number}</p>
-        <p><strong>Seat Number:</strong> {flightDetails.seat_number}</p>
-        <p><strong>Operator:</strong> {flightDetails.operator}</p>
-        <p><strong>Booking Number:</strong> {flightDetails.booking_number}</p>
-        <p><strong>Link:</strong> <a href={flightDetails.link} target="_blank" rel="noopener noreferrer">{flightDetails.link}</a></p>
-        <p><strong>Notes:</strong> {flightDetails.notes}</p>
-                                <ul>
-                                    {flightDetails.customInputs?.map((input, index) => (
-                                        <li key={index}>
-                                            <strong>{input.label}:</strong> {input.value}
-                                        </li>
-                                    ))}
-                                </ul>
+          </div>
+        </>
+      ) : (
+        <p>No flight details available for this route.</p>
+      )}
+    </div>
+    {date && (
+      <Link 
+        to="/flight-details" 
+        className="add-flight-link"
+        onClick={() => {
+          localStorage.setItem("originalOrigin", paramOrigin);
+          localStorage.setItem("originalDestination", paramDestination);
+          localStorage.setItem("originalDate", paramDate || new Date().toISOString());
+        }}
+      >
+        <img src={planeIcon} alt="Add your flight" className="add-flight-icon" />
+        Add your flight
+      </Link>
+    )}
+  </div>
+)}
 
-                                <div className="flight-buttons">
-                                    <button onClick={handleEditFlight} className="edit-button">Edit</button>
-                                    <button onClick={handleDeleteFlight} className="delete-button">Delete</button>
-                                </div>
-                            </>
-                        ) : (
-                            <p>No flight details available for this route.</p>
-                        )}
-                    </div>
-
-                    {date && (
-                    <Link 
-                    to="/flight-details" 
-                    className="add-flight-link"
-                    onClick={() => {
-                        localStorage.setItem("originalOrigin", paramOrigin);
-                        localStorage.setItem("originalDestination", paramDestination);
-                        localStorage.setItem("originalDate", paramDate || new Date().toISOString());
-                    }}
-                    
-                >
-                
-                     <img src={planeIcon} alt="Add your flight" className="add-flight-icon" />
-                     Add your flight
-                 </Link>
-                 
-                  
-                   
-                    
-                    )}
-                </div>
-            )}
 
 
 {activeSection === 'Train' && (
-                <div className="trains-info">
-                    <div className="transport-details">
-                        <h2>Train Details</h2>
-                        {trainDetails && Object.keys(trainDetails).length > 0 ? (
-                            <>
-                                <p><strong>Departure Time:</strong> {trainDetails.departure_time}</p>
-                                <p><strong>Arrival Time:</strong> {trainDetails.arrival_time}</p>
-                                <p><strong>Departure Station:</strong> {trainDetails.departure_station}</p>
-                                <p><strong>Arrival Station:</strong> {trainDetails.arrival_station}</p>
-                                <p><strong>Seat Number:</strong> {trainDetails.seat_number}</p>
-                                <p><strong>Operator:</strong> {trainDetails.operator}</p>
-                                <p><strong>Booking Number:</strong> {trainDetails.booking_number}</p>
-                                <p><strong>Link:</strong> <a href={trainDetails.link} target="_blank" rel="noopener noreferrer">{trainDetails.link}</a></p>
-                                <p><strong>Notes:</strong> {trainDetails.notes}</p>
-                                <p><strong>Track:</strong> {trainDetails.track}</p>
-                                <p><strong>Vehicle Number:</strong> {trainDetails.vehicle_number}</p>
-                                <div className="train-buttons">
-                                    <button onClick={() => navigate('/train-edit')} className="edit-button">Edit</button>
-                                    <button onClick={handleDeleteTrain} className="delete-button">Delete</button>
-                                </div>
-                            </>
-                        ) : (
-                            <p>No train details available for this route.</p>
-                        )}
+    <div className="trains-info">
+        <div className="transport-details">
+            <h2>Train Details</h2>
+            {trainDetails && Object.keys(trainDetails).length > 0 ? (
+                <>
+                    <p><strong>Departure Time:</strong> {trainDetails.departure_time}</p>
+                    <p><strong>Arrival Time:</strong> {trainDetails.arrival_time}</p>
+                    <p><strong>Departure Station:</strong> {trainDetails.departure_station}</p>
+                    <p><strong>Arrival Station:</strong> {trainDetails.arrival_station}</p>
+                    <p><strong>Seat Number:</strong> {trainDetails.seat_number}</p>
+                    <p><strong>Operator:</strong> {trainDetails.operator}</p>
+                    <p><strong>Booking Number:</strong> {trainDetails.booking_number}</p>
+                    <p><strong>Link:</strong> <a href={trainDetails.link} target="_blank" rel="noopener noreferrer">{trainDetails.link}</a></p>
+                    <p><strong>Notes:</strong> {trainDetails.notes}</p>
+                    <p><strong>Track:</strong> {trainDetails.track}</p>
+                    <p><strong>Vehicle Number:</strong> {trainDetails.vehicle_number}</p>
+                    <div className="train-buttons">
+                        <button onClick={() => navigate('/train-edit')} className="edit-button">Edit</button>
+                        <button onClick={handleDeleteTrain} className="delete-button">Delete</button>
                     </div>
-                    {/* Inside the 'Train' section */}
-<Link 
-  to="/train-details" 
-  className="add-train-link"
-  onClick={() => {
-    // Save the original param-based origin/destination/date so we can restore them
-    localStorage.setItem("originalOrigin", paramOrigin);
-    localStorage.setItem("originalDestination", paramDestination);
-    localStorage.setItem("originalDate", paramDate || new Date().toISOString());
-  }}
->
-  Add your train
-</Link>
-
-                </div>
+                </>
+            ) : (
+                <p>No train details available for this route.</p>
             )}
+        </div>
+        <Link 
+            to="/train-details" 
+            className="add-train-link"
+            onClick={() => {
+                localStorage.setItem("originalOrigin", paramOrigin);
+                localStorage.setItem("originalDestination", paramDestination);
+                localStorage.setItem("originalDate", paramDate || new Date().toISOString());
+            }}
+        >
+            Add your train
+        </Link>
+    </div>
+)}
+
 
             {activeSection && !['Drive', 'Flights', 'Train'].includes(activeSection) && (
                 <div className="transport-details">
