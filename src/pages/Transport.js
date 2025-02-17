@@ -10,6 +10,7 @@ const Transport = () => {
     const navigate = useNavigate();
 
     const [flightDetails, setFlightDetails] = useState(location.state?.flightDetails || null);
+    const [busDetails, setBusDetails] = useState(location.state?.busDetails || null);
 
 
     const origin = paramOrigin; 
@@ -93,6 +94,40 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
             alert(`Failed to delete train: ${errorText}`);
         }
     };
+
+    useEffect(() => {
+        if (activeSection === 'Bus' && !busDetails) {
+          const fetchBusDetails = async () => {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/buses', {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+              const data = await response.json();
+              if (Array.isArray(data) && data.length > 0) {
+                setBusDetails(data[data.length - 1]);
+              }
+            }
+          };
+          fetchBusDetails();
+        }
+      }, [activeSection, busDetails]);
+      
+      const handleDeleteBus = () => {
+        if (!busDetails) {
+          alert("Bus details are missing.");
+          return;
+        }
+        const origin = localStorage.getItem("originalOrigin") || "Unknown";
+        const destination = localStorage.getItem("originalDestination") || "Unknown";
+        const date = localStorage.getItem("originalDate") || new Date().toISOString();
+        if (origin === "Unknown" || destination === "Unknown") {
+          alert("Missing valid bus details for navigation.");
+          return;
+        }
+        const transportUrl = `/transport/${encodeURIComponent(origin)}/${encodeURIComponent(destination)}/${encodeURIComponent(date)}`;
+        navigate(transportUrl, { state: { activeSection: "Bus" } });
+      };
 
     const handleEditFlight = () => {
         navigate('/flight-edit', { state: { flightDetails } });
@@ -265,8 +300,49 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
     </div>
 )}
 
+{activeSection === 'Bus' && (
+  <div className="buses-info">
+    <div className="transport-details">
+      <h2>Bus Details</h2>
+      {busDetails && Object.keys(busDetails).length > 0 ? (
+        <>
+          <p><strong>Departure Time:</strong> {busDetails.departure_time}</p>
+          <p><strong>Arrival Time:</strong> {busDetails.arrival_time}</p>
+          <p><strong>Notes:</strong> {busDetails.notes}</p>
+          <p><strong>Departure Station:</strong> {busDetails.departure_station}</p>
+          <p><strong>Arrival Station:</strong> {busDetails.arrival_station}</p>
+          <p><strong>Seat Number:</strong> {busDetails.seat_number}</p>
+          <p><strong>Operator:</strong> {busDetails.operator}</p>
+          <p><strong>Booking Number:</strong> {busDetails.booking_number}</p>
+          <p><strong>Link:</strong> <a href={busDetails.link} target="_blank" rel="noopener noreferrer">{busDetails.link}</a></p>
+          <p><strong>Platform:</strong> {busDetails.platform}</p>
+          <p><strong>Vehicle Number:</strong> {busDetails.vehicle_number}</p>
+          <div className="bus-buttons">
+          <button onClick={() => navigate('/bus-edit')} className="edit-button">Edit</button>
+          <button onClick={handleDeleteBus} className="delete-button">Delete</button>
+          </div>
+        </>
+      ) : (
+        <p>No bus details available for this route.</p>
+      )}
+    </div>
+    <Link 
+      to="/bus-details" 
+      className="add-bus-link"
+      onClick={() => {
+        localStorage.setItem("originalOrigin", paramOrigin);
+        localStorage.setItem("originalDestination", paramDestination);
+        localStorage.setItem("originalDate", paramDate || new Date().toISOString());
+      }}
+    >
+      Add your bus
+    </Link>
+  </div>
+)}
 
-            {activeSection && !['Drive', 'Flights', 'Train'].includes(activeSection) && (
+
+
+            {activeSection && !['Drive', 'Flights', 'Train', 'Bus'].includes(activeSection) && (
                 <div className="transport-details">
                     <p>{`${activeSection} information coming soon...`}</p>
                 </div>

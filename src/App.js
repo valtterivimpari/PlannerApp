@@ -18,6 +18,9 @@ import FlightSummary from './pages/FlightSummary';
 import TrainDetails from './pages/TrainDetails';
 import TrainEdit from './pages/TrainEdit';
 import TrainSummary from './pages/TrainSummary';
+import BusDetails from './pages/BusDetails';
+import BusEdit from './pages/BusEdit';
+import BusSummary from './pages/BusSummary';
 
 
 function App() {
@@ -42,6 +45,10 @@ function App() {
                 <Route path="/train-details" element={<TrainDetails />} />
 <Route path="/train-edit" element={<TrainEdit />} />
 <Route path="/train-summary" element={<TrainSummary />} />
+<Route path="/bus-details" element={<BusDetails />} />
+<Route path="/bus-edit" element={<BusEdit />} />
+<Route path="/bus-summary" element={<BusSummary />} />
+
 
             </Routes>
         </Router>

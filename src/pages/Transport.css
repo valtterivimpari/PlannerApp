@@ -99,7 +99,7 @@
 }
 
 .add-flight button {
-    background-color: #007bff;
+    background-color: #111edb;
     color: white;
     border: none;
     border-radius: 50%;
@@ -324,5 +324,111 @@
 .train-buttons .ready-button:hover {
     background: linear-gradient(45deg, #27ae60, #2ecc71);
 }
+
+/* Modern Bus Section Styling */
+.buses-info {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 30px auto;
+    transition: transform 0.3s ease;
+}
+.buses-info:hover {
+    transform: translateY(-3px);
+}
+
+.buses-info h2 {
+    font-size: 2em;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.buses-info p {
+    font-size: 1.2em;
+    color: #34495e;
+    margin: 10px 0;
+}
+
+/* Stylish Add Bus Link */
+.buses-info a.add-bus-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: linear-gradient(45deg, #2980b9, #2471a3);
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+.buses-info a.add-bus-link:hover {
+    background: linear-gradient(45deg, #2471a3, #2980b9);
+    transform: scale(1.05);
+}
+.buses-info .delete-button {
+    background-color: #ff4d4d !important;  /* bright red */
+    color: white !important;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.buses-info .delete-button:hover {
+    background-color: #ff0000 !important;  /* even brighter red on hover */
+}
+
+
+.flight-buttons,
+.train-buttons,
+.bus-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+
+
+/* Bus Buttons Container */
+.bus-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Styled Edit and Ready Buttons for Bus */
+.bus-buttons .edit-button,
+.bus-buttons .ready-button {
+    flex: 1;
+    padding: 15px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.bus-buttons .edit-button {
+    background: linear-gradient(45deg, #f1c40f, #d4ac0d);
+    color: white;
+}
+.bus-buttons .edit-button:hover {
+    background: linear-gradient(45deg, #d4ac0d, #f1c40f);
+}
+.bus-buttons .ready-button {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    color: white;
+}
+.bus-buttons .ready-button:hover {
+    background: linear-gradient(45deg, #27ae60, #2ecc71);
+}
+
 
 
