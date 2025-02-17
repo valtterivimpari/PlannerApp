@@ -113,21 +113,27 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
         }
       }, [activeSection, busDetails]);
       
-      const handleDeleteBus = () => {
-        if (!busDetails) {
-          alert("Bus details are missing.");
-          return;
+      const handleDeleteBus = async () => {
+        if (!busDetails || !busDetails.id) {
+            alert("Error: Bus ID is missing. Unable to delete.");
+            return;
         }
-        const origin = localStorage.getItem("originalOrigin") || "Unknown";
-        const destination = localStorage.getItem("originalDestination") || "Unknown";
-        const date = localStorage.getItem("originalDate") || new Date().toISOString();
-        if (origin === "Unknown" || destination === "Unknown") {
-          alert("Missing valid bus details for navigation.");
-          return;
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:5000/api/buses/${busDetails.id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+            setBusDetails(null);
+            alert("Bus details deleted successfully");
+            navigate(`/transport/${paramOrigin}/${paramDestination}/${paramDate}`, { replace: true });
+            window.location.reload();
+        } else {
+            const errorText = await response.text();
+            alert(`Failed to delete bus: ${errorText}`);
         }
-        const transportUrl = `/transport/${encodeURIComponent(origin)}/${encodeURIComponent(destination)}/${encodeURIComponent(date)}`;
-        navigate(transportUrl, { state: { activeSection: "Bus" } });
-      };
+    };
+    
 
     const handleEditFlight = () => {
         navigate('/flight-edit', { state: { flightDetails } });
