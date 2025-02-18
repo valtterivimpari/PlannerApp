@@ -123,11 +123,6 @@ return (
               📅 {trip.start_date ? formatDateToDDMMYYYY(trip.start_date) : 'N/A'} -
               {trip.end_date ? formatDateToDDMMYYYY(trip.end_date) : 'N/A'}
             </p>
-            <img
-              src={countryImages[trip.selected_country] || '/images/fallback.jpg'}
-              alt={`View of ${trip.selected_country}`}
-              className="trip-image"
-            />
             <button
               className="details-button"
               onClick={() => navigate(`/destination/${trip.id}`)}
