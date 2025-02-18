@@ -1,0 +1,56 @@
+/* FerrySummary.css */
+.ferry-summary-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.ferry-summary-container h2 {
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.ferry-summary-container p {
+    font-size: 18px;
+    margin: 10px 0;
+    text-align: left;
+    padding-left: 20px;
+}
+
+.edit-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #f1c40f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.edit-button:hover {
+    background-color: #d4ac0d;
+}
+
+.delete-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(45deg, #ff4d4d, #ff0000);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.delete-button:hover {
+    background: linear-gradient(45deg, #ff0000, #ff4d4d);
+}

@@ -16,6 +16,7 @@ const Transport = () => {
     const origin = paramOrigin; 
     const destination = paramDestination; 
     const [trainDetails, setTrainDetails] = useState(location.state?.trainDetails || null);
+    const [ferryDetails, setFerryDetails] = useState(location.state?.ferryDetails || null);
     
     
     
@@ -74,6 +75,24 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
         }
     }, [activeSection, trainDetails]);
 
+    useEffect(() => {
+      if (activeSection === 'Ferry' && !ferryDetails) {
+        const fetchFerryDetails = async () => {
+          const token = localStorage.getItem('token');
+          const response = await fetch('http://localhost:5000/api/ferries', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data) && data.length > 0) {
+              setFerryDetails(data[data.length - 1]);
+            }
+          }
+        };
+        fetchFerryDetails();
+      }
+    }, [activeSection, ferryDetails]);
+
     const handleDeleteTrain = async () => {
         if (!trainDetails || !trainDetails.id) {
             alert("Error: Train ID is missing. Unable to delete.");
@@ -94,6 +113,28 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
             alert(`Failed to delete train: ${errorText}`);
         }
     };
+
+    const handleDeleteFerry = async () => {
+      if (!ferryDetails || !ferryDetails.id) {
+        alert("Error: Ferry ID is missing. Unable to delete.");
+        return;
+      }
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/ferries/${ferryDetails.id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+          setFerryDetails(null);
+          alert("Ferry details deleted successfully");
+          navigate(`/transport/${paramOrigin}/${paramDestination}/${paramDate}`, { replace: true });
+          window.location.reload();
+      } else {
+          const errorText = await response.text();
+          alert(`Failed to delete ferry: ${errorText}`);
+      }
+  };
+  
 
     useEffect(() => {
         if (activeSection === 'Bus' && !busDetails) {
@@ -346,9 +387,48 @@ const travelDate = originalDate.toLocaleDateString('fi-FI');
   </div>
 )}
 
+{activeSection === 'Ferry' && (
+  <div className="ferries-info">
+    <div className="transport-details">
+      <h2>Ferry Details</h2>
+      {ferryDetails && Object.keys(ferryDetails).length > 0 ? (
+        <>
+          <p><strong>Departure Time:</strong> {ferryDetails.departure_time}</p>
+          <p><strong>Arrival Time:</strong> {ferryDetails.arrival_time}</p>
+          <p><strong>Notes:</strong> {ferryDetails.notes}</p>
+          <p><strong>Departure Port:</strong> {ferryDetails.departure_port}</p>
+          <p><strong>Arrival Port:</strong> {ferryDetails.arrival_port}</p>
+          <p><strong>Link:</strong> <a href={ferryDetails.link} target="_blank" rel="noopener noreferrer">{ferryDetails.link}</a></p>
+          <p><strong>Operator:</strong> {ferryDetails.operator}</p>
+          <p><strong>Seat Number:</strong> {ferryDetails.seat_number}</p>
+          <p><strong>Booking Number:</strong> {ferryDetails.booking_number}</p>
+          <p><strong>Vehicle Number:</strong> {ferryDetails.vehicle_number}</p>
+          <div className="ferry-buttons">
+            <button onClick={() => navigate('/ferry-edit')} className="edit-button">Edit</button>
+            <button onClick={handleDeleteFerry} className="delete-button">Delete</button>
+          </div>
+        </>
+      ) : (
+        <p>No ferry details available for this route.</p>
+      )}
+    </div>
+    <Link 
+      to="/ferry-details" 
+      className="add-ferry-link"
+      onClick={() => {
+        localStorage.setItem("originalOrigin", paramOrigin);
+        localStorage.setItem("originalDestination", paramDestination);
+        localStorage.setItem("originalDate", paramDate || new Date().toISOString());
+      }}
+    >
+      Add your ferry
+    </Link>
+  </div>
+)}
 
 
-            {activeSection && !['Drive', 'Flights', 'Train', 'Bus'].includes(activeSection) && (
+
+            {activeSection && !['Drive', 'Flights', 'Train', 'Bus', 'Ferry'].includes(activeSection) && (
                 <div className="transport-details">
                     <p>{`${activeSection} information coming soon...`}</p>
                 </div>

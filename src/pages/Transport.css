@@ -312,6 +312,91 @@
     transform: scale(1.05);
 }
 
+/* ------------------------------------------------------------------
+   FERRY SECTION
+   ------------------------------------------------------------------ */
+   .ferries-info {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 30px auto;
+    transition: transform 0.3s ease;
+}
+.ferries-info:hover {
+    transform: translateY(-3px);
+}
+.ferries-info h2 {
+    font-size: 2em;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+.ferries-info p {
+    font-size: 1.2em;
+    color: #34495e;
+    margin: 10px 0;
+}
+.ferries-info a.add-ferry-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: linear-gradient(45deg, #2980b9, #2471a3);
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+.ferries-info a.add-ferry-link:hover {
+    background: linear-gradient(45deg, #2471a3, #2980b9);
+    transform: scale(1.05);
+}
+
+/* Ferry Buttons Container */
+.ferry-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.ferry-buttons .edit-button,
+.ferry-buttons .delete-button {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    height: 45px;
+    padding: 0 15px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1;
+    box-sizing: border-box;
+}
+.ferry-buttons .edit-button {
+    background: linear-gradient(45deg, #f1c40f, #d4ac0d);
+    color: white;
+}
+.ferry-buttons .edit-button:hover {
+    background: linear-gradient(45deg, #d4ac0d, #f1c40f);
+}
+.ferry-buttons .delete-button {
+    background: linear-gradient(45deg, #ff4d4d, #ff0000);
+    color: white;
+}
+.ferry-buttons .delete-button:hover {
+    background: linear-gradient(45deg, #ff0000, #ff4d4d);
+}
+
+
 /* End of Transport.css */
 
 

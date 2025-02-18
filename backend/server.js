@@ -717,6 +717,89 @@ app.post('/api/buses', authenticateToken, async (req, res) => {
       res.status(500).json({ error: "Server error" });
     }
   });
+
+  // ---------- FERRY ENDPOINTS ----------
+
+// Create a new ferry entry
+app.post('/api/ferries', authenticateToken, async (req, res) => {
+    const {
+        departureTime,
+        arrivalTime,
+        notes,
+        departurePort,
+        arrivalPort,
+        link,
+        operator,
+        seatNumber,
+        bookingNumber,
+        vehicleNumber
+    } = req.body;
+    const userId = req.user.id;
+    try {
+        const query = `
+            INSERT INTO ferries (
+                user_id, departure_time, arrival_time, notes, departure_port, arrival_port, link, operator, seat_number, booking_number, vehicle_number
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            RETURNING *;
+        `;
+        const values = [userId, departureTime, arrivalTime, notes, departurePort, arrivalPort, link, operator, seatNumber, bookingNumber, vehicleNumber];
+        const result = await pool.query(query, values);
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error inserting ferry:", error);
+        res.status(500).send("Server error: " + error.message);
+    }
+});
+
+// Get all ferries for the logged-in user
+app.get('/api/ferries', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const query = `SELECT * FROM ferries WHERE user_id = $1`;
+        const result = await pool.query(query, [userId]);
+        res.status(200).json(result.rows);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Update a ferry entry
+app.put('/api/ferries/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const updatedFields = req.body;
+    try {
+        let query = `UPDATE ferries SET `;
+        const values = [];
+        Object.entries(updatedFields).forEach(([key, value], index) => {
+            query += `${key} = $${index + 1}, `;
+            values.push(value);
+        });
+        query = query.slice(0, -2) + ` WHERE id = $${values.length + 1} RETURNING *`;
+        values.push(id);
+        const result = await pool.query(query, values);
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Delete a ferry entry
+app.delete('/api/ferries/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+    try {
+        const query = `DELETE FROM ferries WHERE id = $1 AND user_id = $2 RETURNING *`;
+        const result = await pool.query(query, [id, userId]);
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Ferry not found or already deleted." });
+        }
+        res.status(200).json({ message: "Ferry deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
   
 
 
