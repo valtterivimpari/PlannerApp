@@ -94,21 +94,32 @@
     background-color: #16a085;
 }
 
+.sleeping-section {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .sleeping-section h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.2em;
+  }
+
 .add-sleeping-button {
     background-color: #1abc9c;
     color: white;
     border: none;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 1.5em;
-    line-height: 30px;
+    width: 40px;
+    height: 40px;
+    font-size: 2em;
+    line-height: 40px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s ease;
-}
+    margin: 0 10px
+  }
 
 .add-sleeping-button:hover {
     background-color: #16a085;
@@ -155,7 +166,7 @@
 .add-destination {
     margin-top: 10px;
     display: flex;
-    gap: 10px;
+    gap: 20px;
 }
 
 .add-destination input {
@@ -197,10 +208,11 @@
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 5px 10px;
+    padding: 10px 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-left: 10px;
+
 }
 
 .map-button:hover {
@@ -217,13 +229,13 @@
 }
 .destination-buttons {
     display: flex;
-    gap: 10px; /* Spacing between buttons */
+    gap: 20px; /* Spacing between buttons */
 }
 
 .nights-counter {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 }
 
 .nights-counter button {

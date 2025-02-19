@@ -386,6 +386,17 @@ return (
                                     <button className="delete-button" onClick={() => handleRemoveDestination(index)}>Delete</button>
                                     <button className="map-button" onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}>Map View</button>
                                 </div>
+                                           {/* New Sleeping Section */}
+             <div className="sleeping-section">
+               <h4>Sleeping</h4>
+              {destination.sleeping ? (
+                <p>{destination.sleeping}</p>
+               ) : (
+                 <button onClick={() => navigate('/sleeping')} className="add-sleeping-button">
+                   +
+                </button>
+              )}
+             </div>
                             </div>
                         ))}
                         <div className="add-destination">
