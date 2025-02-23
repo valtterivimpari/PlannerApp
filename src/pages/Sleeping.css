@@ -39,18 +39,35 @@
   }
   
   .add-custom-button {
-    margin: 10px;
-    padding: 8px 16px;
-    background-color: #3498db;
-    border: none;
-    border-radius: 4px;
+    background-color: #1abc9c; /* Green color */
     color: #fff;
+    border: none;
+    border-radius: 9999px; /* Very large border radius to create a pill shape */
+    padding: 14px 30px; /* Bigger padding for a bigger button */
+    font-size: 16px; /* Slightly larger text */
+    display: inline-flex; /* So the plus icon and text sit side by side */
+    align-items: center; /* Vertically center content */
+    gap: 10px; /* Space between plus icon and text */
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-weight: 500; /* Slightly bolder text */
   }
   
+  /* Hover effect to slightly darken the background */
   .add-custom-button:hover {
-    background-color: #2980b9;
+    background-color: #16a085;
+  }
+  .plus-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;       /* Circle width */
+    height: 24px;      /* Circle height */
+    border-radius: 9999px;
+    background-color: #fff;  /* White circle */
+    color: #1abc9c;          /* Teal plus sign */
+    font-weight: bold;
+    font-size: 16px;
   }
   
   .save-button {

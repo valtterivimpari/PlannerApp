@@ -62,14 +62,12 @@ function Sleeping() {
           </a>
         </div>
         <div className="custom-button">
-          <button className="add-custom-button" onClick={() => { /* Future custom action */ }}>
-            Add Custom
-          </button>
-        </div>
-        <div className="save-button-container">
-          <button className="save-button" onClick={handleSaveSleeping}>
-            Save Sleeping Details
-          </button>
+        <button className="add-custom-button" onClick={() => { /* Future custom action */ }}>
+  <span className="plus-icon">+</span>
+  Add custom
+</button>
+
+
         </div>
       </div>
     );
