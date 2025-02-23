@@ -1,0 +1,77 @@
+/* Sleeping.css */
+.sleeping-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: 40px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  
+  .sleeping-info h2 {
+    font-size: 2em; /* keep existing size */
+    color: #000; /* set header text to black */
+  }
+  
+  .sleeping-info p {
+    font-size: 1.1em;
+    color: #555;
+  }
+  .city-name {
+    color: #00796b; /* green color for the city name */
+  }
+  
+  .booking-link a {
+    display: inline-block;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background-color: #1abc9c;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .booking-link a:hover {
+    background-color: #16a085;
+  }
+  
+  .add-custom-button {
+    margin: 10px;
+    padding: 8px 16px;
+    background-color: #3498db;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-custom-button:hover {
+    background-color: #2980b9;
+  }
+  
+  .save-button {
+    margin: 20px;
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .save-button:hover {
+    background-color: #27ae60;
+  }
+
+  .booking-logo {
+    width: 23px; /* Adjust this value as needed */
+    height: auto;
+    margin-right: 10px;
+  }
+  
+  

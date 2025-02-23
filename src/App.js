@@ -24,6 +24,7 @@ import BusSummary from './pages/BusSummary';
 import FerryDetails from './pages/FerryDetails';
 import FerryEdit from './pages/FerryEdit';
 import FerrySummary from './pages/FerrySummary';
+import Sleeping from './pages/Sleeping';
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
 <Route path="/ferry-details" element={<FerryDetails />} />
   <Route path="/ferry-edit" element={<FerryEdit />} />
   <Route path="/ferry-summary" element={<FerrySummary />} />
+  <Route path="/sleeping" element={<RequireAuth><Sleeping /></RequireAuth>} />
 
 
             </Routes>

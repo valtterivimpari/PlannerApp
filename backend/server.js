@@ -370,18 +370,20 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
     console.log('User ID from token:', req.user.id);
 
     const { tripId } = req.params;
-    const { selected_country } = req.body;
+    // Now accept both selected_country and sleeping from the request body.
+    const { selected_country, sleeping } = req.body;
     const userId = req.user.id;
 
     try {
         const query = `
             UPDATE trips
-            SET selected_country = $1
-            WHERE id = $2 AND user_id = $3
+            SET selected_country = COALESCE($1, selected_country),
+                sleeping = COALESCE($2, sleeping)
+            WHERE id = $3 AND user_id = $4
             RETURNING *;
         `;
-        console.log('Executing query with:', selected_country, tripId, userId);
-        const result = await pool.query(query, [selected_country, tripId, userId]);
+        console.log('Executing query with:', selected_country, sleeping, tripId, userId);
+        const result = await pool.query(query, [selected_country, sleeping, tripId, userId]);
 
         if (result.rowCount === 0) {
             console.log('No rows updated: Trip not found or unauthorized.');
@@ -392,9 +394,10 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
         res.status(200).json(result.rows[0]);
     } catch (error) {
         console.error('Error during PUT request:', error);
-        res.status(200).send("Route works with minimal logic!");
+        res.status(500).send("Server error");
     }
 });
+
 
 app.get('/api/directions', async (req, res) => {
     const { start, end } = req.query;
