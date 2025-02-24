@@ -103,6 +103,7 @@ formattedCheckout = isNaN(checkoutDateObj)
           <p>
             <strong>Type:</strong> {sleeping.type}
           </p>
+          <p><strong>Name:</strong> {sleeping.name}</p>
           <p>
             <strong>Breakfast:</strong> {sleeping.breakfast === 'yes' ? 'Included' : 'Not included'}
           </p>

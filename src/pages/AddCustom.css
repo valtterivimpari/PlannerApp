@@ -40,6 +40,7 @@
   }
   
   .form-group input[type="url"],
+  .form-group input[type="text"],
   .form-group select,
   .form-group textarea {
     padding: 10px;

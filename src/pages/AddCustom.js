@@ -11,12 +11,14 @@ function AddCustom() {
   const initialData = sleeping
     ? {
         accommodationType: sleeping.type, // use the saved type
+        accommodationName: sleeping.name || '',
         breakfast: sleeping.breakfast,
         link: sleeping.link,
         notes: sleeping.notes
       }
     : {
         accommodationType: '',
+        accommodationName: '',
         breakfast: 'no',
         link: '',
         notes: ''
@@ -59,11 +61,13 @@ function AddCustom() {
       const checkoutDateObj = new Date(checkinDateObj);
       checkoutDateObj.setDate(checkinDateObj.getDate() + nights);
       const formattedCheckout = checkoutDateObj.toLocaleDateString('fi-FI', options);
+
   
       // Build custom sleeping details object including both raw and formatted dates
       const sleepingDetails = {
         custom: true,
         type: formData.accommodationType,
+        name: formData.accommodationName, // new field
         breakfast: formData.breakfast,
         link: formData.link,
         notes: formData.notes,
@@ -129,6 +133,17 @@ function AddCustom() {
               <option value="Campground">Campground</option>
               <option value="Motel">Motel</option>
             </select>
+          </div>
+          <div className="form-group">
+            <label>Name of the Accommodation:</label>
+            <input 
+              type="text"
+              name="accommodationName"
+              value={formData.accommodationName}
+              onChange={handleChange}
+              placeholder="Enter accommodation name"
+              required
+            />
           </div>
           <div className="form-group">
             <label>Breakfast Included:</label>
