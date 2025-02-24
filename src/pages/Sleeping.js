@@ -7,45 +7,65 @@ import bookingImage from '../assets/booking.png';
 function Sleeping() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { tripId, city, startDate, nights } = location.state || {};
+  // Check if a custom sleeping object exists in state
+  const { tripId, sleeping, city, startDate, nights } = location.state || {};
 
-  // Ensure default values and check for a valid start date
-  const numNights = nights || 1;
-  const checkinDate = new Date(startDate);
-  const checkoutDate = new Date(checkinDate);
-  checkoutDate.setDate(checkinDate.getDate() + numNights);
 
-  // Format dates in Finnish (e.g., la 31. toukok.)
-  const options = { day: 'numeric', month: 'short', weekday: 'short' };
-  const formattedCheckin = isNaN(checkinDate)
-    ? 'Invalid Date'
-    : checkinDate.toLocaleDateString('fi-FI', options);
-  const formattedCheckout = isNaN(checkoutDate)
-    ? 'Invalid Date'
-    : checkoutDate.toLocaleDateString('fi-FI', options);
+  // If custom sleeping details exist, use them; otherwise, use fallback values
+  const isCustom = sleeping && sleeping.custom;
+  const displayCity = isCustom ? sleeping.city : city;
+  const displayNights = isCustom ? sleeping.nights : (nights || 1);
+  const validStartDate = startDate && !isNaN(new Date(startDate))
+  ? startDate
+  : new Date().toISOString();
 
-  // Build the booking.com URL dynamically using the dates and city
-  const bookingLink = `https://www.booking.com/searchresults.fi.html?aid=1787423&label=673360ebb504efb5a35ba159&sid=81e3c0f7caa3bdd18af46ff33346f738&checkin_month=${checkinDate.getMonth() + 1}&checkin_monthday=${checkinDate.getDate()}&checkin_year=${checkinDate.getFullYear()}&checkout_month=${checkoutDate.getMonth() + 1}&checkout_monthday=${checkoutDate.getDate()}&checkout_year=${checkoutDate.getFullYear()}&class_interval=1&dtdisc=0&group_adults=2&group_children=0&inac=0&index_postcard=0&keep_landing=1&label_click=undef&lang=fi&lang_changed=1&no_rooms=1&offset=0&postcard=0&room1=A%2CA&sb_price_type=total&shw_aparth=1&slp_r_match=0&ss=${encodeURIComponent(city)}&ss_all=0&ssb=empty&sshis=0`;
+  let formattedCheckin, formattedCheckout;
+  if (isCustom) {
+    // Assume custom checkinDate is already formatted
+    formattedCheckin = sleeping.checkinDate;
+    // Calculate checkout based on nights if desired—or store it in custom details as well.
+    // For simplicity, we’ll display the custom checkout if provided; otherwise, use checkin plus nights.
+    formattedCheckout = sleeping.checkoutDate || '—';
+  } else {
+    const numNights = nights || 1;
+const checkinDateObj = new Date(validStartDate);
+const checkoutDateObj = new Date(checkinDateObj);
+checkoutDateObj.setDate(checkinDateObj.getDate() + numNights);
+const options = { day: 'numeric', month: 'short', weekday: 'short' };
+formattedCheckin = isNaN(checkinDateObj)
+? 'Invalid Date'
+: checkinDateObj.toLocaleDateString('fi-FI', options);
+formattedCheckout = isNaN(checkoutDateObj)
+? 'Invalid Date'
+: checkoutDateObj.toLocaleDateString('fi-FI', options);
+}
 
-  // Function to save sleeping details (updates the sleeping field for the trip)
-  const handleSaveSleeping = async () => {
+  // Build the booking.com URL dynamically using the city and, if not custom, the dates
+  const bookingLink = `https://www.booking.com/searchresults.fi.html?aid=1787423&label=673360ebb504efb5a35ba159&sid=81e3c0f7caa3bdd18af46ff33346f738&checkin_month=0&checkin_monthday=0&checkin_year=0&checkout_month=0&checkout_monthday=0&checkout_year=0&class_interval=1&dtdisc=0&group_adults=2&group_children=0&inac=0&index_postcard=0&keep_landing=1&label_click=undef&lang=fi&lang_changed=1&no_rooms=1&offset=0&postcard=0&room1=A%2CA&sb_price_type=total&shw_aparth=1&slp_r_match=0&ss=${encodeURIComponent(displayCity)}&ss_all=0&ssb=empty&sshis=0`;
+  // (For simplicity, the checkin/checkout values are not recalculated in custom mode.)
+
+  // Handler for editing custom details – navigate to AddCustom with current custom details
+  const handleEditCustom = () => {
+    const newStartDate = (sleeping && sleeping.rawCheckin) ? sleeping.rawCheckin : startDate;
+    navigate('/add-custom', { state: { tripId, city, startDate: newStartDate, nights, sleeping } });
+  };
+  
+  
+
+  // Handler for deleting custom details
+  const handleDeleteCustom = async () => {
     try {
       const token = localStorage.getItem('token');
-      const sleepingDetails = {
-        city,
-        checkinDate: formattedCheckin,
-        checkoutDate: formattedCheckout,
-        nights: numNights,
-      };
-      const response = await axios.put(
+      await axios.put(
         `http://localhost:5000/api/trips/${tripId}`,
-        { sleeping: sleepingDetails },
+        { sleeping: null },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log('Sleeping details saved:', response.data);
-      navigate(-1);
+      console.log('Custom sleeping details deleted');
+      // Navigate back to Sleeping with fallback details
+      navigate('/sleeping', { state: { tripId, city, startDate, nights } });
     } catch (error) {
-      console.error('Error saving sleeping details:', error);
+      console.error('Error deleting custom sleeping details:', error);
     }
   };
 
@@ -53,8 +73,8 @@ function Sleeping() {
     <div className="sleeping-container">
       <div className="sleeping-info">
         <h2>
-          {numNights} {numNights === 1 ? 'night' : 'nights'} in{' '}
-          <span className="city-name">{city}</span>
+          {displayNights} {displayNights === 1 ? 'night' : 'nights'} in{' '}
+          <span className="city-name">{displayCity}</span>
         </h2>
         <p>
           {formattedCheckin} - {formattedCheckout}
@@ -70,16 +90,42 @@ function Sleeping() {
         <button
           className="add-custom-button"
           onClick={() => {
-            /* Future custom action */
+            navigate('/add-custom', { state: { tripId, city, startDate, nights } })
           }}
         >
           <span className="plus-icon">+</span>
           Add custom
         </button>
       </div>
+      {isCustom && (
+        <div className="custom-summary">
+          <h3>Custom Accommodation Details</h3>
+          <p>
+            <strong>Type:</strong> {sleeping.type}
+          </p>
+          <p>
+            <strong>Breakfast:</strong> {sleeping.breakfast === 'yes' ? 'Included' : 'Not included'}
+          </p>
+          <p>
+            <strong>Link:</strong> {sleeping.link}
+          </p>
+          <p>
+            <strong>Notes:</strong> {sleeping.notes}
+          </p>
+          <div className="summary-buttons">
+            <button className="edit-button" onClick={handleEditCustom}>
+              Edit
+            </button>
+            <button className="delete-button" onClick={handleDeleteCustom}>
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default Sleeping;
+
 

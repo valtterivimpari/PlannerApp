@@ -370,9 +370,11 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
     console.log('User ID from token:', req.user.id);
 
     const { tripId } = req.params;
-    // Now accept both selected_country and sleeping from the request body.
     const { selected_country, sleeping } = req.body;
     const userId = req.user.id;
+    
+    // If sleeping details are provided, stringify them
+    const sleepingJson = sleeping ? JSON.stringify(sleeping) : null;
 
     try {
         const query = `
@@ -382,8 +384,8 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
             WHERE id = $3 AND user_id = $4
             RETURNING *;
         `;
-        console.log('Executing query with:', selected_country, sleeping, tripId, userId);
-        const result = await pool.query(query, [selected_country, sleeping, tripId, userId]);
+        console.log('Executing query with:', selected_country, sleepingJson, tripId, userId);
+        const result = await pool.query(query, [selected_country, sleepingJson, tripId, userId]);
 
         if (result.rowCount === 0) {
             console.log('No rows updated: Trip not found or unauthorized.');
@@ -397,6 +399,7 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
         res.status(500).send("Server error");
     }
 });
+
 
 
 app.get('/api/directions', async (req, res) => {

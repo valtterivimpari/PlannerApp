@@ -301,37 +301,6 @@ return (
                         <strong>Destination:</strong> {destinationName || 'Unknown'}
 
                     </div>
-
-                    <div>
-                        <strong>Sleeping:</strong>
-                        {trip.sleeping ? (
-                            trip.sleeping
-                        ) : (
-                            <button onClick={() => console.log('Add sleeping details')} className="add-sleeping-button">
-                                +
-                            </button>
-                        )}
-                    </div>
-                    <div>
-                        <strong>Discover:</strong>
-                        {trip.discover ? (
-                            trip.discover
-                        ) : (
-                            <button onClick={() => console.log('Add discover details')} className="add-discover-button">
-                                +
-                            </button>
-                        )}
-                    </div>
-                    <div>
-                        <strong>Transport:</strong>
-                        {trip.transport ? (
-                            trip.transport
-                        ) : (
-                            <button onClick={() => console.log('Add transport details')} className="add-transport-button">
-                                +
-                            </button>
-                        )}
-                    </div>
                 </div>
                 <div className="trip-destinations">
                 <h2>Destinations</h2>

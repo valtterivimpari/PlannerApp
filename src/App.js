@@ -25,6 +25,8 @@ import FerryDetails from './pages/FerryDetails';
 import FerryEdit from './pages/FerryEdit';
 import FerrySummary from './pages/FerrySummary';
 import Sleeping from './pages/Sleeping';
+import AddCustom from './pages/AddCustom';
+
 
 
 function App() {
@@ -56,6 +58,8 @@ function App() {
   <Route path="/ferry-edit" element={<FerryEdit />} />
   <Route path="/ferry-summary" element={<FerrySummary />} />
   <Route path="/sleeping" element={<RequireAuth><Sleeping /></RequireAuth>} />
+  <Route path="/add-custom" element={<RequireAuth><AddCustom /></RequireAuth>} />
+
 
 
             </Routes>
