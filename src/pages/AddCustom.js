@@ -7,7 +7,8 @@ function AddCustom() {
   const location = useLocation();
   const navigate = useNavigate();
   // Expecting tripId, city, startDate, and nights from the previous page
-  const { tripId, city, startDate, nights, sleeping } = location.state || {};
+  const { tripId, city, startDate, nights, sleeping, destinationIndex } = location.state || {};
+
   const initialData = sleeping
     ? {
         accommodationType: sleeping.type, // use the saved type
@@ -48,67 +49,126 @@ function AddCustom() {
     try {
       const token = localStorage.getItem('token');
       const options = { day: 'numeric', month: 'short', weekday: 'short' };
-      const validStartDate = startDate 
-      ? startDate 
-      : (sleeping && sleeping.rawCheckin ? sleeping.rawCheckin : new Date().toISOString());
-   
-  
+      const validStartDate = startDate
+        ? startDate
+        : (sleeping && sleeping.rawCheckin ? sleeping.rawCheckin : new Date().toISOString());
+      
       // Save the raw start date (ISO string)
       const rawCheckin = new Date(validStartDate).toISOString();
-  
       const formattedCheckin = new Date(validStartDate).toLocaleDateString('fi-FI', options);
       const checkinDateObj = new Date(validStartDate);
       const checkoutDateObj = new Date(checkinDateObj);
       checkoutDateObj.setDate(checkinDateObj.getDate() + nights);
       const formattedCheckout = checkoutDateObj.toLocaleDateString('fi-FI', options);
-
-  
+    
       // Build custom sleeping details object including both raw and formatted dates
       const sleepingDetails = {
         custom: true,
         type: formData.accommodationType,
-        name: formData.accommodationName, // new field
+        name: formData.accommodationName,
         breakfast: formData.breakfast,
         link: formData.link,
         notes: formData.notes,
         city,
-        rawCheckin,         // Raw ISO string for editing later
+        rawCheckin,
         checkinDate: formattedCheckin,
         checkoutDate: formattedCheckout,
-        nights
+        nights,
       };
-  
-      await axios.put(
-        `http://localhost:5000/api/trips/${tripId}`,
-        { sleeping: sleepingDetails },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      console.log('Custom sleeping details saved');
-      // Navigate to the Sleeping page, passing along the custom sleeping details
-      navigate('/sleeping', { state: { tripId, sleeping: sleepingDetails, city, startDate: validStartDate, nights } });
+    
+      if (destinationIndex !== undefined) {
+        // Update sleeping details for a specific destination
+        const tripResponse = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const currentTrip = tripResponse.data;
+        // currentTrip.destinations is now an array (already parsed by GET endpoint)
+        let destinations = currentTrip.destinations || [];
+        if (destinations[destinationIndex]) {
+          destinations[destinationIndex].sleeping = sleepingDetails;
+        } else {
+          console.error("Destination index not found");
+          return;
+        }
+        // Save the updated destinations array
+        await axios.put(
+          `http://localhost:5000/api/trips/${tripId}/destinations`,
+          { destinations },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        // Also clear the top-level sleeping field so it doesn’t override destination sleeping data
+        await axios.put(
+          `http://localhost:5000/api/trips/${tripId}`,
+          { sleeping: null },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log('Sleeping details updated for destination index', destinationIndex);
+        navigate(`/sleeping/${encodeURIComponent(city)}/${validStartDate}`, { 
+          state: { tripId, sleeping: sleepingDetails, city, startDate: validStartDate, nights, destinationIndex } 
+        });
+        
+      } else {
+        // Fallback: update the overall trip sleeping field
+        await axios.put(
+          `http://localhost:5000/api/trips/${tripId}`,
+          { sleeping: sleepingDetails },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log('Custom sleeping details saved');
+        navigate(`/sleeping/${encodeURIComponent(city)}/${validStartDate}`, { 
+          state: { tripId, sleeping: sleepingDetails, city, startDate: validStartDate, nights } 
+        });
+        
+      }
+      
     } catch (error) {
       console.error('Error saving custom sleeping details:', error);
     }
   };
   
   
+  
 
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem('token');
-      // Remove custom details by setting sleeping to null
-      await axios.put(
-        `http://localhost:5000/api/trips/${tripId}`,
-        { sleeping: null },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      console.log('Custom sleeping details deleted');
-      navigate('/sleeping', { state: { tripId, city, startDate: validStartDate, nights } });
-
+      if (destinationIndex !== undefined) {
+        // Fetch current trip details
+        const tripResponse = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const currentTrip = tripResponse.data;
+        let destinations = currentTrip.destinations ? JSON.parse(currentTrip.destinations) : [];
+        // Remove sleeping details for the specific destination
+        if (destinations[destinationIndex]) {
+          destinations[destinationIndex].sleeping = null;
+        }
+        // Save updated destinations
+        await axios.put(
+          `http://localhost:5000/api/trips/${tripId}/destinations`,
+          { destinations },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log('Sleeping details deleted for destination index', destinationIndex);
+        navigate('/trip-info', { state: { tripId } });
+      } else {
+        // Default behavior: remove sleeping details from the entire trip
+        await axios.put(
+          `http://localhost:5000/api/trips/${tripId}`,
+          { sleeping: null },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log('Custom sleeping details deleted');
+        navigate(`/sleeping/${encodeURIComponent(city)}/${startDate}`, { 
+          state: { tripId, city, startDate, nights } 
+        });
+        
+      }
     } catch (error) {
       console.error('Error deleting custom sleeping details:', error);
     }
   };
+  
 
   return (
     <div className="add-custom-container">
@@ -198,6 +258,9 @@ function AddCustom() {
           <h2>Summary</h2>
           <p>
             <strong>Type:</strong> {formData.accommodationType}
+          </p>
+          <p>
+            <strong>Type:</strong> {formData.accommodationName}
           </p>
           <p>
             <strong>Breakfast:</strong>{' '}

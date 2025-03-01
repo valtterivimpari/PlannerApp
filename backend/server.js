@@ -261,26 +261,31 @@ app.delete('/api/trips/:tripId', authenticateToken, async (req, res) => {
 
 // Get a specific trip by ID
 app.get('/api/trips/:tripId', authenticateToken, async (req, res) => {
-    console.log(`GET /api/trips/${req.params.tripId} hit`);
-    const { tripId } = req.params;
-    const userId = req.user.id;
-
     try {
+        const { tripId } = req.params;
+        const userId = req.user.id;
         const query = `SELECT * FROM trips WHERE id = $1 AND user_id = $2`;
         const result = await pool.query(query, [tripId, userId]);
-
         if (result.rowCount === 0) {
-            console.log('Trip not found or unauthorized');
             return res.status(404).send('Trip not found or unauthorized');
         }
-
-        console.log('Trip data:', result.rows[0]); // Debugging
-        res.status(200).json(result.rows[0]);
+        let tripData = result.rows[0];
+        // If destinations is stored as a JSON string, parse it
+        if (tripData.destinations && typeof tripData.destinations === 'string') {
+            tripData.destinations = JSON.parse(tripData.destinations);
+        }
+        // If the trip has destinations, clear the top-level sleeping field
+        if (tripData.destinations && tripData.destinations.length > 0) {
+            tripData.sleeping = null;
+        }
+        res.status(200).json(tripData);
     } catch (error) {
         console.error('Error fetching trip:', error);
         res.status(500).send('Server error');
     }
 });
+
+
 
 // Place this route first
 app.put('/api/trips/:tripId/add-destination', authenticateToken, async (req, res) => {

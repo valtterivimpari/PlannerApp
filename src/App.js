@@ -57,7 +57,7 @@ function App() {
 <Route path="/ferry-details" element={<FerryDetails />} />
   <Route path="/ferry-edit" element={<FerryEdit />} />
   <Route path="/ferry-summary" element={<FerrySummary />} />
-  <Route path="/sleeping" element={<RequireAuth><Sleeping /></RequireAuth>} />
+  <Route path="/sleeping/:city/:date" element={<RequireAuth><Sleeping /></RequireAuth>} />
   <Route path="/add-custom" element={<RequireAuth><AddCustom /></RequireAuth>} />
 
 

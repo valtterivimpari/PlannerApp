@@ -356,32 +356,30 @@ return (
                                     <button className="map-button" onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}>Map View</button>
                                 </div>
                 {/* New Sleeping Section */}
-<div className="sleeping-section">
+                <div className="sleeping-section">
   <h4>Sleeping</h4>
-  {destination.sleeping ? (
-    // Optionally display saved sleeping details (e.g. city and dates)
-    <p>
-      {destination.sleeping.city} <br />
-      {destination.sleeping.checkinDate} - {destination.sleeping.checkoutDate}
-    </p>
-  ) : (
-    <button
-      onClick={() =>
-        navigate('/sleeping', {
+  <button
+    onClick={() =>
+      navigate(
+        `/sleeping/${encodeURIComponent(destination.name)}/${calculateStartDate(trip.start_date, index).toISOString()}`,
+        {
           state: {
             tripId: trip.id,
             city: destination.name,
             startDate: calculateStartDate(trip.start_date, index).toISOString(),
             nights: destination.nights,
+            destinationIndex: index,
           },
-        })
-      }
-      className="add-sleeping-button"
-    >
-      +
-    </button>
-  )}
+        }
+      )
+    }
+    className="add-sleeping-button"
+  >
+    +
+  </button>
 </div>
+
+
 
                             </div>
                         ))}

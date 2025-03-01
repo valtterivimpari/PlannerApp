@@ -1,69 +1,133 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Sleeping.css';
 import bookingImage from '../assets/booking.png';
 
 function Sleeping() {
+  // Use dynamic URL parameters if defined in the route (optional)
+  const { city: urlCity, date: urlDate } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  // Check if a custom sleeping object exists in state
-  const { tripId, sleeping, city, startDate, nights } = location.state || {};
+  // Extract values from location.state
+  const { tripId, sleeping: sleepingState, city: stateCity, startDate, nights, destinationIndex } = location.state || {};
 
+  // Local state for trip details
+  const [trip, setTrip] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // If custom sleeping details exist, use them; otherwise, use fallback values
-  const isCustom = sleeping && sleeping.custom;
-  const displayCity = isCustom ? sleeping.city : city;
-  const displayNights = isCustom ? sleeping.nights : (nights || 1);
-  const validStartDate = startDate && !isNaN(new Date(startDate))
-  ? startDate
-  : new Date().toISOString();
+  // Fetch trip data from the server
+  useEffect(() => {
+    async function fetchTrip() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = response.data;
+        // Ensure destinations is an array
+        if (data.destinations && typeof data.destinations === 'string') {
+          data.destinations = JSON.parse(data.destinations);
+        }
+        setTrip(data);
+      } catch (error) {
+        console.error('Error fetching trip:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (!sleepingState) {
+      fetchTrip();
+    } else {
+      setTrip({ sleeping: sleepingState, city: stateCity });
+      setLoading(false);
+    }
+  }, [tripId, sleepingState, stateCity]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // Determine sleeping details:
+  // If a destinationIndex is provided and trip.destinations exist, use that destination's sleeping details.
+  let sleepingDetails = null;
+  if (destinationIndex !== undefined && trip && trip.destinations) {
+    sleepingDetails = trip.destinations[destinationIndex]?.sleeping || null;
+  } else {
+    sleepingDetails = trip.sleeping;
+  }
+
+  const isCustom = sleepingDetails && sleepingDetails.custom;
+  // Prefer stateCity if provided; otherwise fallback to URL parameter.
+  const displayCity = isCustom ? sleepingDetails.city : (stateCity || urlCity);
+  const displayNights = isCustom ? sleepingDetails.nights : (nights || 1);
 
   let formattedCheckin, formattedCheckout;
   if (isCustom) {
-    // Assume custom checkinDate is already formatted
-    formattedCheckin = sleeping.checkinDate;
-    // Calculate checkout based on nights if desired—or store it in custom details as well.
-    // For simplicity, we’ll display the custom checkout if provided; otherwise, use checkin plus nights.
-    formattedCheckout = sleeping.checkoutDate || '—';
+    formattedCheckin = sleepingDetails.checkinDate;
+    formattedCheckout = sleepingDetails.checkoutDate || '—';
   } else {
     const numNights = nights || 1;
-const checkinDateObj = new Date(validStartDate);
-const checkoutDateObj = new Date(checkinDateObj);
-checkoutDateObj.setDate(checkinDateObj.getDate() + numNights);
-const options = { day: 'numeric', month: 'short', weekday: 'short' };
-formattedCheckin = isNaN(checkinDateObj)
-? 'Invalid Date'
-: checkinDateObj.toLocaleDateString('fi-FI', options);
-formattedCheckout = isNaN(checkoutDateObj)
-? 'Invalid Date'
-: checkoutDateObj.toLocaleDateString('fi-FI', options);
-}
+    const validStartDate = startDate && !isNaN(new Date(startDate))
+      ? startDate
+      : new Date().toISOString();
+    const checkinDateObj = new Date(validStartDate);
+    const checkoutDateObj = new Date(checkinDateObj);
+    checkoutDateObj.setDate(checkinDateObj.getDate() + numNights);
+    const options = { day: 'numeric', month: 'short', weekday: 'short' };
+    formattedCheckin = isNaN(checkinDateObj) ? 'Invalid Date' : checkinDateObj.toLocaleDateString('fi-FI', options);
+    formattedCheckout = isNaN(checkoutDateObj) ? 'Invalid Date' : checkoutDateObj.toLocaleDateString('fi-FI', options);
+  }
 
-  // Build the booking.com URL dynamically using the city and, if not custom, the dates
-  const bookingLink = `https://www.booking.com/searchresults.fi.html?aid=1787423&label=673360ebb504efb5a35ba159&sid=81e3c0f7caa3bdd18af46ff33346f738&checkin_month=0&checkin_monthday=0&checkin_year=0&checkout_month=0&checkout_monthday=0&checkout_year=0&class_interval=1&dtdisc=0&group_adults=2&group_children=0&inac=0&index_postcard=0&keep_landing=1&label_click=undef&lang=fi&lang_changed=1&no_rooms=1&offset=0&postcard=0&room1=A%2CA&sb_price_type=total&shw_aparth=1&slp_r_match=0&ss=${encodeURIComponent(displayCity)}&ss_all=0&ssb=empty&sshis=0`;
-  // (For simplicity, the checkin/checkout values are not recalculated in custom mode.)
+  // Build the booking.com URL dynamically using displayCity.
+  const bookingLink = `https://www.booking.com/searchresults.fi.html?ss=${encodeURIComponent(displayCity)}`;
 
-  // Handler for editing custom details – navigate to AddCustom with current custom details
   const handleEditCustom = () => {
-    const newStartDate = (sleeping && sleeping.rawCheckin) ? sleeping.rawCheckin : startDate;
-    navigate('/add-custom', { state: { tripId, city, startDate: newStartDate, nights, sleeping } });
+    const newStartDate = (sleepingDetails && sleepingDetails.rawCheckin) ? sleepingDetails.rawCheckin : startDate;
+    navigate('/add-custom', {
+      state: { tripId, city: displayCity, startDate: newStartDate, nights, sleeping: sleepingDetails, destinationIndex },
+    });
   };
-  
-  
 
-  // Handler for deleting custom details
   const handleDeleteCustom = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:5000/api/trips/${tripId}`,
-        { sleeping: null },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      console.log('Custom sleeping details deleted');
-      // Navigate back to Sleeping with fallback details
-      navigate('/sleeping', { state: { tripId, city, startDate, nights } });
+      if (destinationIndex !== undefined) {
+        // Fetch the latest trip details.
+        const tripResponse = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const currentTrip = tripResponse.data;
+        let destinations = currentTrip.destinations || [];
+        // Update the specific destination.
+        if (destinations[destinationIndex]) {
+          destinations[destinationIndex].sleeping = null;
+        }
+        // Save updated destinations.
+        await axios.put(
+          `http://localhost:5000/api/trips/${tripId}/destinations`,
+          { destinations },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        // Also clear the top-level sleeping field.
+        await axios.put(
+          `http://localhost:5000/api/trips/${tripId}`,
+          { sleeping: null },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log('Sleeping details deleted for destination index', destinationIndex);
+        navigate('/trip-info', { state: { tripId } });
+      } else {
+        await axios.put(
+          `http://localhost:5000/api/trips/${tripId}`,
+          { sleeping: null },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log('Custom sleeping details deleted');
+        navigate(`/sleeping/${encodeURIComponent(displayCity)}/${startDate}`, {
+          state: { tripId, city: displayCity, startDate, nights },
+        });
+      }
     } catch (error) {
       console.error('Error deleting custom sleeping details:', error);
     }
@@ -73,8 +137,7 @@ formattedCheckout = isNaN(checkoutDateObj)
     <div className="sleeping-container">
       <div className="sleeping-info">
         <h2>
-          {displayNights} {displayNights === 1 ? 'night' : 'nights'} in{' '}
-          <span className="city-name">{displayCity}</span>
+          {displayNights} {displayNights === 1 ? 'night' : 'nights'} in <span className="city-name">{displayCity}</span>
         </h2>
         <p>
           {formattedCheckin} - {formattedCheckout}
@@ -90,7 +153,9 @@ formattedCheckout = isNaN(checkoutDateObj)
         <button
           className="add-custom-button"
           onClick={() => {
-            navigate('/add-custom', { state: { tripId, city, startDate, nights } })
+            navigate('/add-custom', {
+              state: { tripId, city: displayCity, startDate, nights, destinationIndex },
+            });
           }}
         >
           <span className="plus-icon">+</span>
@@ -100,19 +165,13 @@ formattedCheckout = isNaN(checkoutDateObj)
       {isCustom && (
         <div className="custom-summary">
           <h3>Custom Accommodation Details</h3>
+          <p><strong>Type:</strong> {sleepingDetails.type}</p>
+          <p><strong>Name:</strong> {sleepingDetails.name}</p>
           <p>
-            <strong>Type:</strong> {sleeping.type}
+            <strong>Breakfast:</strong> {sleepingDetails.breakfast === 'yes' ? 'Included' : 'Not included'}
           </p>
-          <p><strong>Name:</strong> {sleeping.name}</p>
-          <p>
-            <strong>Breakfast:</strong> {sleeping.breakfast === 'yes' ? 'Included' : 'Not included'}
-          </p>
-          <p>
-            <strong>Link:</strong> {sleeping.link}
-          </p>
-          <p>
-            <strong>Notes:</strong> {sleeping.notes}
-          </p>
+          <p><strong>Link:</strong> {sleepingDetails.link}</p>
+          <p><strong>Notes:</strong> {sleepingDetails.notes}</p>
           <div className="summary-buttons">
             <button className="edit-button" onClick={handleEditCustom}>
               Edit
@@ -128,5 +187,6 @@ formattedCheckout = isNaN(checkoutDateObj)
 }
 
 export default Sleeping;
+
 
 
