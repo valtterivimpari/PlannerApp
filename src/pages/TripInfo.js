@@ -304,93 +304,107 @@ return (
                 </div>
                 <div className="trip-destinations">
                 <h2>Destinations</h2>
-                        {destinations.map((destination, index) => (
-                            <div className="destination-item" key={index}>
-                                <div>
-                                    <h4>{`${index + 1}. ${destination.name}`}</h4>
-                                    <p className={destination.nights === 0 ? 'stopover-text' : ''}>
-                                        {destination.nights === 0 ? 'Stopover' : `${destination.nights} nights`}
-                                    </p>
-                                </div>
-                                {index > 0 && distances[index - 1] && (
-                                    <div className="distance-display" onClick={() => {
-                                        console.log("Navigating to transport with:", {
-                                            url: `/transport/${destinations[index - 1].name}/${destination.name}/${trip.start_date}`,
-                                            state: {
-                                                distance: distances[index - 1].toFixed(1),
-                                                duration: drivingTimes[index - 1],
-                                                date: calculateStartDate(trip.start_date, index).toISOString(),
-                                            },
-                                        });
-                                        const travelDate = calculateStartDate(trip.start_date, index);
+                {destinations.map((destination, index) => (
+    <div className="destination-item" key={index}>
+        <div>
+            <h4>{`${index + 1}. ${destination.name}`}</h4>
+            <p className={destination.nights === 0 ? 'stopover-text' : ''}>
+                {destination.nights === 0 ? 'Stopover' : `${destination.nights} nights`}
+            </p>
+        </div>
+        {index > 0 && distances[index - 1] && (
+            <div className="distance-display" onClick={() => {
+                const travelDate = calculateStartDate(trip.start_date, index);
+                navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${travelDate.toISOString()}`, {
+                    state: {
+                        distance: distances[index - 1]?.toFixed(1),
+                        duration: drivingTimes[index - 1],
+                        date: travelDate.toISOString(),
+                        index,
+                    },
+                });
+            }}>
+                <span>{distances[index - 1].toFixed(1)} km</span>
+            </div>
+        )}
+        <p>
+            {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
+                ? formatDateRange(
+                      calculateStartDate(trip.start_date, index),
+                      destination.nights
+                  )
+                : 'Invalid Date'}
+        </p>
+        <div className="nights-counter">
+            <strong>Nights:</strong>
+            <button onClick={() => handleDecrement(index)}>-</button>
+            <span>{destination.nights === 0 ? 'Stopover' : destination.nights}</span>
+            <button onClick={() => handleIncrement(index)}>+</button>
+        </div>
+        <div className="destination-buttons">
+            <button className="delete-button" onClick={() => handleRemoveDestination(index)}>Delete</button>
+            <button className="map-button" onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}>Map View</button>
+        </div>
 
-                                        navigate(`/transport/${destinations[index - 1].name}/${destination.name}/${travelDate.toISOString()}`, {
-                                            state: {
-                                                distance: distances[index - 1]?.toFixed(1),
-                                                duration: drivingTimes[index - 1],
-                                                date: travelDate.toISOString(),
-                                                index,
-                                            },
-                                        });
-                                        
-                                    }}>
-                                        <span>{distances[index - 1].toFixed(1)} km</span>
-                                    </div>
-                                )}
-                                <p>
-                                    {calculateStartDate(trip.start_date, index) !== 'Invalid Date'
-                                        ? formatDateRange(
-                                              calculateStartDate(trip.start_date, index),
-                                              destination.nights
-                                          )
-                                        : 'Invalid Date'}
-                                </p>
-                                <div className="nights-counter">
-                                    <strong>Nights:</strong>
-                                    <button onClick={() => handleDecrement(index)}>-</button>
-                                    <span>{destination.nights === 0 ? 'Stopover' : destination.nights}</span>
-                                    <button onClick={() => handleIncrement(index)}>+</button>
-                                </div>
-                                <div className="destination-buttons">
-                                    <button className="delete-button" onClick={() => handleRemoveDestination(index)}>Delete</button>
-                                    <button className="map-button" onClick={() => navigate(`/map-view/${encodeURIComponent(destination.name)}`)}>Map View</button>
-                                </div>
-                {/* New Sleeping Section */}
-                <div className="sleeping-section">
-  <h4>Sleeping</h4>
-  <button
-    onClick={() =>
-      navigate(
-        `/sleeping/${encodeURIComponent(destination.name)}/${calculateStartDate(trip.start_date, index).toISOString()}`,
-        {
-          state: {
-            tripId: trip.id,
-            city: destination.name,
-            startDate: calculateStartDate(trip.start_date, index).toISOString(),
-            nights: destination.nights,
-            destinationIndex: index,
-          },
-        }
-      )
-    }
-    className="add-sleeping-button"
-  >
-    +
-  </button>
-</div>
+        {/* Sleeping Section */}
+        <div className="sleeping-section">
+            <h4>Sleeping</h4>
+            <button
+                onClick={() =>
+                    navigate(
+                        `/sleeping/${encodeURIComponent(destination.name)}/${calculateStartDate(trip.start_date, index).toISOString()}`,
+                        {
+                            state: {
+                                tripId: trip.id,
+                                city: destination.name,
+                                startDate: calculateStartDate(trip.start_date, index).toISOString(),
+                                nights: destination.nights,
+                                destinationIndex: index,
+                            },
+                        }
+                    )
+                }
+                className="add-sleeping-button"
+            >
+                +
+            </button>
+        </div>
 
+        {/* Discover Section */}
+        <div className="discover-section">
+            <h4>Discover</h4>
+            <button
+                onClick={() =>
+                    navigate(
+                        `/discover/${encodeURIComponent(destination.name)}/${calculateStartDate(trip.start_date, index).toISOString()}`,
+                        {
+                            state: {
+                                tripId: trip.id,
+                                city: destination.name,
+                                startDate: calculateStartDate(trip.start_date, index).toISOString(),
+                                nights: destination.nights,
+                                destinationIndex: index,
+                            },
+                        }
+                    )
+                }
+                className="add-discover-button"
+            >
+                +
+            </button>
 
-
-                            </div>
-                        ))}
-                        <div className="add-destination">
+        </div>
+    </div>
+    ))}
+     {/* Keep the add-destination block as provided */}
+     <div className="add-destination">
                             <input type="text" value={newDestination} onChange={(e) => setNewDestination(e.target.value)} placeholder="Add new destination" />
                             <button onClick={handleAddDestination}>Add</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     );
 }
 
