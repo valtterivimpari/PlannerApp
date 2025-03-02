@@ -116,7 +116,11 @@ function Sleeping() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log('Sleeping details deleted for destination index', destinationIndex);
-        navigate('/trip-info', { state: { tripId } });
+        navigate(`/sleeping/${encodeURIComponent(displayCity)}/${startDate}`, {
+          state: { tripId, city: displayCity, startDate, nights, destinationIndex }
+        });
+        
+        
       } else {
         await axios.put(
           `http://localhost:5000/api/trips/${tripId}`,
