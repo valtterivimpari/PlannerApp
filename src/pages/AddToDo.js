@@ -38,15 +38,30 @@ function AddToDo() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Create custom to do object
+    // Compute the date range (check-in and checkout)
+    const baseStartDate = startDate || new Date().toISOString();
+    const numNights = nights || 1;
+    const checkinDateObj = new Date(baseStartDate);
+    const checkoutDateObj = new Date(checkinDateObj);
+    checkoutDateObj.setDate(checkinDateObj.getDate() + numNights);
+    const options = { day: 'numeric', month: 'short', weekday: 'short' };
+    const checkinDateFormatted = isNaN(checkinDateObj)
+      ? 'Invalid Date'
+      : checkinDateObj.toLocaleDateString('fi-FI', options);
+    const checkoutDateFormatted = isNaN(checkoutDateObj)
+      ? 'Invalid Date'
+      : checkoutDateObj.toLocaleDateString('fi-FI', options);
+
+    // Create custom to do object including the date range
     const customTodo = {
-        custom: true,
-        type: 'todo',
-        description,
-        categories: selectedCategories,
-        city: city  // include the city from location.state
-      };
-      
+      custom: true,
+      type: 'todo',
+      description,
+      categories: selectedCategories,
+      city: city,  // include the city from location.state
+      checkinDate: checkinDateFormatted,
+      checkoutDate: checkoutDateFormatted
+    };
 
     try {
       const token = localStorage.getItem('token');
@@ -59,7 +74,6 @@ function AddToDo() {
         if (tripData.destinations && typeof tripData.destinations === 'string') {
           tripData.destinations = JSON.parse(tripData.destinations);
         }
-        // Set custom todo into the designated destination's discover field
         if (tripData.destinations[destinationIndex]) {
           tripData.destinations[destinationIndex].discover = customTodo;
         } else {
@@ -79,7 +93,7 @@ function AddToDo() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
-      // After saving, navigate back to the Discover page with updated details
+      // Navigate back to Discover page with updated details
       navigate(`/discover/${encodeURIComponent(city)}/${startDate}`, {
         state: { tripId, city, startDate, nights, destinationIndex, discover: customTodo }
       });
