@@ -26,6 +26,9 @@ import FerryEdit from './pages/FerryEdit';
 import FerrySummary from './pages/FerrySummary';
 import Sleeping from './pages/Sleeping';
 import AddCustom from './pages/AddCustom';
+import Discover from './pages/Discover';
+import AddToDo from './pages/AddToDo';
+
 
 
 
@@ -59,6 +62,10 @@ function App() {
   <Route path="/ferry-summary" element={<FerrySummary />} />
   <Route path="/sleeping/:city/:date" element={<RequireAuth><Sleeping /></RequireAuth>} />
   <Route path="/add-custom" element={<RequireAuth><AddCustom /></RequireAuth>} />
+  <Route path="/discover/:city/:date" element={<RequireAuth><Discover /></RequireAuth>} />
+  <Route path="/add-todo" element={<RequireAuth><AddToDo /></RequireAuth>} />
+
+
 
 
 
