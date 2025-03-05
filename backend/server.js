@@ -821,31 +821,35 @@ app.get('/api/trips/:tripId/budget', authenticateToken, async (req, res) => {
         if (result.rowCount === 0) {
             return res.status(404).send('Trip not found or unauthorized');
         }
-        // Return parsed JSON if budget exists, else an empty object
-        res.status(200).json(result.rows[0].budget ? JSON.parse(result.rows[0].budget) : {});
+        // Directly return the budget field (or an empty object if null)
+        res.status(200).json(result.rows[0].budget || {});
     } catch (error) {
         console.error('Error fetching budget:', error);
         res.status(500).send('Server error');
     }
 });
 
+
 // In server.js, add a new route to update budget data for a trip
 app.put('/api/trips/:tripId/budget', authenticateToken, async (req, res) => {
     const { tripId } = req.params;
-    const { totalBudget, expenses } = req.body; // expenses: array of { category, amount }
+    const { totalBudget, expenses, currency } = req.body; // ensure currency is included if needed
     const userId = req.user.id;
     try {
         const query = `UPDATE trips SET budget = $1 WHERE id = $2 AND user_id = $3 RETURNING budget`;
-        const result = await pool.query(query, [JSON.stringify({ totalBudget, expenses }), tripId, userId]);
+        // Save the budget as a JSON string. PostgreSQL will automatically convert it.
+        const result = await pool.query(query, [JSON.stringify({ totalBudget, expenses, currency }), tripId, userId]);
         if (result.rowCount === 0) {
             return res.status(404).send('Trip not found or unauthorized');
         }
-        res.status(200).json(JSON.parse(result.rows[0].budget));
+        // Return the updated budget directly; it will be a JS object
+        res.status(200).json(result.rows[0].budget);
     } catch (error) {
         console.error('Error updating budget:', error);
         res.status(500).send('Server error');
     }
 });
+
 
 
 
