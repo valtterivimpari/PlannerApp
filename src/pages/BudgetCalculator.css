@@ -1,0 +1,134 @@
+.budget-container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .budget-container h1 {
+    text-align: center;
+    color: #00796b;
+  }
+  
+  .budget-form {
+    margin-top: 20px;
+  }
+  
+  .budget-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .budget-form input[type="number"],
+  .budget-form input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .expense-item {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .currency-selector {
+    margin-bottom: 20px;
+  }
+  
+  .currency-selector label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .currency-selector select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .total-budget {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    text-align: right;
+    color: #00796b;
+  }
+  
+  .save-budget-button {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    font-size: 1rem;
+  }
+  
+  .save-budget-button:hover {
+    background-color: #16a085;
+  }
+  
+  .message {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1rem;
+    color: green;
+  }
+  
+  .back-button {
+    margin-top: 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    font-size: 1rem;
+  }
+  
+  .back-button:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Additional styling for Add/Remove buttons */
+  .add-expense-button {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px;
+  }
+  
+  .add-expense-button:hover {
+    background-color: #16a085;
+  }
+  
+  .remove-expense-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .remove-expense-button:hover {
+    background-color: #c0392b;
+  }
+  
+  

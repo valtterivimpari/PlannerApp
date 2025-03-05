@@ -811,6 +811,44 @@ app.delete('/api/ferries/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// In server.js, add a new route to get budget data for a trip
+app.get('/api/trips/:tripId/budget', authenticateToken, async (req, res) => {
+    const { tripId } = req.params;
+    const userId = req.user.id;
+    try {
+        const query = `SELECT budget FROM trips WHERE id = $1 AND user_id = $2`;
+        const result = await pool.query(query, [tripId, userId]);
+        if (result.rowCount === 0) {
+            return res.status(404).send('Trip not found or unauthorized');
+        }
+        // Return parsed JSON if budget exists, else an empty object
+        res.status(200).json(result.rows[0].budget ? JSON.parse(result.rows[0].budget) : {});
+    } catch (error) {
+        console.error('Error fetching budget:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// In server.js, add a new route to update budget data for a trip
+app.put('/api/trips/:tripId/budget', authenticateToken, async (req, res) => {
+    const { tripId } = req.params;
+    const { totalBudget, expenses } = req.body; // expenses: array of { category, amount }
+    const userId = req.user.id;
+    try {
+        const query = `UPDATE trips SET budget = $1 WHERE id = $2 AND user_id = $3 RETURNING budget`;
+        const result = await pool.query(query, [JSON.stringify({ totalBudget, expenses }), tripId, userId]);
+        if (result.rowCount === 0) {
+            return res.status(404).send('Trip not found or unauthorized');
+        }
+        res.status(200).json(JSON.parse(result.rows[0].budget));
+    } catch (error) {
+        console.error('Error updating budget:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
   
 
 

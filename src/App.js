@@ -28,6 +28,7 @@ import Sleeping from './pages/Sleeping';
 import AddCustom from './pages/AddCustom';
 import Discover from './pages/Discover';
 import AddToDo from './pages/AddToDo';
+import BudgetCalculator from './pages/BudgetCalculator';
 
 
 
@@ -64,6 +65,9 @@ function App() {
   <Route path="/add-custom" element={<RequireAuth><AddCustom /></RequireAuth>} />
   <Route path="/discover/:city/:date" element={<RequireAuth><Discover /></RequireAuth>} />
   <Route path="/add-todo" element={<RequireAuth><AddToDo /></RequireAuth>} />
+  <Route path="/budget-calculator/:tripId" element={ <RequireAuth><BudgetCalculator /> </RequireAuth>
+  } 
+/>
 
 
 

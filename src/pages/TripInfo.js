@@ -403,6 +403,14 @@ return (
                             </div>
                         </div>
                     </div>
+<div className="budget-section">
+  <button 
+    className="budget-button" 
+    onClick={() => navigate(`/budget-calculator/${trip.id}`)}>
+      Budget Calculator
+  </button>
+</div>
+
                 </div>
             </div>
     );
