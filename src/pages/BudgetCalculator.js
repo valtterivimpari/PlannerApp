@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Pie } from 'react-chartjs-2';
+import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import './BudgetCalculator.css';
+
+// Register necessary chart components
+Chart.register(ArcElement, Tooltip, Legend);
 
 // Full list of world currencies as per ISO 4217 standards.
 const currencyOptions = [
@@ -232,6 +237,33 @@ const BudgetCalculator = () => {
     }
   };
 
+  // Prepare data for the pie chart visualization
+  const chartData = {
+    labels: expenses.map(expense => expense.category) || [],
+    datasets: [
+      {
+        data: expenses.map(expense => parseFloat(expense.amount) || 0),
+        backgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+          // You can add more colors if needed
+        ],
+        hoverBackgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+        ]
+      }
+    ]
+  };
+
   return (
     <div className="budget-container">
       <h1>Budget Calculator</h1>
@@ -276,6 +308,20 @@ const BudgetCalculator = () => {
         ))}
         <button onClick={addExpenseItem} className="add-expense-button">Add Expense</button>
 
+        {/* Expense Visualization */}
+        {expenses.length > 0 && (
+          <div className="chart-container">
+            <h2>Expense Distribution</h2>
+            <Pie
+  data={chartData}
+  options={{ maintainAspectRatio: false }}
+  width={300}
+  height={300}
+/>
+
+          </div>
+        )}
+
         <div className="total-budget">
           <strong>Total Budget: </strong>
           <span>{totalBudget} {currency}</span>
@@ -286,9 +332,12 @@ const BudgetCalculator = () => {
       </div>
       <button onClick={() => navigate(-1)} className="back-button">Back to Trip Info</button>
     </div>
+
+
   );
 };
 
 export default BudgetCalculator;
+
 
   

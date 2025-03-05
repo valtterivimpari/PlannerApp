@@ -1,7 +1,7 @@
 .budget-container {
     max-width: 600px;
     margin: 30px auto;
-    padding: 20px;
+    padding: 120px 20px 20px; /* Increase top padding to 120px */
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
     border-radius: 8px;
@@ -129,5 +129,13 @@
   .remove-expense-button:hover {
     background-color: #c0392b;
   }
+
+  .chart-container {
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+  }
+  
+  
   
   
