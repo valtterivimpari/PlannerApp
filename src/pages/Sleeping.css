@@ -1,125 +1,175 @@
 /* Sleeping.css */
-/* Overall container styling for a modern, card look */
+
+/* Make the container fill at least the full viewport height and allow scrolling */
 .sleeping-container {
-    background-color: #ffffff;
-    padding: 40px;
-    max-width: 600px;
-    margin: 50px auto;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    text-align: center;
-  }
-  
-  /* Header styling */
-  .sleeping-info h2 {
-    font-size: 2.2em;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .sleeping-info p {
-    font-size: 1.2em;
-    color: #666;
-  }
-  
-  /* Accent the city name in green */
-  .city-name {
-    color: #00796b;
-  }
-  
-  /* Booking link styled as a modern pill button */
-  .booking-link a {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: #fff;
-    padding: 12px 24px;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    transition: background 0.3s ease;
-  }
-  
-  .booking-link a:hover {
-    background: linear-gradient(135deg, #2980b9, #3498db);
-  }
-  
-  .booking-logo {
-    width: 23px;
-    height: auto;
-    margin-right: 10px;
-  }
-  
-  /* Add custom button styled as a large pill with a gradient */
-  .add-custom-button {
-    background: linear-gradient(135deg, #1abc9c, #16a085);
-    color: #fff;
-    border: none;
-    border-radius: 9999px;
-    padding: 16px 40px;
-    font-size: 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    font-weight: 600;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
+  background-color: #ffffff;
+  padding: 20px; /* Reduced from 40px */
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto; /* Remove large top/bottom margins */
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  text-align: center;
+  min-height: 100vh;       /* Force container to fill the screen height */
+  box-sizing: border-box;  /* Ensure padding doesn’t cause overflow */
+  display: flex;           /* Flex layout for easy vertical centering */
+  flex-direction: column;
+}
 
-  .custom-button {
-    margin-top: 20px; /* Increase gap between booking button and custom button */
-  }
-  
-  
-  .add-custom-button:hover {
-    background: linear-gradient(135deg, #16a085, #1abc9c);
-    transform: translateY(-2px);
-  }
-  
-  /* Plus icon styling */
-  .plus-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: #fff;
-    color: #1abc9c;
-    font-weight: bold;
-    font-size: 18px;
-  }
-  
-  /* Save button styled similarly */
-  .save-button {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    color: #fff;
-    border: none;
-    border-radius: 9999px;
-    padding: 16px 40px;
-    font-size: 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    font-weight: 600;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-  }
-  
-  .save-button:hover {
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
-    transform: translateY(-2px);
-  }
-  
+/* Use a content wrapper if you want your content vertically centered */
+.sleeping-content {
+  margin: auto 0; /* Push content to vertical center (if there's extra space) */
+}
 
-  .booking-logo {
-    width: 23px; /* Adjust this value as needed */
-    height: auto;
-    margin-right: 10px;
-  }
-  
-  
+/* Header styling */
+.sleeping-info h2 {
+  font-size: 2em; /* Slightly smaller to save space */
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.sleeping-info p {
+  font-size: 1em; /* Slightly smaller to save space */
+  color: #666;
+}
+
+/* Accent the city name in green */
+.city-name {
+  color: #00796b;
+}
+
+/* Booking link styled as a modern pill button */
+.booking-link a {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: background 0.3s ease;
+  margin-bottom: 15px; /* Add some spacing below */
+}
+
+.booking-link a:hover {
+  background: linear-gradient(135deg, #2980b9, #3498db);
+}
+
+.booking-logo {
+  width: 23px;
+  height: auto;
+  margin-right: 10px;
+}
+
+/* Button container for the custom add button */
+.custom-button {
+  margin-bottom: 20px; /* Some spacing after the button */
+}
+
+/* Add custom button styled as a large pill with a gradient */
+.add-custom-button {
+  background: linear-gradient(135deg, #1abc9c, #16a085);
+  color: #fff;
+  border: none;
+  border-radius: 9999px;
+  padding: 12px 28px; /* Reduced padding */
+  font-size: 16px;    /* Slightly smaller */
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  font-weight: 600;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-custom-button:hover {
+  background: linear-gradient(135deg, #16a085, #1abc9c);
+  transform: translateY(-2px);
+}
+
+/* Plus icon styling */
+.plus-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #1abc9c;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Custom summary section (edit/delete buttons) */
+.custom-summary {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.custom-summary h3 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Buttons container */
+.summary-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.edit-button,
+.delete-button {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  color: #fff;
+  font-weight: 600;
+}
+
+.edit-button {
+  background: linear-gradient(135deg, #f1c40f, #f39c12);
+}
+
+.edit-button:hover {
+  background: linear-gradient(135deg, #f39c12, #f1c40f);
+  transform: translateY(-2px);
+}
+
+.delete-button {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.delete-button:hover {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  transform: translateY(-2px);
+}
+
+.view-photo-button {
+  margin-top: 15px;
+}
+
+.view-photo-button button {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  font-size: 16px;
+}
+
+.view-photo-button button:hover {
+  background: linear-gradient(135deg, #8e44ad, #9b59b6);
+  transform: translateY(-2px);
+}

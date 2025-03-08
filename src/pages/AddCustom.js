@@ -27,6 +27,7 @@ function AddCustom() {
   
   const [formData, setFormData] = useState(initialData);
   const [isPreview, setIsPreview] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +35,10 @@ function AddCustom() {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
   };
 
   const handleSubmit = (e) => {
@@ -60,6 +65,19 @@ function AddCustom() {
       const checkoutDateObj = new Date(checkinDateObj);
       checkoutDateObj.setDate(checkinDateObj.getDate() + nights);
       const formattedCheckout = checkoutDateObj.toLocaleDateString('fi-FI', options);
+
+      let imageUrl = null;
+      if (imageFile) {
+        const uploadData = new FormData();
+        uploadData.append('accommodationImage', imageFile);
+        const uploadResponse = await axios.post("http://localhost:5000/api/upload/accommodation", uploadData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`
+          }
+        });
+        imageUrl = uploadResponse.data.imageUrl;
+      }
     
       // Build custom sleeping details object including both raw and formatted dates
       const sleepingDetails = {
@@ -74,6 +92,7 @@ function AddCustom() {
         checkinDate: formattedCheckin,
         checkoutDate: formattedCheckout,
         nights,
+        image: imageUrl  // save the image URL here
       };
     
       if (destinationIndex !== undefined) {
@@ -249,6 +268,16 @@ function AddCustom() {
               placeholder="Enter notes"
             />
           </div>
+            {/* New file input for the accommodation photo */}
+            <div className="form-group">
+            <label>Accommodation Photo:</label>
+            <input
+              type="file"
+              accept="image/*"
+              name="accommodationImage"
+              onChange={handleFileChange}
+            />
+          </div>
           <button type="submit" className="submit-button">
             Preview
           </button>
@@ -272,6 +301,11 @@ function AddCustom() {
           <p>
             <strong>Notes:</strong> {formData.notes}
           </p>
+          {imageFile && (
+            <p>
+              <strong>Photo Selected:</strong> {imageFile.name}
+            </p>
+          )}
           <div className="summary-buttons">
             <button className="edit-button" onClick={handleEdit}>
               Edit

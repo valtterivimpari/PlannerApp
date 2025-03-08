@@ -850,6 +850,19 @@ app.put('/api/trips/:tripId/budget', authenticateToken, async (req, res) => {
     }
 });
 
+app.post('/api/upload/accommodation', authenticateToken, upload.single('accommodationImage'), async (req, res) => {
+    try {
+      // Construct the full URL using the server port
+      const fullUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+      res.status(200).json({ imageUrl: fullUrl });
+    } catch (error) {
+      console.error('Error uploading accommodation image:', error);
+      res.status(500).send('Error uploading image');
+    }
+  });
+  
+  
+
 
 
 

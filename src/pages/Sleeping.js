@@ -137,8 +137,21 @@ function Sleeping() {
     }
   };
 
+  const handleViewPhoto = () => {
+    if (sleepingDetails && sleepingDetails.image) {
+      // Optionally, ensure the URL is absolute:
+      const imageUrl = sleepingDetails.image.startsWith('/uploads')
+        ? `http://localhost:5000${sleepingDetails.image}`
+        : sleepingDetails.image;
+      window.open(imageUrl, '_blank');
+    } else {
+      alert("No accommodation photo available.");
+    }
+  };
+
   return (
     <div className="sleeping-container">
+      <div className="sleeping-content"></div>
       <div className="sleeping-info">
         <h2>
           {displayNights} {displayNights === 1 ? 'night' : 'nights'} in <span className="city-name">{displayCity}</span>
@@ -166,6 +179,10 @@ function Sleeping() {
           Add custom
         </button>
       </div>
+      {/* New View Photo Button */}
+      <div className="view-photo-button">
+        <button onClick={handleViewPhoto}>Accommodation Photo</button>
+      </div>
       {isCustom && (
         <div className="custom-summary">
           <h3>Custom Accommodation Details</h3>
@@ -188,6 +205,7 @@ function Sleeping() {
       )}
     </div>
   );
+  
 }
 
 export default Sleeping;
