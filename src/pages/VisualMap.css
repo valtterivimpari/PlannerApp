@@ -88,6 +88,26 @@
     color: #333;
   }
   
+  /* Back button styling */
+  .back-button-container {
+    margin-top: 20px;
+  }
+  
+  .back-button {
+    padding: 10px 20px;
+    background-color: #00796b;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #005f56;
+  }
+  
   
   
   

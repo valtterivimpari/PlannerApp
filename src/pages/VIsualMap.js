@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import './VisualMap.css';
@@ -7,7 +7,7 @@ import './VisualMap.css';
 // Remove any default icon URLs so that our custom icons are used.
 delete L.Icon.Default.prototype._getIconUrl;
 
-// A small helper component to update the map's center programmatically
+// Helper component to update the map's center programmatically
 function ChangeMapView({ center, zoom }) {
   const map = useMap();
   useEffect(() => {
@@ -18,6 +18,7 @@ function ChangeMapView({ center, zoom }) {
 
 function VisualMap() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { destinations, tripId } = location.state || {};
   const [coords, setCoords] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -51,11 +52,11 @@ function VisualMap() {
     getCoords();
   }, [destinations]);
 
-  // Use the first valid coordinate as default center
+  // Center the map on the current destination or fallback to a default location.
   const defaultCenter = [51.505, -0.09];
   const center = coords.length > 0 ? coords[currentIndex] : defaultCenter;
 
-  // Handlers for navigation buttons
+  // Navigation handlers.
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
@@ -74,11 +75,11 @@ function VisualMap() {
       <MapContainer center={center} zoom={6} scrollWheelZoom={true} className="map">
         <ChangeMapView center={center} zoom={6} />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {coords.map((position, index) => {
-          // Create a custom div icon that displays the destination number
+          // Create a custom div icon that displays the destination number.
           const markerNumberIcon = L.divIcon({
             html: `<div class="marker-number">${index + 1}</div>`,
             className: 'custom-marker-icon',
@@ -100,7 +101,7 @@ function VisualMap() {
           Previous
         </button>
         <span className="destination-label">
-          {destinations && destinations[currentIndex] 
+          {destinations && destinations[currentIndex]
             ? `Destination ${currentIndex + 1}: ${destinations[currentIndex].name}`
             : `Destination ${currentIndex + 1}`}
         </span>
@@ -108,11 +109,17 @@ function VisualMap() {
           Next
         </button>
       </div>
+      <div className="back-button-container">
+        <button className="back-button" onClick={() => navigate(`/trip-info/${tripId}`)}>
+          Back to Trip Info
+        </button>
+      </div>
     </div>
   );
 }
 
 export default VisualMap;
+
 
 
 
