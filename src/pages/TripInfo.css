@@ -301,5 +301,26 @@
     color: #004d40; /* Darker teal for units */
 }
 
+.map-route-button {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .draw-route-button {
+    padding: 12px 20px;
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+  }
+  
+  .draw-route-button:hover {
+    background-color: #16a085;
+  }
+  
+
 
 

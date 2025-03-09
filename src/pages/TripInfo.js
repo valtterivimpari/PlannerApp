@@ -410,6 +410,15 @@ return (
       Budget Calculator
   </button>
 </div>
+<div className="map-route-button">
+  <button 
+    className="draw-route-button"
+    onClick={() => navigate('/visual-map', { state: { destinations, tripId: trip.id } })}
+  >
+    Draw Route on Map
+  </button>
+</div>
+
 
                 </div>
             </div>
