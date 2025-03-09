@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import './VisualMap.css';
 
 // Remove any default icon URLs so that our custom icons are used.
 delete L.Icon.Default.prototype._getIconUrl;
 
+// A small helper component to update the map's center programmatically
+function ChangeMapView({ center, zoom }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [center, zoom, map]);
+  return null;
+}
+
 function VisualMap() {
   const location = useLocation();
   const { destinations, tripId } = location.state || {};
   const [coords, setCoords] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Helper function to fetch coordinates from Nominatim
+  // Helper: fetch coordinates from Nominatim
   const fetchCoordinates = async (cityName) => {
     try {
       const response = await fetch(
@@ -31,22 +41,38 @@ function VisualMap() {
   useEffect(() => {
     const getCoords = async () => {
       if (destinations && destinations.length > 0) {
-        const promises = destinations.map(dest => fetchCoordinates(dest.name));
+        // Assume each destination has a 'name' property
+        const promises = destinations.map((dest) => fetchCoordinates(dest.name));
         const results = await Promise.all(promises);
-        const validCoords = results.filter(coord => coord !== null);
+        const validCoords = results.filter((coord) => coord !== null);
         setCoords(validCoords);
       }
     };
     getCoords();
   }, [destinations]);
 
-  // Center map on first destination or a default location
-  const center = coords.length > 0 ? coords[0] : [51.505, -0.09];
+  // Use the first valid coordinate as default center
+  const defaultCenter = [51.505, -0.09];
+  const center = coords.length > 0 ? coords[currentIndex] : defaultCenter;
+
+  // Handlers for navigation buttons
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (coords && currentIndex < coords.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
 
   return (
     <div className="visual-map-container">
       <h2>Trip Route Map</h2>
       <MapContainer center={center} zoom={6} scrollWheelZoom={true} className="map">
+        <ChangeMapView center={center} zoom={6} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -69,11 +95,25 @@ function VisualMap() {
         })}
         {coords.length > 1 && <Polyline positions={coords} color="blue" />}
       </MapContainer>
+      <div className="navigation-controls">
+        <button className="nav-button" onClick={handlePrev} disabled={currentIndex === 0}>
+          Previous
+        </button>
+        <span className="destination-label">
+          {destinations && destinations[currentIndex] 
+            ? `Destination ${currentIndex + 1}: ${destinations[currentIndex].name}`
+            : `Destination ${currentIndex + 1}`}
+        </span>
+        <button className="nav-button" onClick={handleNext} disabled={currentIndex === coords.length - 1}>
+          Next
+        </button>
+      </div>
     </div>
   );
 }
 
 export default VisualMap;
+
 
 
 

@@ -15,7 +15,7 @@
     color: #00796b;
   }
   
-  /* The map container */
+  /* Map container styling */
   .map {
     height: 550px;
     width: 100%;
@@ -52,6 +52,42 @@
     width: 100%;
     height: 100%;
   }
+  
+  /* Navigation controls styling */
+  .navigation-controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .nav-button {
+    padding: 10px 15px;
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+  }
+  
+  .nav-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .nav-button:hover:not(:disabled) {
+    background-color: #16a085;
+  }
+  
+  .destination-label {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+  }
+  
   
   
   
