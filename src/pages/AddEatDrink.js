@@ -110,8 +110,9 @@ function AddEatDrink() {
       }
       // Navigate back to Discover page with updated details
       navigate(`/discover/${encodeURIComponent(city)}/${startDate}`, {
-        state: { tripId, city, startDate, nights, destinationIndex, discover: customEatDrink }
+        state: { tripId, city, startDate, nights, destinationIndex }
       });
+      
     } catch (error) {
       console.error("Error saving custom eat & drink:", error);
     }

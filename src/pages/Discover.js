@@ -31,7 +31,7 @@ function Discover() {
         const response = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const data = response.data;
+        let data = response.data;
         if (data.destinations && typeof data.destinations === 'string') {
           data.destinations = JSON.parse(data.destinations);
         }
@@ -42,14 +42,9 @@ function Discover() {
         setLoading(false);
       }
     }
-
-    if (!discoverState) {
-      fetchTrip();
-    } else {
-      setTrip({ discover: discoverState, city: stateCity });
-      setLoading(false);
-    }
-  }, [tripId, discoverState, stateCity]);
+    fetchTrip();
+  }, [tripId]);
+  
 
   if (loading) {
     return <div>Loading...</div>;

@@ -134,8 +134,9 @@ if (destinationIndex !== undefined) {
 
       // Navigate back to Discover page with updated details
       navigate(`/discover/${encodeURIComponent(city)}/${startDate}`, {
-        state: { tripId, city, startDate, nights, destinationIndex, discover: customTodo }
+        state: { tripId, city, startDate, nights, destinationIndex }
       });
+      
     } catch (error) {
       console.error("Error saving custom to do:", error);
     }
