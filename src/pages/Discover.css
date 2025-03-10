@@ -202,6 +202,24 @@
     height: 24px;
     object-fit: contain;
   }
+
+  .custom-entries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+  
+  .custom-card {
+    flex: 1 1 280px;
+    padding: 15px;
+    border: 2px solid #f39c12;
+    border-radius: 8px;
+    background-color: #fff;
+    text-align: left;
+  }
+  
   
   
   

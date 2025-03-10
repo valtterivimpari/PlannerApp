@@ -43,14 +43,15 @@ function AddToDo() {
   // Expecting these from location.state (set when navigating from Discover menu)
   const { tripId, city, startDate, nights, destinationIndex } = location.state || {};
   
-  // If there's an existing discover object of type "todo", prepopulate the form.
   const initialTodo =
-    location.state?.discover && location.state.discover.type === 'todo'
-      ? location.state.discover
-      : {};
+  location.state?.discover && location.state.discover.type === 'todo'
+    ? location.state.discover
+    : {};
 
-  const [description, setDescription] = useState(initialTodo.description || '');
-  const [selectedCategories, setSelectedCategories] = useState(initialTodo.categories || []);
+// Now use initialTodo in state hooks
+const [time, setTime] = useState(initialTodo.time || '');
+const [description, setDescription] = useState(initialTodo.description || '');
+const [selectedCategories, setSelectedCategories] = useState(initialTodo.categories || []);
 
   const handleCategoryChange = (category) => {
     if (selectedCategories.includes(category)) {
@@ -82,41 +83,55 @@ function AddToDo() {
       type: 'todo',
       description,
       categories: selectedCategories,
-      city: city,  // include the city from location.state
+      city,  
       checkinDate: checkinDateFormatted,
-      checkoutDate: checkoutDateFormatted
+      checkoutDate: checkoutDateFormatted,
+      time  // added time property
     };
 
     try {
-      const token = localStorage.getItem('token');
-      if (destinationIndex !== undefined) {
-        // Update the destination's discover details
-        const response = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        let tripData = response.data;
-        if (tripData.destinations && typeof tripData.destinations === 'string') {
-          tripData.destinations = JSON.parse(tripData.destinations);
-        }
-        if (tripData.destinations[destinationIndex]) {
-          tripData.destinations[destinationIndex].discover = customTodo;
-        } else {
-          tripData.destinations = tripData.destinations || [];
-          tripData.destinations[destinationIndex] = { discover: customTodo };
-        }
-        await axios.put(
-          `http://localhost:5000/api/trips/${tripId}/destinations`,
-          { destinations: tripData.destinations },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else {
-        // Update top-level discover field
-        await axios.put(
-          `http://localhost:5000/api/trips/${tripId}`,
-          { discover: customTodo },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
+      // Replace your existing PUT logic with something like this:
+const token = localStorage.getItem('token');
+if (destinationIndex !== undefined) {
+  const response = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  let tripData = response.data;
+  if (tripData.destinations && typeof tripData.destinations === 'string') {
+    tripData.destinations = JSON.parse(tripData.destinations);
+  }
+  // Get current custom entries (if any)
+  let currentEntries = tripData.destinations[destinationIndex]?.discover;
+  if (!currentEntries) {
+    currentEntries = [];
+  } else if (!Array.isArray(currentEntries)) {
+    currentEntries = [currentEntries];
+  }
+  // Push new entry
+  currentEntries.push(customTodo);
+  // Save updated entries back to the destination
+  tripData.destinations[destinationIndex].discover = currentEntries;
+  await axios.put(
+    `http://localhost:5000/api/trips/${tripId}/destinations`,
+    { destinations: tripData.destinations },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+} else {
+  // Top-level discover field
+  let currentEntries = tripData.discover;
+  if (!currentEntries) {
+    currentEntries = [];
+  } else if (!Array.isArray(currentEntries)) {
+    currentEntries = [currentEntries];
+  }
+  currentEntries.push(customTodo);
+  await axios.put(
+    `http://localhost:5000/api/trips/${tripId}`,
+    { discover: currentEntries },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+}
+
       // Navigate back to Discover page with updated details
       navigate(`/discover/${encodeURIComponent(city)}/${startDate}`, {
         state: { tripId, city, startDate, nights, destinationIndex, discover: customTodo }
@@ -168,6 +183,14 @@ function AddToDo() {
                 <label htmlFor={`cat-${idx}`}>{cat}</label>
               </div>
             ))}
+
+<label>Select Time:</label>
+<input 
+  type="time" 
+  value={time} 
+  onChange={(e) => setTime(e.target.value)} 
+  required 
+/>
           </div>
         </fieldset>
         <button type="submit" className="addtodo-submit-button">Save</button>

@@ -30,6 +30,8 @@ import Discover from './pages/Discover';
 import AddToDo from './pages/AddToDo';
 import BudgetCalculator from './pages/BudgetCalculator';
 import VisualMap from './pages/VIsualMap';
+import AddEatDrink from './pages/AddEatDrink';
+import CalendarView from './pages/CalendarView';
 
 
 
@@ -68,6 +70,8 @@ function App() {
   <Route path="/add-todo" element={<RequireAuth><AddToDo /></RequireAuth>} />
   <Route path="/budget-calculator/:tripId" element={ <RequireAuth><BudgetCalculator /> </RequireAuth> } />
   <Route path="/visual-map" element={<RequireAuth><VisualMap /></RequireAuth>} />
+  <Route path="/add-eatdrink" element={<RequireAuth><AddEatDrink /></RequireAuth>} />
+  <Route path="/calendar" element={<RequireAuth><CalendarView /></RequireAuth>} />
 
 
 

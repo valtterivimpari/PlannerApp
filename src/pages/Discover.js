@@ -64,6 +64,24 @@ if (destinationIndex !== undefined && trip?.destinations) {
   discoverDetails = trip.discover;
 }
 
+// Determine discover details for the current destination or top-level field:
+let discoverEntries = [];
+if (destinationIndex !== undefined && trip?.destinations) {
+  discoverEntries = trip.destinations[destinationIndex]?.discover || [];
+} else {
+  discoverEntries = trip.discover || [];
+}
+
+// Ensure discoverEntries is always an array
+if (!Array.isArray(discoverEntries)) {
+  discoverEntries = [discoverEntries];
+}
+
+// Now you can filter safely:
+const todoEntries = discoverEntries.filter(entry => entry.type === 'todo');
+const eatDrinkEntries = discoverEntries.filter(entry => entry.type === 'eatdrink');
+
+
 // Define isCustom before using it
 const isCustom = discoverDetails ? discoverDetails.custom : false;
 
@@ -112,7 +130,7 @@ if (isCustom) {
 
   const handleAddEatDrink = () => {
     // Navigate to Add Custom with type 'eatdrink'
-    navigate('/add-custom', {
+    navigate('/add-eatdrink', {
       state: {
         tripId,
         city: displayCity,
@@ -120,7 +138,6 @@ if (isCustom) {
         nights,
         destinationIndex,
         discover: discoverDetails,
-        type: 'eatdrink',
       },
     });
   };
@@ -210,53 +227,69 @@ if (isCustom) {
 
       {/* The small menu with two options: "Add to do" and "Add eat & drink" */}
       {showMenu && (
-        <div className="custom-menu">
-          <div className="custom-menu-item" onClick={handleAddToDo}>
-            <img src={todoIcon} alt="Add to do" className="custom-menu-icon" />
-            <span>Add to do</span>
-          </div>
-          <div className="custom-menu-item" onClick={handleAddEatDrink}>
-            <img src={eatDrinkIcon} alt="Add eat & drink" className="custom-menu-icon" />
-            <span>Add eat & drink</span>
-          </div>
+      <div className="custom-menu">
+        <div className="custom-menu-item" onClick={handleAddToDo}>
+          <img src={todoIcon} alt="Add to do" className="custom-menu-icon" />
+          <span>Add to do</span>
         </div>
-      )}
-
-      {/* Existing custom summary (if isCustom) */}
-      {isCustom && (
-  <div className="discover-custom-summary">
-    <h3>Custom Discover Details</h3>
-    {discoverDetails.type === 'todo' ? (
-      <>
-        <p><strong>To do:</strong> {discoverDetails.description}</p>
-        <p>
-          <strong>Categories:</strong> {discoverDetails.categories && discoverDetails.categories.length > 0
-            ? discoverDetails.categories.join(', ')
-            : 'None'}
-        </p>
-      </>
-    ) : (
-      <>
-        <p><strong>Type:</strong> {discoverDetails.type}</p>
-        <p><strong>Name:</strong> {discoverDetails.name}</p>
-        <p><strong>Highlights:</strong> {discoverDetails.highlights}</p>
-        <p><strong>Link:</strong> {discoverDetails.link}</p>
-        <p><strong>Notes:</strong> {discoverDetails.notes}</p>
-      </>
+        <div className="custom-menu-item" onClick={handleAddEatDrink}>
+          <img src={eatDrinkIcon} alt="Add eat & drink" className="custom-menu-icon" />
+          <span>Add eat & drink</span>
+        </div>
+      </div>
     )}
-    <div className="discover-summary-buttons">
-      <button className="discover-edit-button" onClick={handleAddToDo}>
-        Edit
-      </button>
-      <button className="discover-delete-button" onClick={handleDeleteCustom}>
-        Delete
-      </button>
-    </div>
-  </div>
-)}
 
-    </div>
-  );
+<div className="discover-custom-summary">
+  <div className="custom-entries">
+    {todoEntries.length > 0 && (
+      <div className="custom-card">
+        <h4>To Do</h4>
+        {todoEntries.map((entry, index) => (
+          <div key={`todo-${index}`}>
+            <p><strong>To do:</strong> {entry.description}</p>
+            <p>
+              <strong>Categories:</strong>{' '}
+              {entry.categories && entry.categories.length > 0
+                ? entry.categories.join(', ')
+                : 'None'}
+            </p>
+            <p>
+            </p>
+          </div>
+        ))}
+      </div>
+    )}
+
+<button
+  className="discover-calendar-button"
+  onClick={() => {
+    // Pass the trip's startDate, nights, and the complete custom entries array
+    navigate('/calendar', {
+      state: {
+        tripId,
+        startDate,
+        nights,
+        events: discoverEntries  // this is your array of custom entries (both todo and eatdrink)
+      }
+    });
+  }}
+>
+  Calendar View
+</button>
+  </div>
+  <div className="discover-summary-buttons">
+    {/* Edit and Delete buttons – consider enhancing these later */}
+    <button className="discover-edit-button" onClick={handleAddToDo}>
+      Edit
+    </button>
+    <button className="discover-delete-button" onClick={handleDeleteCustom}>
+      Delete
+    </button>
+  </div>
+</div>
+
+  </div>
+);
 }
 
 export default Discover;

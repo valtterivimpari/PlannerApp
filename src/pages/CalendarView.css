@@ -1,0 +1,67 @@
+/* CalendarView.css */
+.calendar-view-container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .calendar-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .calendar-day {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    flex: 1 1 calc(33.33% - 10px);
+    min-width: 200px;
+    padding: 10px;
+  }
+  
+  .day-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .day-events {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .calendar-event {
+    background-color: #f39c12;
+    color: #fff;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .event-time {
+    font-weight: bold;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 90%;
+  }
+  
+  

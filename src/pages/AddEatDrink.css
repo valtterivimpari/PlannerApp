@@ -1,0 +1,82 @@
+.addeatdrink-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px 40px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+  }
+  
+  .addeatdrink-container h1 {
+    font-size: 2.2em;
+    color: #f39c12;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+  }
+  
+  .addeatdrink-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+  }
+  
+  .addeatdrink-form input[type="text"],
+  .addeatdrink-form select,
+  .addeatdrink-form input[type="time"],
+  .addeatdrink-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #f39c12;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+  }
+  
+  .addeatdrink-form input[type="text"]:focus,
+  .addeatdrink-form select:focus,
+  .addeatdrink-form input[type="time"]:focus,
+  .addeatdrink-form textarea:focus {
+    border-color: #f1c40f;
+    outline: none;
+  }
+  
+  .addeatdrink-submit-button {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background-color: #f39c12;
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .addeatdrink-submit-button:hover {
+    background-color: #f1c40f;
+    transform: translateY(-2px);
+  }
+
+  /* Container that holds all the checkboxes side by side */
+.categories-container {
+    display: flex;
+    flex-wrap: wrap;   /* Allow items to wrap if there's not enough space */
+    gap: 10px;         /* Space between each checkbox group */
+    margin-bottom: 20px;
+  }
+  
+  /* Each individual checkbox + label pair */
+  .category-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  
