@@ -1,16 +1,18 @@
 // CalendarView.js
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './CalendarView.css';
 
 function CalendarView() {
   const location = useLocation();
-  const { tripId, startDate, nights, destinationIndex, events } = location.state || {};
-  
+  const navigate = useNavigate();
+  // Destructure all needed state from location.state (including city)
+  const { tripId, startDate, nights, destinationIndex, events, city } = location.state || {};
+
   // Use local state for events so we can update after edit/delete
   const [eventsState, setEventsState] = useState(Array.isArray(events) ? events : [events]);
-  
+
   // Generate calendar days
   const [calendarDays, setCalendarDays] = useState([]);
   useEffect(() => {
@@ -25,27 +27,26 @@ function CalendarView() {
     }
     setCalendarDays(days);
   }, [startDate, nights]);
-  
-  // For modal details
+
+  // Local state for modal and editing
   const [selectedEvent, setSelectedEvent] = useState(null);
-  // For edit mode in modal
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
-  
-  // Helper to convert "HH:MM" to minutes for sorting
+
+  // Helper: convert time string "HH:MM" to minutes for sorting
   const timeToMinutes = timeStr => {
     if (!timeStr) return 0;
     const [hours, minutes] = timeStr.split(':').map(Number);
     return hours * 60 + minutes;
   };
-  
-  // Function to update custom entries on the server
+
+  // Update custom entries on the server
   const updateCustomEntries = async (updatedEntries) => {
     const token = localStorage.getItem('token');
     try {
       if (destinationIndex !== undefined) {
         const response = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         let tripData = response.data;
         if (tripData.destinations && typeof tripData.destinations === 'string') {
@@ -59,7 +60,7 @@ function CalendarView() {
         );
       } else {
         const response = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         let tripData = response.data;
         tripData.discover = updatedEntries;
@@ -84,7 +85,6 @@ function CalendarView() {
   const handleEditInitiate = (event) => {
     setSelectedEvent(event);
     setIsEditing(true);
-    // Initialize edit form with event values
     setEditForm({ ...event });
   };
 
@@ -94,7 +94,6 @@ function CalendarView() {
   };
 
   const handleEditSave = async () => {
-    // Update the event in our local state
     const updatedEvents = eventsState.map(ev =>
       ev === selectedEvent ? editForm : ev
     );
@@ -108,8 +107,18 @@ function CalendarView() {
     setIsEditing(false);
   };
 
+  // Back button handler: navigate back to Discover page with needed state
+  const handleBack = () => {
+    navigate(`/discover/${encodeURIComponent(city)}/${startDate}`, {
+      state: { tripId, city, startDate, nights, destinationIndex }
+    });
+  };
+
   return (
     <div className="calendar-view-container">
+      <button className="calendar-back-button" onClick={handleBack}>
+        Back to Discover
+      </button>
       <h2>Calendar View</h2>
       <div className="calendar-grid">
         {calendarDays.map(day => {
@@ -142,7 +151,6 @@ function CalendarView() {
           );
         })}
       </div>
-
       {selectedEvent && (
         <div className="modal-overlay" onClick={() => { setSelectedEvent(null); setIsEditing(false); }}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>

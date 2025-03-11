@@ -234,56 +234,26 @@ if (isCustom) {
       </div>
     )}
 
-<div className="discover-custom-summary">
-  <div className="custom-entries">
-    {todoEntries.length > 0 && (
-      <div className="custom-card">
-        <h4>To Do</h4>
-        {todoEntries.map((entry, index) => (
-          <div key={`todo-${index}`}>
-            <p><strong>To do:</strong> {entry.description}</p>
-            <p>
-              <strong>Categories:</strong>{' '}
-              {entry.categories && entry.categories.length > 0
-                ? entry.categories.join(', ')
-                : 'None'}
-            </p>
-            <p>
-            </p>
-          </div>
-        ))}
-      </div>
-    )}
-
 <button
   className="discover-calendar-button"
   onClick={() => {
-    // Pass the trip's startDate, nights, and the complete custom entries array
     navigate('/calendar', {
       state: {
         tripId,
         startDate,
         nights,
-        events: discoverEntries  // this is your array of custom entries (both todo and eatdrink)
+        events: discoverEntries,
+        city: displayCity  // now passing city!
       }
     });
   }}
 >
   Calendar View
 </button>
-  </div>
-  <div className="discover-summary-buttons">
-    {/* Edit and Delete buttons – consider enhancing these later */}
-    <button className="discover-edit-button" onClick={handleAddToDo}>
-      Edit
-    </button>
-    <button className="discover-delete-button" onClick={handleDeleteCustom}>
-      Delete
-    </button>
-  </div>
-</div>
 
   </div>
+
+
 );
 }
 
