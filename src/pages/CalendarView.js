@@ -18,7 +18,7 @@ function CalendarView() {
 useEffect(() => {
   let days = [];
   const start = new Date(startDate);
-  for (let i = 0; i < nights; i++) {
+  for (let i = 0; i <= nights; i++) {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
     const options = { day: 'numeric', month: 'short', weekday: 'short' };
@@ -27,6 +27,17 @@ useEffect(() => {
   }
   setCalendarDays(days);
 }, [startDate, nights]);
+
+useEffect(() => {
+  console.log("All events in CalendarView:", eventsState);
+}, [eventsState]);
+
+calendarDays.forEach(day => {
+  console.log("Calendar day =>", day.formatted);
+  const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
+  console.log("Matching events =>", dayEvents);
+});
+
 
   // Local state for modal and editing
   const [selectedEvent, setSelectedEvent] = useState(null);

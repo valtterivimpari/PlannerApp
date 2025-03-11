@@ -71,7 +71,7 @@ function AddEatDrink() {
       city,
       checkinDate: checkinDateFormatted,
       checkoutDate: checkoutDateFormatted,
-      eventDate: selectedDateString
+      eventDate
     };
   
     try {

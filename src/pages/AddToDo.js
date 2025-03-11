@@ -36,6 +36,7 @@ const recommendations = [
   },
 ];
 
+
 function AddToDo() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -96,7 +97,7 @@ function AddToDo() {
       checkinDate: checkinDateFormatted,
       checkoutDate: checkoutDateFormatted,
       time,
-      eventDate: selectedDateString
+      eventDate
     };
 
     try {

@@ -375,22 +375,24 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
     console.log('User ID from token:', req.user.id);
 
     const { tripId } = req.params;
-    const { selected_country, sleeping } = req.body;
+    const { selected_country, sleeping, discover } = req.body; // include discover
     const userId = req.user.id;
     
-    // If sleeping details are provided, stringify them
+    // Stringify sleeping and discover if provided
     const sleepingJson = sleeping ? JSON.stringify(sleeping) : null;
+    const discoverJson = discover ? JSON.stringify(discover) : null;
 
     try {
         const query = `
             UPDATE trips
             SET selected_country = COALESCE($1, selected_country),
-                sleeping = COALESCE($2, sleeping)
-            WHERE id = $3 AND user_id = $4
+                sleeping = COALESCE($2, sleeping),
+                discover = COALESCE($3, discover)
+            WHERE id = $4 AND user_id = $5
             RETURNING *;
         `;
-        console.log('Executing query with:', selected_country, sleepingJson, tripId, userId);
-        const result = await pool.query(query, [selected_country, sleepingJson, tripId, userId]);
+        console.log('Executing query with:', selected_country, sleepingJson, discoverJson, tripId, userId);
+        const result = await pool.query(query, [selected_country, sleepingJson, discoverJson, tripId, userId]);
 
         if (result.rowCount === 0) {
             console.log('No rows updated: Trip not found or unauthorized.');
@@ -404,6 +406,7 @@ app.put('/api/trips/:tripId', authenticateToken, async (req, res) => {
         res.status(500).send("Server error");
     }
 });
+
 
 
 

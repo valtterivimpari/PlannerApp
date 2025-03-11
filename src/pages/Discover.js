@@ -35,6 +35,7 @@ function Discover() {
         if (data.destinations && typeof data.destinations === 'string') {
           data.destinations = JSON.parse(data.destinations);
         }
+        console.log("Fetched trip data:", data);
         setTrip(data);
       } catch (error) {
         console.error('Error fetching trip:', error);
