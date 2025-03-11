@@ -1,10 +1,10 @@
-// CalendarView.js
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './CalendarView.css';
 
 function CalendarView() {
+  // Define category arrays for editing
   const todoCategories = [
     "Sights & Landmarks",
     "Nature & Outdoors",
@@ -23,47 +23,40 @@ function CalendarView() {
     "Coffee & Tea",
     "Dessert & Sweets"
   ];
-  
+
   const location = useLocation();
   const navigate = useNavigate();
-  // Destructure all needed state from location.state (including city)
+  // Destructure state passed from Discover page
   const { tripId, startDate, nights, destinationIndex, events, city } = location.state || {};
 
-  // Use local state for events so we can update after edit/delete
+  // Local state for events and calendar days
   const [eventsState, setEventsState] = useState(Array.isArray(events) ? events : [events]);
-
-  // Generate calendar days
   const [calendarDays, setCalendarDays] = useState([]);
-useEffect(() => {
-  let days = [];
-  const start = new Date(startDate);
-  for (let i = 0; i <= nights; i++) {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    const options = { day: 'numeric', month: 'short', weekday: 'short' };
-    let formatted = d.toLocaleDateString('fi-FI', options);
-    days.push({ date: d, formatted });
-  }
-  setCalendarDays(days);
-}, [startDate, nights]);
 
-useEffect(() => {
-  console.log("All events in CalendarView:", eventsState);
-}, [eventsState]);
+  // Generate calendar days from startDate and nights
+  useEffect(() => {
+    let days = [];
+    const start = new Date(startDate);
+    for (let i = 0; i <= nights; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      const options = { day: 'numeric', month: 'short', weekday: 'short' };
+      let formatted = d.toLocaleDateString('fi-FI', options);
+      days.push({ date: d, formatted });
+    }
+    setCalendarDays(days);
+  }, [startDate, nights]);
 
-calendarDays.forEach(day => {
-  console.log("Calendar day =>", day.formatted);
-  const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
-  console.log("Matching events =>", dayEvents);
-});
+  useEffect(() => {
+    console.log("All events in CalendarView:", eventsState);
+  }, [eventsState]);
 
-
-  // Local state for modal and editing
+  // Modal and editing state
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
 
-  // Helper: convert time string "HH:MM" to minutes for sorting
+  // Helper: convert time "HH:MM" to minutes for sorting
   const timeToMinutes = timeStr => {
     if (!timeStr) return 0;
     const [hours, minutes] = timeStr.split(':').map(Number);
@@ -123,6 +116,18 @@ calendarDays.forEach(day => {
     setEditForm(prev => ({ ...prev, [name]: value }));
   };
 
+  // Toggle category selection in edit form
+  const handleCategoryToggle = (cat) => {
+    setEditForm(prev => {
+      const updatedCats = [...prev.categories];
+      if (updatedCats.includes(cat)) {
+        return { ...prev, categories: updatedCats.filter(c => c !== cat) };
+      } else {
+        return { ...prev, categories: [...updatedCats, cat] };
+      }
+    });
+  };
+
   const handleEditSave = async () => {
     const updatedEvents = eventsState.map(ev =>
       ev === selectedEvent ? editForm : ev
@@ -137,25 +142,11 @@ calendarDays.forEach(day => {
     setIsEditing(false);
   };
 
-  // Back button handler: navigate back to Discover page with needed state
   const handleBack = () => {
     navigate(`/discover/${encodeURIComponent(city)}/${startDate}`, {
       state: { tripId, city, startDate, nights, destinationIndex }
     });
   };
-  const handleCategoryToggle = (cat) => {
-    setEditForm((prev) => {
-      // copy the existing array
-      const updatedCats = [...prev.categories];
-      // either add or remove the clicked category
-      if (updatedCats.includes(cat)) {
-        return { ...prev, categories: updatedCats.filter(c => c !== cat) };
-      } else {
-        return { ...prev, categories: [...updatedCats, cat] };
-      }
-    });
-  };
-  
 
   return (
     <div className="calendar-view-container">
@@ -164,15 +155,13 @@ calendarDays.forEach(day => {
       </button>
       <h2>Calendar View</h2>
       <div className="calendar-grid">
-      {calendarDays.map(day => {
- // inside the .map(day => {...})
-const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
-
-  dayEvents.sort((a, b) => {
-    const timeA = a.type === 'todo' ? a.time : a.visitTime;
-    const timeB = b.type === 'todo' ? b.time : b.visitTime;
-    return timeToMinutes(timeA) - timeToMinutes(timeB);
-  });
+        {calendarDays.map(day => {
+          const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
+          dayEvents.sort((a, b) => {
+            const timeA = a.type === 'todo' ? a.time : a.visitTime;
+            const timeB = b.type === 'todo' ? b.time : b.visitTime;
+            return timeToMinutes(timeA) - timeToMinutes(timeB);
+          });
           return (
             <div key={day.formatted} className="calendar-day">
               <div className="day-header">{day.formatted}</div>
@@ -217,6 +206,19 @@ const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
                       value={editForm.time}
                       onChange={handleEditChange}
                     />
+                    <label>Select Categories:</label>
+                    <div className="edit-categories-container">
+                      {todoCategories.map(cat => (
+                        <label key={cat} className="edit-category-label">
+                          <input
+                            type="checkbox"
+                            checked={editForm.categories.includes(cat)}
+                            onChange={() => handleCategoryToggle(cat)}
+                          />
+                          {cat}
+                        </label>
+                      ))}
+                    </div>
                   </>
                 ) : (
                   <>
@@ -240,68 +242,24 @@ const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
                       value={editForm.comments}
                       onChange={handleEditChange}
                     />
+                    <label>Select Categories:</label>
+                    <div className="edit-categories-container">
+                      {eatDrinkCategories.map(cat => (
+                        <label key={cat} className="edit-category-label">
+                          <input
+                            type="checkbox"
+                            checked={editForm.categories.includes(cat)}
+                            onChange={() => handleCategoryToggle(cat)}
+                          />
+                          {cat}
+                        </label>
+                      ))}
+                    </div>
                   </>
                 )}
-               {selectedEvent.type === 'todo' ? (
-  <>
-
-    {/* Categories for todo */}
-    <label>Select Categories:</label>
-    <div className="edit-categories-container">
-      {todoCategories.map(cat => (
-        <label key={cat} className="edit-category-label">
-          <input
-            type="checkbox"
-            checked={editForm.categories.includes(cat)}
-            onChange={() => handleCategoryToggle(cat)}
-          />
-          {cat}
-        </label>
-      ))}
-    </div>
-  </>
-) : (
-  <>
-    <label>Name:</label>
-    <input
-      type="text"
-      name="name"
-      value={editForm.name}
-      onChange={handleEditChange}
-    />
-    <label>Time:</label>
-    <input
-      type="time"
-      name="visitTime"
-      value={editForm.visitTime}
-      onChange={handleEditChange}
-    />
-    <label>Comments:</label>
-    <textarea
-      name="comments"
-      value={editForm.comments}
-      onChange={handleEditChange}
-    />
-    {/* Categories for eat & drink */}
-    <label>Select Categories:</label>
-    <div className="edit-categories-container">
-      {eatDrinkCategories.map(cat => (
-        <label key={cat} className="edit-category-label">
-          <input
-            type="checkbox"
-            checked={editForm.categories.includes(cat)}
-            onChange={() => handleCategoryToggle(cat)}
-          />
-          {cat}
-        </label>
-      ))}
-    </div>
-  </>
-)}
-
                 <div className="modal-buttons">
-                  <button onClick={handleEditSave}>Save</button>
-                  <button onClick={handleEditCancel}>Cancel</button>
+                  <button className="save-btn" onClick={handleEditSave}>Save</button>
+                  <button className="cancel-btn" onClick={handleEditCancel}>Cancel</button>
                 </div>
               </>
             ) : (
@@ -318,15 +276,11 @@ const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
                     <p><strong>Comments:</strong> {selectedEvent.comments}</p>
                   </>
                 )}
-                <p>
-                  <strong>Categories:</strong> {selectedEvent.categories.join(', ')}
-                </p>
-                <p>
-                  <strong>Date:</strong> {selectedEvent.checkinDate} - {selectedEvent.checkoutDate}
-                </p>
+                <p><strong>Categories:</strong> {selectedEvent.categories.join(', ')}</p>
+                <p><strong>Date:</strong> {selectedEvent.checkinDate} - {selectedEvent.checkoutDate}</p>
                 <div className="modal-buttons">
                   <button onClick={() => handleEditInitiate(selectedEvent)}>Edit</button>
-                  <button onClick={() => handleDeleteEvent(selectedEvent)}>Delete</button>
+                  <button className="delete-btn" onClick={() => handleDeleteEvent(selectedEvent)}>Delete</button>
                   <button onClick={() => setSelectedEvent(null)}>Close</button>
                 </div>
               </>
@@ -339,3 +293,4 @@ const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
 }
 
 export default CalendarView;
+
