@@ -5,6 +5,25 @@ import axios from 'axios';
 import './CalendarView.css';
 
 function CalendarView() {
+  const todoCategories = [
+    "Sights & Landmarks",
+    "Nature & Outdoors",
+    "Tours & Attractions",
+    "Culture & Entertainment",
+    "Sports & Wellness",
+    "Beaches & Lakes",
+    "Shopping & Souvenirs"
+  ];
+  
+  const eatDrinkCategories = [
+    "Breakfast",
+    "Lunch",
+    "Dinner",
+    "Drinks & Nightlife",
+    "Coffee & Tea",
+    "Dessert & Sweets"
+  ];
+  
   const location = useLocation();
   const navigate = useNavigate();
   // Destructure all needed state from location.state (including city)
@@ -124,6 +143,19 @@ calendarDays.forEach(day => {
       state: { tripId, city, startDate, nights, destinationIndex }
     });
   };
+  const handleCategoryToggle = (cat) => {
+    setEditForm((prev) => {
+      // copy the existing array
+      const updatedCats = [...prev.categories];
+      // either add or remove the clicked category
+      if (updatedCats.includes(cat)) {
+        return { ...prev, categories: updatedCats.filter(c => c !== cat) };
+      } else {
+        return { ...prev, categories: [...updatedCats, cat] };
+      }
+    });
+  };
+  
 
   return (
     <div className="calendar-view-container">
@@ -210,15 +242,63 @@ const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
                     />
                   </>
                 )}
-                <label>Categories (comma-separated):</label>
-                <input
-                  type="text"
-                  name="categories"
-                  value={editForm.categories.join(', ')}
-                  onChange={(e) =>
-                    setEditForm(prev => ({ ...prev, categories: e.target.value.split(',').map(s => s.trim()) }))
-                  }
-                />
+               {selectedEvent.type === 'todo' ? (
+  <>
+
+    {/* Categories for todo */}
+    <label>Select Categories:</label>
+    <div className="edit-categories-container">
+      {todoCategories.map(cat => (
+        <label key={cat} className="edit-category-label">
+          <input
+            type="checkbox"
+            checked={editForm.categories.includes(cat)}
+            onChange={() => handleCategoryToggle(cat)}
+          />
+          {cat}
+        </label>
+      ))}
+    </div>
+  </>
+) : (
+  <>
+    <label>Name:</label>
+    <input
+      type="text"
+      name="name"
+      value={editForm.name}
+      onChange={handleEditChange}
+    />
+    <label>Time:</label>
+    <input
+      type="time"
+      name="visitTime"
+      value={editForm.visitTime}
+      onChange={handleEditChange}
+    />
+    <label>Comments:</label>
+    <textarea
+      name="comments"
+      value={editForm.comments}
+      onChange={handleEditChange}
+    />
+    {/* Categories for eat & drink */}
+    <label>Select Categories:</label>
+    <div className="edit-categories-container">
+      {eatDrinkCategories.map(cat => (
+        <label key={cat} className="edit-category-label">
+          <input
+            type="checkbox"
+            checked={editForm.categories.includes(cat)}
+            onChange={() => handleCategoryToggle(cat)}
+          />
+          {cat}
+        </label>
+      ))}
+    </div>
+  </>
+)}
+
                 <div className="modal-buttons">
                   <button onClick={handleEditSave}>Save</button>
                   <button onClick={handleEditCancel}>Cancel</button>

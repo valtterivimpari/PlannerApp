@@ -14,26 +14,7 @@ const categoriesList = [
 ];
 
 const recommendations = [
-  {
-    activity: "City Exploration & Sightseeing",
-    idealTemp: "15°C to 24°C (60°F to 75°F)",
-    message: "Mild temperatures make walking around and exploring local neighborhoods comfortable."
-  },
-  {
-    activity: "Hiking & Outdoor Adventures",
-    idealTemp: "10°C to 21°C (50°F to 70°F)",
-    message: "Cooler temperatures help prevent overheating during strenuous activities."
-  },
-  {
-    activity: "Beach & Water Activities",
-    idealTemp: "24°C to 29°C (75°F to 85°F)",
-    message: "Warm weather is perfect for sunbathing and comfortable swimming."
-  },
-  {
-    activity: "Winter Sports (Skiing, Snowboarding)",
-    idealTemp: "-6°C to -1°C (20°F to 30°F)",
-    message: "Cold conditions help maintain good snow quality for winter sports."
-  },
+ 
 ];
 
 
@@ -146,7 +127,6 @@ function AddToDo() {
     <div className="addtodo-container">
       <h1>Custom to do</h1>
       <div className="weather-forecast">
-        <h2>Weather Recommendations for {city}</h2>
         <ul>
           {recommendations.map((rec, index) => (
             <li key={index}>
