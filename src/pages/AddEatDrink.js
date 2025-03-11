@@ -8,11 +8,22 @@ function AddEatDrink() {
   const location = useLocation();
   const { tripId, city, startDate, nights, destinationIndex, discover: discoverState } = location.state || {};
 
+  // Compute available dates from startDate and nights
+  const availableDates = [];
+  const tripStart = new Date(startDate);
+  for (let i = 0; i <= nights; i++) {
+    const d = new Date(tripStart);
+    d.setDate(tripStart.getDate() + i);
+    const options = { day: 'numeric', month: 'short', weekday: 'short' };
+    availableDates.push(d.toLocaleDateString('fi-FI', options));
+  }
+
   // Form state fields
   const [name, setName] = useState(discoverState?.name || '');
   const [selectedCategories, setSelectedCategories] = useState(discoverState?.categories || []);
   const [comments, setComments] = useState(discoverState?.comments || '');
   const [visitTime, setVisitTime] = useState(discoverState?.visitTime || '');
+  const [eventDate, setEventDate] = useState(discoverState?.eventDate || availableDates[0]);
 
   // List of categories for Eat & Drink
   const categoriesList = [
@@ -24,7 +35,6 @@ function AddEatDrink() {
     "Dessert & Sweets"
   ];
 
-  // Toggle checkbox selection
   const handleCategoryChange = (cat) => {
     if (selectedCategories.includes(cat)) {
       setSelectedCategories(selectedCategories.filter(item => item !== cat));
@@ -36,7 +46,7 @@ function AddEatDrink() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    // Compute the date range (check-in and checkout), similar to AddToDo.js
+    // Compute overall trip date range for display (if needed)
     const baseStartDate = startDate || new Date().toISOString();
     const numNights = nights || 1;
     const checkinDateObj = new Date(baseStartDate);
@@ -50,7 +60,7 @@ function AddEatDrink() {
       ? 'Invalid Date'
       : checkoutDateObj.toLocaleDateString('fi-FI', options);
   
-    // Build custom object with the computed dates included
+    // Build custom object with the computed dates included and the chosen eventDate
     const customEatDrink = {
       custom: true,
       type: 'eatdrink',
@@ -60,7 +70,8 @@ function AddEatDrink() {
       visitTime,
       city,
       checkinDate: checkinDateFormatted,
-      checkoutDate: checkoutDateFormatted
+      checkoutDate: checkoutDateFormatted,
+      eventDate: selectedDateString
     };
   
     try {
@@ -73,16 +84,13 @@ function AddEatDrink() {
         if (tripData.destinations && typeof tripData.destinations === 'string') {
           tripData.destinations = JSON.parse(tripData.destinations);
         }
-        // Get current custom entries (if any)
         let currentEntries = tripData.destinations[destinationIndex]?.discover;
         if (!currentEntries) {
           currentEntries = [];
         } else if (!Array.isArray(currentEntries)) {
           currentEntries = [currentEntries];
         }
-        // Push new entry using customEatDrink (not customTodo)
         currentEntries.push(customEatDrink);
-        // Save updated entries back to the destination
         tripData.destinations[destinationIndex].discover = currentEntries;
         await axios.put(
           `http://localhost:5000/api/trips/${tripId}/destinations`,
@@ -90,7 +98,6 @@ function AddEatDrink() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
-        // Top-level discover field
         const response = await axios.get(`http://localhost:5000/api/trips/${tripId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -108,11 +115,10 @@ function AddEatDrink() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
-      // Navigate back to Discover page with updated details
+      // Navigate back to Discover page (which now will show only the Calendar View button)
       navigate(`/discover/${encodeURIComponent(city)}/${startDate}`, {
         state: { tripId, city, startDate, nights, destinationIndex }
       });
-      
     } catch (error) {
       console.error("Error saving custom eat & drink:", error);
     }
@@ -130,9 +136,7 @@ function AddEatDrink() {
           placeholder="Enter the name of the place" 
           required 
         />
-
         <label>Select Categories:</label>
-        {/* Wrap all checkboxes in a flex container for horizontal layout */}
         <div className="categories-container">
           {categoriesList.map((cat, idx) => (
             <div key={idx} className="category-item">
@@ -147,7 +151,6 @@ function AddEatDrink() {
             </div>
           ))}
         </div>
-
         <label>Comments:</label>
         <textarea 
           value={comments} 
@@ -155,7 +158,6 @@ function AddEatDrink() {
           placeholder="Add your comments..." 
           required 
         />
-
         <label>Select Time:</label>
         <input 
           type="time" 
@@ -163,7 +165,12 @@ function AddEatDrink() {
           onChange={(e) => setVisitTime(e.target.value)} 
           required 
         />
-
+        <label>Choose Date:</label>
+        <select value={eventDate} onChange={(e) => setEventDate(e.target.value)} required>
+          {availableDates.map((d, idx) => (
+            <option key={idx} value={d}>{d}</option>
+          ))}
+        </select>
         <button type="submit" className="addeatdrink-submit-button">Save</button>
       </form>
     </div>

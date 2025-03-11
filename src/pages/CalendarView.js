@@ -15,18 +15,18 @@ function CalendarView() {
 
   // Generate calendar days
   const [calendarDays, setCalendarDays] = useState([]);
-  useEffect(() => {
-    let days = [];
-    const start = new Date(startDate);
-    for (let i = 0; i < nights; i++) {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      const options = { day: 'numeric', month: 'short', weekday: 'short' };
-      let formatted = d.toLocaleDateString('fi-FI', options);
-      days.push({ date: d, formatted });
-    }
-    setCalendarDays(days);
-  }, [startDate, nights]);
+useEffect(() => {
+  let days = [];
+  const start = new Date(startDate);
+  for (let i = 0; i < nights; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const options = { day: 'numeric', month: 'short', weekday: 'short' };
+    let formatted = d.toLocaleDateString('fi-FI', options);
+    days.push({ date: d, formatted });
+  }
+  setCalendarDays(days);
+}, [startDate, nights]);
 
   // Local state for modal and editing
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -121,13 +121,15 @@ function CalendarView() {
       </button>
       <h2>Calendar View</h2>
       <div className="calendar-grid">
-        {calendarDays.map(day => {
-          const dayEvents = eventsState.filter(ev => ev.checkinDate === day.formatted);
-          dayEvents.sort((a, b) => {
-            const timeA = a.type === 'todo' ? a.time : a.visitTime;
-            const timeB = b.type === 'todo' ? b.time : b.visitTime;
-            return timeToMinutes(timeA) - timeToMinutes(timeB);
-          });
+      {calendarDays.map(day => {
+ // inside the .map(day => {...})
+const dayEvents = eventsState.filter(ev => ev.eventDate === day.formatted);
+
+  dayEvents.sort((a, b) => {
+    const timeA = a.type === 'todo' ? a.time : a.visitTime;
+    const timeB = b.type === 'todo' ? b.time : b.visitTime;
+    return timeToMinutes(timeA) - timeToMinutes(timeB);
+  });
           return (
             <div key={day.formatted} className="calendar-day">
               <div className="day-header">{day.formatted}</div>
