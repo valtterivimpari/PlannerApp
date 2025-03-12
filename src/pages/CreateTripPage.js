@@ -47,7 +47,7 @@ function CreateTripPage() {
         e.preventDefault();
     
         const token = localStorage.getItem('token');
-        console.log('Token being sent:', token); // Debugging
+        console.log('Token being sent:', token);
     
         if (!token) {
             console.error('No token found');
@@ -67,10 +67,14 @@ function CreateTripPage() {
             );
     
             console.log('Trip created successfully:', response.data);
+    
+            // Redirect to the trips page after successful creation
+            navigate('/trips');
         } catch (error) {
             console.error('Error creating trip:', error.response ? error.response.data : error.message);
         }
     };
+    
     
     
     
