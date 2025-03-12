@@ -13,12 +13,6 @@ function Login() {
     
 
     const handleLogin = async () => {
-        console.log('Attempting login with:', { username, password });
-        console.log('JWT_SECRET:', process.env.JWT_SECRET);
-        console.log(process.env);
-
-
-    
         try {
             const response = await fetch('http://localhost:5000/api/login', {
                 method: 'POST',
@@ -26,27 +20,26 @@ function Login() {
                 body: JSON.stringify({ username, password }),
             });
     
-            console.log('Response status:', response.status);
             if (!response.ok) {
                 setError('Invalid username or password');
-                console.error('Login failed');
                 return;
             }
     
             const data = await response.json();
-            console.log('Login successful, received data:', data);
-    
+            
+            // Only store login status if user explicitly logs in
             localStorage.setItem('token', data.token);
             localStorage.setItem('displayName', data.displayName);
             localStorage.setItem('loggedInUsername', username);
-            localStorage.setItem('isLoggedIn', 'true'); // Ensure this is set
+            localStorage.setItem('isLoggedIn', 'true'); 
     
-            navigate('/profile'); // Redirect to the profile page
+            navigate('/profile'); 
         } catch (error) {
             console.error('Error during login:', error);
             setError('An error occurred during login. Please try again.');
         }
     };
+    
     
     
     

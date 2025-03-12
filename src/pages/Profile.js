@@ -19,14 +19,15 @@ function Profile() {
     const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {
-        console.log('Profile loaded for username:', username);
-
         const token = localStorage.getItem('token');
-        if (!token) {
-            console.warn('No token found. Redirecting to login.');
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+        if (!token || !isLoggedIn) {
+            console.warn('No token or login session found. Redirecting to login.');
             navigate('/login');
         }
-    }, [navigate, username]);
+    }, [navigate]);
+    
 
     const handleSearch = async () => {
         const token = localStorage.getItem('token');
@@ -38,11 +39,6 @@ function Profile() {
         } catch (error) {
             console.error('Error searching users:', error);
         }
-    };
-
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate('/login');
     };
 
     const handleImageUpload = (event) => {
@@ -65,7 +61,6 @@ function Profile() {
 
     return (
         <div>
-            <button onClick={handleLogout} className="logout-button">Log Out</button>
             <div className="profile-container">
                 <div className="profile-header">
                     <div className="profile-photo">

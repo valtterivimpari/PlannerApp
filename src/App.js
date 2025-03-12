@@ -88,15 +88,17 @@ function RedirectIfLoggedIn({ children }) {
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
-        if (isLoggedIn && window.location.pathname !== '/profile') {
+        
+        // Prevent automatic redirection from the home page
+        if (isLoggedIn && window.location.pathname === '/login') {
             console.log('Redirecting logged-in user to profile...');
-            navigate('/profile'); // Redirect to profile
+            navigate('/profile');
         }
     }, [navigate]);
 
     return children;
 }
+
 
 // Component to protect routes for authenticated users
 function RequireAuth({ children }) {
