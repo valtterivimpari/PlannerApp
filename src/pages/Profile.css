@@ -7,11 +7,11 @@
   }
   
   /* LEFT COLUMN: Profile container */
-  .profile-container {
+.profile-container {
     width: 250px;
     min-width: 250px;
     background-color: #f4f8fb;
-    overflow-y: auto;
+    overflow: hidden;  /* Disable scrolling */
     padding: 20px;
     border-right: 1px solid #ddd;
     box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
