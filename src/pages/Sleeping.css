@@ -173,3 +173,33 @@
   background: linear-gradient(135deg, #8e44ad, #9b59b6);
   transform: translateY(-2px);
 }
+
+.back-button {
+  background: linear-gradient(135deg, #00796b, #004d40); /* Darker teal */
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  margin: 20px auto; /* Space at the top */
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:hover {
+  background: linear-gradient(135deg, #004d40, #00796b);
+  transform: translateY(-3px);
+}
+
+.back-button:active {
+  transform: translateY(1px);
+}
+
+
+

@@ -151,6 +151,14 @@ function Sleeping() {
 
   return (
     <div className="sleeping-container">
+      {/* Back Button at the very top */}
+      <div className="back-button-container">
+        <button className="back-button" onClick={() => navigate(`/trip-info/${tripId}`)}>
+          ← Back to Trip Info
+        </button>
+      </div>
+
+
       <div className="sleeping-content"></div>
       <div className="sleeping-info">
         <h2>
@@ -191,7 +199,6 @@ function Sleeping() {
           <p>
             <strong>Breakfast:</strong> {sleepingDetails.breakfast === 'yes' ? 'Included' : 'Not included'}
           </p>
-          <p><strong>Link:</strong> {sleepingDetails.link}</p>
           <p><strong>Notes:</strong> {sleepingDetails.notes}</p>
           <div className="summary-buttons">
             <button className="edit-button" onClick={handleEditCustom}>

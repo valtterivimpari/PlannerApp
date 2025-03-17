@@ -250,16 +250,6 @@ function AddCustom() {
             </div>
           </div>
           <div className="form-group">
-            <label>Link:</label>
-            <input
-              type="url"
-              name="link"
-              value={formData.link}
-              onChange={handleChange}
-              placeholder="Enter URL"
-            />
-          </div>
-          <div className="form-group">
             <label>Notes:</label>
             <textarea
               name="notes"
@@ -294,9 +284,6 @@ function AddCustom() {
           <p>
             <strong>Breakfast:</strong>{' '}
             {formData.breakfast === 'yes' ? 'Included' : 'Not included'}
-          </p>
-          <p>
-            <strong>Link:</strong> {formData.link}
           </p>
           <p>
             <strong>Notes:</strong> {formData.notes}
