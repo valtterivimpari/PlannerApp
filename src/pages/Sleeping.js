@@ -153,65 +153,77 @@ function Sleeping() {
     <div className="sleeping-container">
       {/* Back Button at the very top */}
       <div className="back-button-container">
-        <button className="back-button" onClick={() => navigate(`/trip-info/${tripId}`)}>
+        <button
+          className="back-button"
+          onClick={() => navigate(`/trip-info/${tripId}`)}
+        >
           ← Back to Trip Info
         </button>
       </div>
-
-
-      <div className="sleeping-content"></div>
-      <div className="sleeping-info">
-        <h2>
-          {displayNights} {displayNights === 1 ? 'night' : 'nights'} in <span className="city-name">{displayCity}</span>
-        </h2>
-        <p>
-          {formattedCheckin} - {formattedCheckout}
-        </p>
-      </div>
-      <div className="booking-link">
-        <a href={bookingLink} target="_blank" rel="noopener noreferrer">
-          <img src={bookingImage} alt="Booking.com" className="booking-logo" />
-          Find Hotels on Booking.com
-        </a>
-      </div>
-      <div className="custom-button">
-        <button
-          className="add-custom-button"
-          onClick={() => {
-            navigate('/add-custom', {
-              state: { tripId, city: displayCity, startDate, nights, destinationIndex },
-            });
-          }}
-        >
-          <span className="plus-icon">+</span>
-          Add custom
-        </button>
-      </div>
-      {/* New View Photo Button */}
-      <div className="view-photo-button">
-        <button onClick={handleViewPhoto}>Accommodation Photo</button>
-      </div>
-      {isCustom && (
-        <div className="custom-summary">
-          <h3>Custom Accommodation Details</h3>
-          <p><strong>Type:</strong> {sleepingDetails.type}</p>
-          <p><strong>Name:</strong> {sleepingDetails.name}</p>
+  
+      {/* Main Content Container for Vertical Centering */}
+      <div className="sleeping-content">
+        <div className="sleeping-info">
+          <h2>
+            {displayNights} {displayNights === 1 ? 'night' : 'nights'} in{' '}
+            <span className="city-name">{displayCity}</span>
+          </h2>
           <p>
-            <strong>Breakfast:</strong> {sleepingDetails.breakfast === 'yes' ? 'Included' : 'Not included'}
+            {formattedCheckin} - {formattedCheckout}
           </p>
-          <p><strong>Notes:</strong> {sleepingDetails.notes}</p>
-          <div className="summary-buttons">
-            <button className="edit-button" onClick={handleEditCustom}>
-              Edit
-            </button>
-            <button className="delete-button" onClick={handleDeleteCustom}>
-              Delete
-            </button>
-          </div>
         </div>
-      )}
+        <div className="booking-link">
+          <a href={bookingLink} target="_blank" rel="noopener noreferrer">
+            <img src={bookingImage} alt="Booking.com" className="booking-logo" />
+            Find Hotels on Booking.com
+          </a>
+        </div>
+        <div className="custom-button">
+          <button
+            className="add-custom-button"
+            onClick={() => {
+              navigate('/add-custom', {
+                state: { tripId, city: displayCity, startDate, nights, destinationIndex },
+              });
+            }}
+          >
+            <span className="plus-icon">+</span>
+            Add custom
+          </button>
+        </div>
+        <div className="view-photo-button">
+          <button onClick={handleViewPhoto}>Accommodation Photo</button>
+        </div>
+        {isCustom && (
+          <div className="custom-summary">
+            <h3>Custom Accommodation Details</h3>
+            <p>
+              <strong>Type:</strong> {sleepingDetails.type}
+            </p>
+            <p>
+              <strong>Name:</strong> {sleepingDetails.name}
+            </p>
+            <p>
+              <strong>Breakfast:</strong>{' '}
+              {sleepingDetails.breakfast === 'yes' ? 'Included' : 'Not included'}
+            </p>
+            <p>
+              <strong>Notes:</strong> {sleepingDetails.notes}
+            </p>
+            <div className="summary-buttons">
+              <button className="edit-button" onClick={handleEditCustom}>
+                Edit
+              </button>
+              <button className="delete-button" onClick={handleDeleteCustom}>
+                Delete
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
+  
   
 }
 
